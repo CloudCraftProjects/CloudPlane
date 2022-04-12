@@ -8,10 +8,10 @@ It can be called using the API (Bukkit#reloadBukkit(), Bukkit#reloadProperties()
 or as a command using /reload <bukkit|properties>.
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 7d11fbb3db5c51784622cec2d28e453b2e99098e..13f7bce4120cba01cbb9765f52c34a8aa7e36424 100644
+index 96a81d12594ca1aa00eae3873d447d11d488562b..5537822e117e02fa7564709369d9fc749e538d30 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -2866,4 +2866,66 @@ public final class CraftServer implements Server {
+@@ -2871,4 +2871,66 @@ public final class CraftServer implements Server {
      }
  
      // Paper end
