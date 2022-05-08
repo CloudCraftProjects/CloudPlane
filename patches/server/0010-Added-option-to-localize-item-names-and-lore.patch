@@ -39,12 +39,12 @@ index 896a4237f871d46cf39b0721e909c2cc3b5fc728..06c4e66cc2582391147a8202ef2c3370
  
              this.writeNbt(nbttagcompound);
 diff --git a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-index 2cdc4cc69184197346015093be6aca8be07b9a35..4fb9bd0162d5fb38a354c367506c5448885c92f9 100644
+index 5d0bff025f3e62ce66aca796752aeeeef0c13e35..d2c6d3d01f9fa0d6686fb1689ef6ce72ea5f01ed 100644
 --- a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
 +++ b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-@@ -146,4 +146,15 @@ public class CloudPlaneConfig {
-     private static void lobbyServer() {
-         lobbyServer = getString("settings.lobby-server", lobbyServer);
+@@ -140,4 +140,15 @@ public class CloudPlaneConfig {
+ 
+         sleepMessage = getString("settings.sleep-message", sleepMessage);
      }
 +
 +    public static boolean localizeItems = false;

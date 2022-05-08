@@ -18,7 +18,7 @@ index 570a9f1a3387ac42a3c935519aa1656f9d016504..406a2e9732cd6baeb343dc810d5d4579
  
      public boolean isInvulnerable() {
 diff --git a/src/main/java/net/minecraft/world/level/GameRules.java b/src/main/java/net/minecraft/world/level/GameRules.java
-index e67d5012bc7af629d05bceb1b1e22162272e17aa..d4847358686f41604a031b105b29ef1a5990d6fb 100644
+index fb2626d2a6babe531dd1849333b119ab36200d80..605756b748b12bf66151781375eeabec272448d4 100644
 --- a/src/main/java/net/minecraft/world/level/GameRules.java
 +++ b/src/main/java/net/minecraft/world/level/GameRules.java
 @@ -89,6 +89,7 @@ public class GameRules {

@@ -17,10 +17,10 @@ index dbc2f34bdcd6716633fe730cbfe00e6f2d404d7b..06f13e465af2d242470713dc18901ec2
          while (iterator.hasNext()) {
              ServerPlayer entityplayer = (ServerPlayer) iterator.next();
 diff --git a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-index 0b75a9b00382a76842035c53d071ff300023bd4f..af5a9fa3593576ca9294d5efb81315d3e550ee15 100644
+index 1a7e64d0e741d280e3a8573098631812aca02edc..d02ab2f1a3aca078882b647821d336d3de9abab1 100644
 --- a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
 +++ b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-@@ -148,6 +148,7 @@ public class CloudPlaneConfig {
+@@ -142,6 +142,7 @@ public class CloudPlaneConfig {
      }
  
      public static boolean localizeItems = false;
@@ -28,7 +28,7 @@ index 0b75a9b00382a76842035c53d071ff300023bd4f..af5a9fa3593576ca9294d5efb81315d3
      private static void adventure() {
          if (version == 2) {
              localizeItems = getBoolean("settings.localize.items", localizeItems);
-@@ -155,6 +156,7 @@ public class CloudPlaneConfig {
+@@ -149,6 +150,7 @@ public class CloudPlaneConfig {
              set("settings.localize", null);
          } else {
              localizeItems = getBoolean("settings.adventure.localize-items", localizeItems);

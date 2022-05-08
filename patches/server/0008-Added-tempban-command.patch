@@ -5,7 +5,7 @@ Subject: [PATCH] Added tempban command
 
 
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 02dc93c394d37c9a84aa4a58d80615c403c54fb9..89789963e094522096288ad24c1861646f2cdeff 100644
+index 95fe4240f3e1174ec36598f24d63f0073c13b376..c15096ec90c87cb5af349acecc7ced03bc54fe92 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -128,7 +128,7 @@ public abstract class PlayerList {
@@ -18,12 +18,12 @@ index 02dc93c394d37c9a84aa4a58d80615c403c54fb9..89789963e094522096288ad24c186164
      public final List<ServerPlayer> players = new java.util.concurrent.CopyOnWriteArrayList(); // CraftBukkit - ArrayList -> CopyOnWriteArrayList: Iterator safety
      private final Map<UUID, ServerPlayer> playersByUUID = Maps.newHashMap();
 diff --git a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-index 490b31ffc84d6af69fed7666766eb6d54675b5d9..2cdc4cc69184197346015093be6aca8be07b9a35 100644
+index 90e2ed3d05fd897795b7d1936654d830bac08aed..5d0bff025f3e62ce66aca796752aeeeef0c13e35 100644
 --- a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
 +++ b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-@@ -65,6 +65,7 @@ public class CloudPlaneConfig {
+@@ -64,6 +64,7 @@ public class CloudPlaneConfig {
+ 
          commands.add(new tk.booky.cloudplane.commands.FlyCommand());
-         commands.add(new tk.booky.cloudplane.commands.LobbyCommand());
          commands.add(new tk.booky.cloudplane.commands.ReplyCommand());
 +        commands.add(new tk.booky.cloudplane.commands.TempBanCommand());
  

@@ -5,13 +5,13 @@ Subject: [PATCH] Added reply command
 
 
 diff --git a/src/main/java/org/bukkit/util/permissions/CloudPlanePermissions.java b/src/main/java/org/bukkit/util/permissions/CloudPlanePermissions.java
-index b06efb2e6abc3c16868a7103f19e96c1e536cf57..66c44e391be3b82f110b1ea7d486a3bbd9c80731 100644
+index 23cf9352dacfe5d7dd367aba2432f290a5f0f54a..15ebe47cab6b8f2bf36de215a8597749f0d6474c 100644
 --- a/src/main/java/org/bukkit/util/permissions/CloudPlanePermissions.java
 +++ b/src/main/java/org/bukkit/util/permissions/CloudPlanePermissions.java
-@@ -17,6 +17,7 @@ public class CloudPlanePermissions {
+@@ -15,6 +15,7 @@ public class CloudPlanePermissions {
+         Permission commands = DefaultPermissions.registerPermission(PREFIX + "command", "Allows the user to use all CloudPlane commands", PermissionDefault.FALSE, cloudplane);
+         DefaultPermissions.registerPermission(PREFIX + "command.fly", "Allows the user to use the fly command on himself", PermissionDefault.OP, commands);
          DefaultPermissions.registerPermission(PREFIX + "command.fly.other", "Allows the user to use the fly command on others", PermissionDefault.OP, commands);
-         DefaultPermissions.registerPermission(PREFIX + "command.lobby", "Allows the user to use the lobby command on himself", PermissionDefault.TRUE, commands);
-         DefaultPermissions.registerPermission(PREFIX + "command.lobby.other", "Allows the user to use the lobby command on others", PermissionDefault.OP, commands);
 +        DefaultPermissions.registerPermission(PREFIX + "command.reply", "Allows the user to use the reply command", PermissionDefault.TRUE, commands);
          commands.recalculatePermissibles();
  

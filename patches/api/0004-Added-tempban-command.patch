@@ -5,12 +5,12 @@ Subject: [PATCH] Added tempban command
 
 
 diff --git a/src/main/java/org/bukkit/util/permissions/CloudPlanePermissions.java b/src/main/java/org/bukkit/util/permissions/CloudPlanePermissions.java
-index 66c44e391be3b82f110b1ea7d486a3bbd9c80731..4d6446e8b41357222f8ec6002a0428f5820f5cb1 100644
+index 15ebe47cab6b8f2bf36de215a8597749f0d6474c..657c8f85c19e166632a1e0f786477b05c4814dbe 100644
 --- a/src/main/java/org/bukkit/util/permissions/CloudPlanePermissions.java
 +++ b/src/main/java/org/bukkit/util/permissions/CloudPlanePermissions.java
-@@ -18,6 +18,7 @@ public class CloudPlanePermissions {
-         DefaultPermissions.registerPermission(PREFIX + "command.lobby", "Allows the user to use the lobby command on himself", PermissionDefault.TRUE, commands);
-         DefaultPermissions.registerPermission(PREFIX + "command.lobby.other", "Allows the user to use the lobby command on others", PermissionDefault.OP, commands);
+@@ -16,6 +16,7 @@ public class CloudPlanePermissions {
+         DefaultPermissions.registerPermission(PREFIX + "command.fly", "Allows the user to use the fly command on himself", PermissionDefault.OP, commands);
+         DefaultPermissions.registerPermission(PREFIX + "command.fly.other", "Allows the user to use the fly command on others", PermissionDefault.OP, commands);
          DefaultPermissions.registerPermission(PREFIX + "command.reply", "Allows the user to use the reply command", PermissionDefault.TRUE, commands);
 +        DefaultPermissions.registerPermission(PREFIX + "command.tempban", "Allows the user to use the tempban command", PermissionDefault.OP, commands);
          commands.recalculatePermissibles();

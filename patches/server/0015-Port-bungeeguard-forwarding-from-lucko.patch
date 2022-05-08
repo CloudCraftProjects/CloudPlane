@@ -89,10 +89,10 @@ index e8a79277f3e57bc82d67ada6543c7f8665311bd3..a77465107e46ed8553a03c4e6a3fa326
                          TranslatableComponent chatmessage = new TranslatableComponent("Unknown data in login hostname, did you forget to enable BungeeCord in spigot.yml?");
                          this.connection.send(new ClientboundLoginDisconnectPacket(chatmessage));
 diff --git a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-index af5a9fa3593576ca9294d5efb81315d3e550ee15..44c7c284be84669b1bd96a51344d4d1435402e1e 100644
+index d02ab2f1a3aca078882b647821d336d3de9abab1..388a25a5a2323e1a8b8e97323d012619585315e0 100644
 --- a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
 +++ b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-@@ -164,4 +164,11 @@ public class CloudPlaneConfig {
+@@ -158,4 +158,11 @@ public class CloudPlaneConfig {
      private static void debugVersion() {
          debugVersion = getBoolean("settings.debug-version", debugVersion);
      }
