@@ -5,7 +5,7 @@ Subject: [PATCH] Add back link detection on non-chat event messages
 
 
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index c104d97191d16c4ad691a6f4c0182a53f7680391..22610353241fb2e8d60f7a241316d828a61f418d 100644
+index dbc2f34bdcd6716633fe730cbfe00e6f2d404d7b..06f13e465af2d242470713dc18901ec2afb4f239 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -1387,6 +1387,7 @@ public abstract class PlayerList {
