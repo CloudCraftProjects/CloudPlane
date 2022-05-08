@@ -22,10 +22,10 @@ index a06c65edede7afb891518f28874f398b563ee367..c1c17b913bd76e8fd3cad080cfd6fbb1
                      this.profiler.pop();
                      this.endMetricsRecordingTick();
 diff --git a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-index 388a25a5a2323e1a8b8e97323d012619585315e0..9782eac867bb719f316412dd1a2c67552e7def76 100644
+index f69a85aa4c34b976655206d02c4343c9f8a40401..9ab5cc3b66aee7f72e12430a10156ac9ac28a908 100644
 --- a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
 +++ b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-@@ -165,4 +165,9 @@ public class CloudPlaneConfig {
+@@ -163,4 +163,9 @@ public class CloudPlaneConfig {
          bungeeGuardEnabled = getBoolean("settings.bungee-guard.enabled", bungeeGuardEnabled);
          bungeeGuardTokens = new java.util.HashSet<>(getList("settings.bungee-guard.tokens", new java.util.ArrayList<>(bungeeGuardTokens)));
      }
