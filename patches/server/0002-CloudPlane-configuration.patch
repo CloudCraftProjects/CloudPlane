@@ -29,7 +29,7 @@ index 836b296fee24aae75adafbd4a4bd73656c69414b..a06c65edede7afb891518f28874f398b
          this.server.getPluginManager().callEvent(new ServerLoadEvent(ServerLoadEvent.LoadType.STARTUP));
          this.connection.acceptConnections();
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 27e90ca03275a42271bbe97ee1a63a355b098ede..a4c9180037973b73c06340cb0d93093bb1401184 100644
+index 6afd7c8b3a0db90dbab14b4405ae4c750e5b0ef1..d100db76012b049ccde050496c716f5914b01d89 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -231,6 +231,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -69,10 +69,10 @@ index 8026e8ca528071bf80fecb5e96370d1d2ae799db..54dc423bc0fb99dd5d47f119f84d03a3
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 3c84154f443c3d9a35ca926d93002301de355b49..40742ac4002c2d6d44ded5946c61ff3bae2e81aa 100644
+index 178830884f8a8d5da73e93200ad339a7b4f81ed4..0634788fa4aed05c8ed7e45333487b9bc6337d6b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -955,6 +955,7 @@ public final class CraftServer implements Server {
+@@ -956,6 +956,7 @@ public final class CraftServer implements Server {
  
          org.spigotmc.SpigotConfig.init((File) console.options.valueOf("spigot-settings")); // Spigot
          com.destroystokyo.paper.PaperConfig.init((File) console.options.valueOf("paper-settings")); // Paper
@@ -80,7 +80,7 @@ index 3c84154f443c3d9a35ca926d93002301de355b49..40742ac4002c2d6d44ded5946c61ff3b
          for (ServerLevel world : this.console.getAllLevels()) {
              // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
              world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters, config.spawnAnimals); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
-@@ -2699,6 +2700,13 @@ public final class CraftServer implements Server {
+@@ -2706,6 +2707,13 @@ public final class CraftServer implements Server {
              return com.destroystokyo.paper.PaperConfig.config;
          }
  

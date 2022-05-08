@@ -5,10 +5,10 @@ Subject: [PATCH] Expose tracked entities
 
 
 diff --git a/src/main/java/org/bukkit/entity/Player.java b/src/main/java/org/bukkit/entity/Player.java
-index f954801f6a5d465b8545e75d7ff5af0352d6ec0d..6bb0f99b03d82052f1576ff168904fe98b37fd1b 100644
+index e65dc831974ca501f69d2cc43858b838e8866676..5013691883119e662171ca58a3e770d5afc1adeb 100644
 --- a/src/main/java/org/bukkit/entity/Player.java
 +++ b/src/main/java/org/bukkit/entity/Player.java
-@@ -2672,4 +2672,14 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
+@@ -2693,4 +2693,14 @@ public interface Player extends HumanEntity, Conversable, OfflinePlayer, PluginM
      @Override
      Spigot spigot();
      // Spigot end

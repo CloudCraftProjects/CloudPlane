@@ -18,10 +18,10 @@ index 0ab662448c24ba1d3c697f8096f03c88dd622e77..9e6d77605d13aaae9f0593ae531c56cb
          public final Set<ServerPlayerConnection> seenBy = new ReferenceOpenHashSet<>(); // Paper - optimise map impl
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 6feeadad9aecb7d63e24d5daae115a93e39aeb3d..68b2510ab1ff80554105f826ae3080daa0e0cc7c 100644
+index f12efe51b14ed3637a8ba45def9c94634a6f5e8f..93dda7013e41cc72172550ea48a5292d527b6d76 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -2703,4 +2703,12 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2791,4 +2791,12 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          return this.spigot;
      }
      // Spigot end
