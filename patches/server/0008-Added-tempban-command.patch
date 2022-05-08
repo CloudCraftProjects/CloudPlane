@@ -4,38 +4,25 @@ Date: Mon, 5 Jul 2021 19:52:09 +0200
 Subject: [PATCH] Added tempban command
 
 
-diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 95fe4240f3e1174ec36598f24d63f0073c13b376..c15096ec90c87cb5af349acecc7ced03bc54fe92 100644
---- a/src/main/java/net/minecraft/server/players/PlayerList.java
-+++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -128,7 +128,7 @@ public abstract class PlayerList {
-     public static final File WHITELIST_FILE = new File("whitelist.json");
-     private static final Logger LOGGER = LogUtils.getLogger();
-     private static final int SEND_PLAYER_INFO_INTERVAL = 600;
--    private static final SimpleDateFormat BAN_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
-+    public static final SimpleDateFormat BAN_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z"); // CloudPlane - private --> public
-     private final MinecraftServer server;
-     public final List<ServerPlayer> players = new java.util.concurrent.CopyOnWriteArrayList(); // CraftBukkit - ArrayList -> CopyOnWriteArrayList: Iterator safety
-     private final Map<UUID, ServerPlayer> playersByUUID = Maps.newHashMap();
-diff --git a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-index 90e2ed3d05fd897795b7d1936654d830bac08aed..5d0bff025f3e62ce66aca796752aeeeef0c13e35 100644
---- a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-+++ b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
+diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+index 36cb41a6f596bfc9fa63bc3c9c5b620008427dc2..731a8b642ac7e84a4d7ee60e54944aa87ed064d9 100644
+--- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
++++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
 @@ -64,6 +64,7 @@ public class CloudPlaneConfig {
  
-         commands.add(new tk.booky.cloudplane.commands.FlyCommand());
-         commands.add(new tk.booky.cloudplane.commands.ReplyCommand());
-+        commands.add(new tk.booky.cloudplane.commands.TempBanCommand());
+         commands.add(new dev.booky.cloudplane.commands.FlyCommand());
+         commands.add(new dev.booky.cloudplane.commands.ReplyCommand());
++        commands.add(new dev.booky.cloudplane.commands.TempBanCommand());
  
          commands.forEach(command -> command.register(dispatcher));
      }
-diff --git a/src/main/java/tk/booky/cloudplane/commands/TempBanCommand.java b/src/main/java/tk/booky/cloudplane/commands/TempBanCommand.java
+diff --git a/src/main/java/dev/booky/cloudplane/commands/TempBanCommand.java b/src/main/java/dev/booky/cloudplane/commands/TempBanCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..94844b5d7ab355450720c6770354ad5afabbf682
+index 0000000000000000000000000000000000000000..6f8c813a15ccd89d67ae7fe5e21e0eb81a2c5f83
 --- /dev/null
-+++ b/src/main/java/tk/booky/cloudplane/commands/TempBanCommand.java
++++ b/src/main/java/dev/booky/cloudplane/commands/TempBanCommand.java
 @@ -0,0 +1,71 @@
-+package tk.booky.cloudplane.commands;
++package dev.booky.cloudplane.commands;
 +
 +import com.mojang.authlib.GameProfile;
 +import com.mojang.brigadier.CommandDispatcher;
@@ -56,7 +43,7 @@ index 0000000000000000000000000000000000000000..94844b5d7ab355450720c6770354ad5a
 +import net.minecraft.server.players.UserBanListEntry;
 +import org.bukkit.event.player.PlayerKickEvent;
 +import org.jetbrains.annotations.Nullable;
-+import tk.booky.cloudplane.parser.DurationParser;
++import dev.booky.cloudplane.parser.DurationParser;
 +
 +import java.util.ArrayList;
 +import java.util.Collection;
@@ -106,13 +93,13 @@ index 0000000000000000000000000000000000000000..94844b5d7ab355450720c6770354ad5a
 +        }
 +    }
 +}
-diff --git a/src/main/java/tk/booky/cloudplane/parser/DurationParser.java b/src/main/java/tk/booky/cloudplane/parser/DurationParser.java
+diff --git a/src/main/java/dev/booky/cloudplane/parser/DurationParser.java b/src/main/java/dev/booky/cloudplane/parser/DurationParser.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..6fb3628651d13340cd871b872d0ea42f917a1516
+index 0000000000000000000000000000000000000000..141d9a266cb5417031d0a68b4f05209a4927c55a
 --- /dev/null
-+++ b/src/main/java/tk/booky/cloudplane/parser/DurationParser.java
++++ b/src/main/java/dev/booky/cloudplane/parser/DurationParser.java
 @@ -0,0 +1,54 @@
-+package tk.booky.cloudplane.parser;
++package dev.booky.cloudplane.parser;
 +
 +import com.mojang.brigadier.LiteralMessage;
 +import com.mojang.brigadier.exceptions.CommandSyntaxException;
@@ -166,3 +153,16 @@ index 0000000000000000000000000000000000000000..6fb3628651d13340cd871b872d0ea42f
 +        }
 +    }
 +}
+diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
+index 95fe4240f3e1174ec36598f24d63f0073c13b376..c15096ec90c87cb5af349acecc7ced03bc54fe92 100644
+--- a/src/main/java/net/minecraft/server/players/PlayerList.java
++++ b/src/main/java/net/minecraft/server/players/PlayerList.java
+@@ -128,7 +128,7 @@ public abstract class PlayerList {
+     public static final File WHITELIST_FILE = new File("whitelist.json");
+     private static final Logger LOGGER = LogUtils.getLogger();
+     private static final int SEND_PLAYER_INFO_INTERVAL = 600;
+-    private static final SimpleDateFormat BAN_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
++    public static final SimpleDateFormat BAN_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z"); // CloudPlane - private --> public
+     private final MinecraftServer server;
+     public final List<ServerPlayer> players = new java.util.concurrent.CopyOnWriteArrayList(); // CraftBukkit - ArrayList -> CopyOnWriteArrayList: Iterator safety
+     private final Map<UUID, ServerPlayer> playersByUUID = Maps.newHashMap();

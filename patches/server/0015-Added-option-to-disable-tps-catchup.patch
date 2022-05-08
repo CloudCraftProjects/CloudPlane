@@ -7,24 +7,10 @@ Took + modified from https://github.com/PurpurMC/Purpur/.
 
 Co-authored-by: William Blake Galbreath <blake.galbreath@gmail.com>
 
-diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index a06c65edede7afb891518f28874f398b563ee367..c1c17b913bd76e8fd3cad080cfd6fbb15c173b83 100644
---- a/src/main/java/net/minecraft/server/MinecraftServer.java
-+++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1228,7 +1228,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
-                     this.tickServer(this::haveTime);
-                     this.profiler.popPush("nextTickWait");
-                     this.mayHaveDelayedTasks = true;
-+                    if (tk.booky.cloudplane.CloudPlaneConfig.tpsCatchup) // CloudPlane
-                     this.delayedTasksMaxNextTickTime = Math.max(Util.getMillis() + 50L, this.nextTickTime);
-+                    else this.delayedTasksMaxNextTickTime = this.nextTickTime = curTime / 1_000_000L + 50L; // CloudPlane
-                     this.waitUntilNextTick();
-                     this.profiler.pop();
-                     this.endMetricsRecordingTick();
-diff --git a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-index f69a85aa4c34b976655206d02c4343c9f8a40401..9ab5cc3b66aee7f72e12430a10156ac9ac28a908 100644
---- a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-+++ b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
+diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+index 9f2bbb928efddc2f5ecfcef32d5525b97c1a0ba3..3bb5b484df9b6ebd1c99ab0f5e400ba076da50bd 100644
+--- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
++++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
 @@ -163,4 +163,9 @@ public class CloudPlaneConfig {
          bungeeGuardEnabled = getBoolean("settings.bungee-guard.enabled", bungeeGuardEnabled);
          bungeeGuardTokens = new java.util.HashSet<>(getList("settings.bungee-guard.tokens", new java.util.ArrayList<>(bungeeGuardTokens)));
@@ -35,3 +21,17 @@ index f69a85aa4c34b976655206d02c4343c9f8a40401..9ab5cc3b66aee7f72e12430a10156ac9
 +        tpsCatchup = getBoolean("settings.tps-catchup", tpsCatchup);
 +    }
  }
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 727bb588239b780f5e41bb29b88a15e03f936687..11a986381fac12db09d74933b9c7631218c6c5c0 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -1228,7 +1228,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+                     this.tickServer(this::haveTime);
+                     this.profiler.popPush("nextTickWait");
+                     this.mayHaveDelayedTasks = true;
++                    if (dev.booky.cloudplane.CloudPlaneConfig.tpsCatchup) // CloudPlane
+                     this.delayedTasksMaxNextTickTime = Math.max(Util.getMillis() + 50L, this.nextTickTime);
++                    else this.delayedTasksMaxNextTickTime = this.nextTickTime = curTime / 1_000_000L + 50L; // CloudPlane
+                     this.waitUntilNextTick();
+                     this.profiler.pop();
+                     this.endMetricsRecordingTick();

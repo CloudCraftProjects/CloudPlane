@@ -1,4 +1,4 @@
-group = "tk.booky"
+group = "dev.booky"
 version = "1.0.0"
 
 repositories {

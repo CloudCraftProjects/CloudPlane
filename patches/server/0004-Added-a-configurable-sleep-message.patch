@@ -4,26 +4,10 @@ Date: Sun, 27 Jun 2021 21:06:03 +0200
 Subject: [PATCH] Added a configurable sleep message
 
 
-diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 48e428ce0590c530522de56c9f9c8cf1631c6e01..2fc90df8e641dd3f7d3821d59416cda4fb882ff2 100644
---- a/src/main/java/net/minecraft/server/level/ServerLevel.java
-+++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -603,6 +603,11 @@ public class ServerLevel extends Level implements WorldGenLevel {
-             if (this.getGameRules().getBoolean(GameRules.RULE_WEATHER_CYCLE) && this.isRaining()) {
-                 this.resetWeatherCycle();
-             }
-+            // CloudPlane start - configurable sleeping over message
-+            if (!org.apache.commons.lang3.StringUtils.isEmpty(tk.booky.cloudplane.CloudPlaneConfig.sleepMessage)) {
-+                Bukkit.broadcast(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize(tk.booky.cloudplane.CloudPlaneConfig.sleepMessage));
-+            }
-+            // CloudPlane end
-         }
- 
-         this.updateSkyBrightness();
-diff --git a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-index 80208f307a7305b8c1146fecf7ea1ee1fa894140..6a2cbb90489ad54d76031863c8e53b3355dc4a2e 100644
---- a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-+++ b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
+diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+index 23d3de9c01c46c742128f49ea113360722c5c7d0..1c3cea8a2244f0997b091759e832c0ff11fc0965 100644
+--- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
++++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
 @@ -126,4 +126,15 @@ public class CloudPlaneConfig {
          config.addDefault(path, def);
          return config.getString(path, config.getString(path));
@@ -40,3 +24,19 @@ index 80208f307a7305b8c1146fecf7ea1ee1fa894140..6a2cbb90489ad54d76031863c8e53b33
 +        sleepMessage = getString("settings.sleep-message", sleepMessage);
 +    }
  }
+diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
+index c63ee396e990d11e2f613f3b5a478b486076ed56..effc5d9513b7e318a2da2756f168f95c98f0e2ea 100644
+--- a/src/main/java/net/minecraft/server/level/ServerLevel.java
++++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
+@@ -603,6 +603,11 @@ public class ServerLevel extends Level implements WorldGenLevel {
+             if (this.getGameRules().getBoolean(GameRules.RULE_WEATHER_CYCLE) && this.isRaining()) {
+                 this.resetWeatherCycle();
+             }
++            // CloudPlane start - configurable sleeping over message
++            if (!org.apache.commons.lang3.StringUtils.isEmpty(dev.booky.cloudplane.CloudPlaneConfig.sleepMessage)) {
++                Bukkit.broadcast(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize(dev.booky.cloudplane.CloudPlaneConfig.sleepMessage));
++            }
++            // CloudPlane end
+         }
+ 
+         this.updateSkyBrightness();

@@ -5,8 +5,22 @@ Subject: [PATCH] Added optional version in debug view
 
 This patch sends the server git hash within the 'minecraft:brand' packet.
 
+diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+index 333ac116512c77cbc0a9912f376e6ad47b382760..f73052f518d96de587838d5e012b15e63615995f 100644
+--- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
++++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+@@ -151,4 +151,9 @@ public class CloudPlaneConfig {
+             localizeItems = getBoolean("settings.adventure.localize-items", localizeItems);
+         }
+     }
++
++    public static boolean debugVersion = false;
++    private static void debugVersion() {
++        debugVersion = getBoolean("settings.debug-version", debugVersion);
++    }
+ }
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index c15096ec90c87cb5af349acecc7ced03bc54fe92..dbc2f34bdcd6716633fe730cbfe00e6f2d404d7b 100644
+index c15096ec90c87cb5af349acecc7ced03bc54fe92..9ff2ffccdd3d972d4e867e4e89d6908fd0fa3180 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -273,7 +273,7 @@ public abstract class PlayerList {
@@ -14,12 +28,12 @@ index c15096ec90c87cb5af349acecc7ced03bc54fe92..dbc2f34bdcd6716633fe730cbfe00e6f
          playerconnection.send(new ClientboundLoginPacket(player.getId(), worlddata.isHardcore(), player.gameMode.getGameModeForPlayer(), player.gameMode.getPreviousGameModeForPlayer(), this.server.levelKeys(), this.registryHolder, worldserver1.dimensionTypeRegistration(), worldserver1.dimension(), BiomeManager.obfuscateSeed(worldserver1.getSeed()), this.getMaxPlayers(), worldserver1.getChunkSource().chunkMap.playerChunkManager.getTargetSendDistance(), worldserver1.getChunkSource().chunkMap.playerChunkManager.getTargetTickViewDistance(), flag1, !flag, worldserver1.isDebug(), worldserver1.isFlat())); // Paper - replace old player chunk management
          player.getBukkitEntity().sendSupportedChannels(); // CraftBukkit
 -        playerconnection.send(new ClientboundCustomPayloadPacket(ClientboundCustomPayloadPacket.BRAND, (new FriendlyByteBuf(Unpooled.buffer())).writeUtf(this.getServer().getServerModName())));
-+        playerconnection.send(new ClientboundCustomPayloadPacket(ClientboundCustomPayloadPacket.BRAND, (new FriendlyByteBuf(Unpooled.buffer())).writeUtf(tk.booky.cloudplane.CloudPlaneConfig.debugVersion ? getServer().server.serverVersion : this.getServer().getServerModName()))); // CloudPlane
++        playerconnection.send(new ClientboundCustomPayloadPacket(ClientboundCustomPayloadPacket.BRAND, (new FriendlyByteBuf(Unpooled.buffer())).writeUtf(dev.booky.cloudplane.CloudPlaneConfig.debugVersion ? getServer().server.serverVersion : this.getServer().getServerModName()))); // CloudPlane
          playerconnection.send(new ClientboundChangeDifficultyPacket(worlddata.getDifficulty(), worlddata.isDifficultyLocked()));
          playerconnection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
          playerconnection.send(new ClientboundSetCarriedItemPacket(player.getInventory().selected));
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 0634788fa4aed05c8ed7e45333487b9bc6337d6b..c0a7f84c0b8af84963976771093aca4757fd1c5a 100644
+index 61bac41b772c93eba042a0b6b94896b54e69c778..431c7a088e3b052e30efabb1273642996227f4d4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -250,7 +250,7 @@ import javax.annotation.Nonnull; // Paper
@@ -31,17 +45,3 @@ index 0634788fa4aed05c8ed7e45333487b9bc6337d6b..c0a7f84c0b8af84963976771093aca47
      private final String bukkitVersion = Versioning.getBukkitVersion();
      private final Logger logger = Logger.getLogger("Minecraft");
      private final ServicesManager servicesManager = new SimpleServicesManager();
-diff --git a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-index d2c6d3d01f9fa0d6686fb1689ef6ce72ea5f01ed..1a7e64d0e741d280e3a8573098631812aca02edc 100644
---- a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-+++ b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-@@ -151,4 +151,9 @@ public class CloudPlaneConfig {
-             localizeItems = getBoolean("settings.adventure.localize-items", localizeItems);
-         }
-     }
-+
-+    public static boolean debugVersion = false;
-+    private static void debugVersion() {
-+        debugVersion = getBoolean("settings.debug-version", debugVersion);
-+    }
- }

@@ -4,25 +4,25 @@ Date: Fri, 25 Jun 2021 22:20:11 +0200
 Subject: [PATCH] Added fly command
 
 
-diff --git a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-index ddc1aff5953d7332c92be6127b3c45e863f444e7..80208f307a7305b8c1146fecf7ea1ee1fa894140 100644
---- a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-+++ b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
+diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+index 4be7a6c94b00bd8f136ac2d054e1faa2624644ea..23d3de9c01c46c742128f49ea113360722c5c7d0 100644
+--- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
++++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
 @@ -62,6 +62,7 @@ public class CloudPlaneConfig {
      public static void registerCommands(CommandDispatcher<CommandSourceStack> dispatcher) {
          commands.clear();
  
-+        commands.add(new tk.booky.cloudplane.commands.FlyCommand());
++        commands.add(new dev.booky.cloudplane.commands.FlyCommand());
  
          commands.forEach(command -> command.register(dispatcher));
      }
-diff --git a/src/main/java/tk/booky/cloudplane/commands/FlyCommand.java b/src/main/java/tk/booky/cloudplane/commands/FlyCommand.java
+diff --git a/src/main/java/dev/booky/cloudplane/commands/FlyCommand.java b/src/main/java/dev/booky/cloudplane/commands/FlyCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..5d7182bb950a179867cd1ab288eb8145f4af1f00
+index 0000000000000000000000000000000000000000..82d75e70d2fa28f542ffea7257210b57c37346df
 --- /dev/null
-+++ b/src/main/java/tk/booky/cloudplane/commands/FlyCommand.java
++++ b/src/main/java/dev/booky/cloudplane/commands/FlyCommand.java
 @@ -0,0 +1,45 @@
-+package tk.booky.cloudplane.commands;
++package dev.booky.cloudplane.commands;
 +
 +import com.mojang.brigadier.CommandDispatcher;
 +import com.mojang.brigadier.arguments.BoolArgumentType;

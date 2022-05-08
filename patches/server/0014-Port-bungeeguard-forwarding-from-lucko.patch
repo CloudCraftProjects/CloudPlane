@@ -6,8 +6,24 @@ Subject: [PATCH] Port bungeeguard forwarding from lucko
 https://github.com/lucko/BungeeGuard/
 https://spigotmc.org/resources/79601/
 
+diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+index f73052f518d96de587838d5e012b15e63615995f..9f2bbb928efddc2f5ecfcef32d5525b97c1a0ba3 100644
+--- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
++++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+@@ -156,4 +156,11 @@ public class CloudPlaneConfig {
+     private static void debugVersion() {
+         debugVersion = getBoolean("settings.debug-version", debugVersion);
+     }
++
++    public static boolean bungeeGuardEnabled = false;
++    public static Set<String> bungeeGuardTokens = java.util.Collections.emptySet();
++    private static void bungeeGuard() {
++        bungeeGuardEnabled = getBoolean("settings.bungee-guard.enabled", bungeeGuardEnabled);
++        bungeeGuardTokens = new java.util.HashSet<>(getList("settings.bungee-guard.tokens", new java.util.ArrayList<>(bungeeGuardTokens)));
++    }
+ }
 diff --git a/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
-index e8a79277f3e57bc82d67ada6543c7f8665311bd3..a77465107e46ed8553a03c4e6a3fa326ef7acf8e 100644
+index e8a79277f3e57bc82d67ada6543c7f8665311bd3..dc25ff541e4a2ab4248b096b018eeb6878134342 100644
 --- a/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerHandshakePacketListenerImpl.java
 @@ -18,6 +18,7 @@ import java.util.HashMap;
@@ -23,7 +39,7 @@ index e8a79277f3e57bc82d67ada6543c7f8665311bd3..a77465107e46ed8553a03c4e6a3fa326
                      if (!handledByEvent && proxyLogicEnabled) {
                          // Paper end
 +                        // CloudPlane start - port bungeeguard forwarding
-+                        if (tk.booky.cloudplane.CloudPlaneConfig.bungeeGuardEnabled) {
++                        if (dev.booky.cloudplane.CloudPlaneConfig.bungeeGuardEnabled) {
 +                            if (packet.hostName.length() > 2500) {
 +                                connection.send(new ClientboundLoginDisconnectPacket(TextComponent.EMPTY));
 +                                connection.disconnect(TextComponent.EMPTY);
@@ -65,7 +81,7 @@ index e8a79277f3e57bc82d67ada6543c7f8665311bd3..a77465107e46ed8553a03c4e6a3fa326
 +                                return;
 +                            }
 +
-+                            if (!tk.booky.cloudplane.CloudPlaneConfig.bungeeGuardTokens.contains(bungeeGuardToken)) {
++                            if (!dev.booky.cloudplane.CloudPlaneConfig.bungeeGuardTokens.contains(bungeeGuardToken)) {
 +                                connection.send(new ClientboundLoginDisconnectPacket(TextComponent.EMPTY));
 +                                connection.disconnect(TextComponent.EMPTY);
 +                                return;
@@ -88,19 +104,3 @@ index e8a79277f3e57bc82d67ada6543c7f8665311bd3..a77465107e46ed8553a03c4e6a3fa326
                      } else if ( ( split.length == 3 || split.length == 4 ) && ( ServerHandshakePacketListenerImpl.HOST_PATTERN.matcher( split[1] ).matches() ) ) {
                          TranslatableComponent chatmessage = new TranslatableComponent("Unknown data in login hostname, did you forget to enable BungeeCord in spigot.yml?");
                          this.connection.send(new ClientboundLoginDisconnectPacket(chatmessage));
-diff --git a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-index 1a7e64d0e741d280e3a8573098631812aca02edc..f69a85aa4c34b976655206d02c4343c9f8a40401 100644
---- a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-+++ b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-@@ -156,4 +156,11 @@ public class CloudPlaneConfig {
-     private static void debugVersion() {
-         debugVersion = getBoolean("settings.debug-version", debugVersion);
-     }
-+
-+    public static boolean bungeeGuardEnabled = false;
-+    public static Set<String> bungeeGuardTokens = java.util.Collections.emptySet();
-+    private static void bungeeGuard() {
-+        bungeeGuardEnabled = getBoolean("settings.bungee-guard.enabled", bungeeGuardEnabled);
-+        bungeeGuardTokens = new java.util.HashSet<>(getList("settings.bungee-guard.tokens", new java.util.ArrayList<>(bungeeGuardTokens)));
-+    }
- }

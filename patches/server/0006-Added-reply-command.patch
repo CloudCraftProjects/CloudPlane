@@ -4,55 +4,25 @@ Date: Fri, 2 Jul 2021 13:34:31 +0200
 Subject: [PATCH] Added reply command
 
 
-diff --git a/src/main/java/net/minecraft/server/commands/MsgCommand.java b/src/main/java/net/minecraft/server/commands/MsgCommand.java
-index 1326e7d09e25b19b6f8a3911b3a3944514d77173..450eeba0210c458f8b6c95d179c80d5cb9f9e7bd 100644
---- a/src/main/java/net/minecraft/server/commands/MsgCommand.java
-+++ b/src/main/java/net/minecraft/server/commands/MsgCommand.java
-@@ -43,6 +43,13 @@ public class MsgCommand {
-         for(ServerPlayer serverPlayer2 : targets) {
-             consumer.accept(serverPlayer2.getDisplayName());
-             serverPlayer2.sendMessage((new TranslatableComponent("commands.message.display.incoming", source.getDisplayName(), message)).withStyle(new ChatFormatting[]{ChatFormatting.GRAY, ChatFormatting.ITALIC}), uUID);
-+
-+            // CloudPlane start
-+            if (entity instanceof ServerPlayer) {
-+                ((ServerPlayer) entity).replyTarget = serverPlayer2;
-+                serverPlayer2.replyTarget = ((ServerPlayer) entity);
-+            }
-+            // CloudPlane end
-         }
- 
-         return targets.size();
-diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 2f5e40437d1865a874c352999edd084226d4e47b..5b404f73e006a24d87a1102c99b7a6e86eb719f3 100644
---- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
-+++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -257,6 +257,7 @@ public class ServerPlayer extends Player {
-     public double lastEntitySpawnRadiusSquared; // Paper - optimise isOutsideRange, this field is in blocks
-     public final com.destroystokyo.paper.util.misc.PooledLinkedHashSets.PooledObjectLinkedOpenHashSet<ServerPlayer> cachedSingleHashSet; // Paper
-     public org.bukkit.event.player.PlayerQuitEvent.QuitReason quitReason = null; // Paper - there are a lot of changes to do if we change all methods leading to the event
-+    @Nullable public ServerPlayer replyTarget; // CloudPlane - reply command
- 
-     public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile) {
-         super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);
-diff --git a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-index 7974a75b4b59e7e89effdd2b66ca0a983bce5b3a..90e2ed3d05fd897795b7d1936654d830bac08aed 100644
---- a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-+++ b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
+diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+index 5e940de79d9b1f5082916d6fdd0665526789c71c..36cb41a6f596bfc9fa63bc3c9c5b620008427dc2 100644
+--- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
++++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
 @@ -63,6 +63,7 @@ public class CloudPlaneConfig {
          commands.clear();
  
-         commands.add(new tk.booky.cloudplane.commands.FlyCommand());
-+        commands.add(new tk.booky.cloudplane.commands.ReplyCommand());
+         commands.add(new dev.booky.cloudplane.commands.FlyCommand());
++        commands.add(new dev.booky.cloudplane.commands.ReplyCommand());
  
          commands.forEach(command -> command.register(dispatcher));
      }
-diff --git a/src/main/java/tk/booky/cloudplane/commands/ReplyCommand.java b/src/main/java/tk/booky/cloudplane/commands/ReplyCommand.java
+diff --git a/src/main/java/dev/booky/cloudplane/commands/ReplyCommand.java b/src/main/java/dev/booky/cloudplane/commands/ReplyCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..a74efad770ed123dbabaec5727f72e51705c51a0
+index 0000000000000000000000000000000000000000..929ca8aca7deab7f0820ef1468f3f1bb90a617d2
 --- /dev/null
-+++ b/src/main/java/tk/booky/cloudplane/commands/ReplyCommand.java
++++ b/src/main/java/dev/booky/cloudplane/commands/ReplyCommand.java
 @@ -0,0 +1,43 @@
-+package tk.booky.cloudplane.commands;
++package dev.booky.cloudplane.commands;
 +// Created by booky10 in CloudPlane (15:08 04.12.21)
 +
 +import com.mojang.brigadier.CommandDispatcher;
@@ -95,3 +65,33 @@ index 0000000000000000000000000000000000000000..a74efad770ed123dbabaec5727f72e51
 +        return 1;
 +    }
 +}
+diff --git a/src/main/java/net/minecraft/server/commands/MsgCommand.java b/src/main/java/net/minecraft/server/commands/MsgCommand.java
+index 1326e7d09e25b19b6f8a3911b3a3944514d77173..450eeba0210c458f8b6c95d179c80d5cb9f9e7bd 100644
+--- a/src/main/java/net/minecraft/server/commands/MsgCommand.java
++++ b/src/main/java/net/minecraft/server/commands/MsgCommand.java
+@@ -43,6 +43,13 @@ public class MsgCommand {
+         for(ServerPlayer serverPlayer2 : targets) {
+             consumer.accept(serverPlayer2.getDisplayName());
+             serverPlayer2.sendMessage((new TranslatableComponent("commands.message.display.incoming", source.getDisplayName(), message)).withStyle(new ChatFormatting[]{ChatFormatting.GRAY, ChatFormatting.ITALIC}), uUID);
++
++            // CloudPlane start
++            if (entity instanceof ServerPlayer) {
++                ((ServerPlayer) entity).replyTarget = serverPlayer2;
++                serverPlayer2.replyTarget = ((ServerPlayer) entity);
++            }
++            // CloudPlane end
+         }
+ 
+         return targets.size();
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+index 2f5e40437d1865a874c352999edd084226d4e47b..5b404f73e006a24d87a1102c99b7a6e86eb719f3 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+@@ -257,6 +257,7 @@ public class ServerPlayer extends Player {
+     public double lastEntitySpawnRadiusSquared; // Paper - optimise isOutsideRange, this field is in blocks
+     public final com.destroystokyo.paper.util.misc.PooledLinkedHashSets.PooledObjectLinkedOpenHashSet<ServerPlayer> cachedSingleHashSet; // Paper
+     public org.bukkit.event.player.PlayerQuitEvent.QuitReason quitReason = null; // Paper - there are a lot of changes to do if we change all methods leading to the event
++    @Nullable public ServerPlayer replyTarget; // CloudPlane - reply command
+ 
+     public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile) {
+         super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);

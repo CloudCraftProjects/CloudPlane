@@ -4,8 +4,28 @@ Date: Sun, 22 Aug 2021 20:30:16 +0200
 Subject: [PATCH] Added option to localize item names and lore
 
 
+diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+index 731a8b642ac7e84a4d7ee60e54944aa87ed064d9..333ac116512c77cbc0a9912f376e6ad47b382760 100644
+--- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
++++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+@@ -140,4 +140,15 @@ public class CloudPlaneConfig {
+ 
+         sleepMessage = getString("settings.sleep-message", sleepMessage);
+     }
++
++    public static boolean localizeItems = false;
++    private static void adventure() {
++        if (version == 2) {
++            localizeItems = getBoolean("settings.localize.items", localizeItems);
++            set("settings.adventure.localize-items", localizeItems);
++            set("settings.localize", null);
++        } else {
++            localizeItems = getBoolean("settings.adventure.localize-items", localizeItems);
++        }
++    }
+ }
 diff --git a/src/main/java/net/minecraft/network/FriendlyByteBuf.java b/src/main/java/net/minecraft/network/FriendlyByteBuf.java
-index 896a4237f871d46cf39b0721e909c2cc3b5fc728..06c4e66cc2582391147a8202ef2c3370a165b21b 100644
+index 896a4237f871d46cf39b0721e909c2cc3b5fc728..c391d5138fa729aae201cb9d6e7f0f909ac2539d 100644
 --- a/src/main/java/net/minecraft/network/FriendlyByteBuf.java
 +++ b/src/main/java/net/minecraft/network/FriendlyByteBuf.java
 @@ -508,6 +508,29 @@ public class FriendlyByteBuf extends ByteBuf {
@@ -14,7 +34,7 @@ index 896a4237f871d46cf39b0721e909c2cc3b5fc728..06c4e66cc2582391147a8202ef2c3370
                  // Paper end
 +
 +                // CloudPlane start
-+                if (nbttagcompound != null && tk.booky.cloudplane.CloudPlaneConfig.localizeItems) {
++                if (nbttagcompound != null && dev.booky.cloudplane.CloudPlaneConfig.localizeItems) {
 +                    CompoundTag display = nbttagcompound.getCompound("display");
 +                    if (display != null) {
 +                        String name = display.getString("Name");
@@ -38,23 +58,3 @@ index 896a4237f871d46cf39b0721e909c2cc3b5fc728..06c4e66cc2582391147a8202ef2c3370
              }
  
              this.writeNbt(nbttagcompound);
-diff --git a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-index 5d0bff025f3e62ce66aca796752aeeeef0c13e35..d2c6d3d01f9fa0d6686fb1689ef6ce72ea5f01ed 100644
---- a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-+++ b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-@@ -140,4 +140,15 @@ public class CloudPlaneConfig {
- 
-         sleepMessage = getString("settings.sleep-message", sleepMessage);
-     }
-+
-+    public static boolean localizeItems = false;
-+    private static void adventure() {
-+        if (version == 2) {
-+            localizeItems = getBoolean("settings.localize.items", localizeItems);
-+            set("settings.adventure.localize-items", localizeItems);
-+            set("settings.localize", null);
-+        } else {
-+            localizeItems = getBoolean("settings.adventure.localize-items", localizeItems);
-+        }
-+    }
- }

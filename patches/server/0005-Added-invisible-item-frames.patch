@@ -4,6 +4,54 @@ Date: Thu, 1 Jul 2021 21:58:19 +0200
 Subject: [PATCH] Added invisible item frames
 
 
+diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+index 1c3cea8a2244f0997b091759e832c0ff11fc0965..5e940de79d9b1f5082916d6fdd0665526789c71c 100644
+--- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
++++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+@@ -70,6 +70,7 @@ public class CloudPlaneConfig {
+     public static void registerRecipes(Server server) {
+         recipes.clear();
+ 
++        recipes.add(dev.booky.cloudplane.recipes.InvisibleItemFrameRecipe.get());
+ 
+         recipes.forEach(server::addRecipe);
+     }
+diff --git a/src/main/java/dev/booky/cloudplane/recipes/InvisibleItemFrameRecipe.java b/src/main/java/dev/booky/cloudplane/recipes/InvisibleItemFrameRecipe.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..e0cc65ace1bd0b2b5f540cf88625970709d9d33b
+--- /dev/null
++++ b/src/main/java/dev/booky/cloudplane/recipes/InvisibleItemFrameRecipe.java
+@@ -0,0 +1,30 @@
++package dev.booky.cloudplane.recipes;
++
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.format.TextDecoration;
++import org.bukkit.Material;
++import org.bukkit.NamespacedKey;
++import org.bukkit.inventory.ItemStack;
++import org.bukkit.inventory.Recipe;
++import org.bukkit.inventory.ShapedRecipe;
++import org.bukkit.inventory.meta.ItemMeta;
++
++public class InvisibleItemFrameRecipe {
++
++    private static final Component NAME = Component.text("Invisible Item Frame").decoration(TextDecoration.ITALIC, false);
++    private static final NamespacedKey KEY = NamespacedKey.minecraft("invisible_item_frame");
++
++    public static Recipe get() {
++        ItemStack item = new ItemStack(Material.ITEM_FRAME);
++        ItemMeta meta = item.getItemMeta();
++
++        meta.setCustomModelData(1);
++        meta.displayName(NAME);
++
++        item.setItemMeta(meta);
++        return new ShapedRecipe(KEY, item)
++                .shape("###", "#+#", "###")
++                .setIngredient('#', Material.GLASS_PANE)
++                .setIngredient('+', Material.ITEM_FRAME);
++    }
++}
 diff --git a/src/main/java/net/minecraft/world/entity/decoration/ItemFrame.java b/src/main/java/net/minecraft/world/entity/decoration/ItemFrame.java
 index f134a2e68d50fba021b19fac4c75fb35d0e252c6..520c62224cb01dcbdf705af0a9a139963860c2ab 100644
 --- a/src/main/java/net/minecraft/world/entity/decoration/ItemFrame.java
@@ -53,51 +101,3 @@ index 0284201b0bb0f5c9a4a2393cf0d83e8e21262df3..1e3fd7321efb392fc4543188922805ae
              } else {
                  if (this.type != EntityType.GLOW_ITEM_FRAME) {
                      return InteractionResult.sidedSuccess(world.isClientSide);
-diff --git a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-index 6a2cbb90489ad54d76031863c8e53b3355dc4a2e..7974a75b4b59e7e89effdd2b66ca0a983bce5b3a 100644
---- a/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-+++ b/src/main/java/tk/booky/cloudplane/CloudPlaneConfig.java
-@@ -70,6 +70,7 @@ public class CloudPlaneConfig {
-     public static void registerRecipes(Server server) {
-         recipes.clear();
- 
-+        recipes.add(tk.booky.cloudplane.recipes.InvisibleItemFrameRecipe.get());
- 
-         recipes.forEach(server::addRecipe);
-     }
-diff --git a/src/main/java/tk/booky/cloudplane/recipes/InvisibleItemFrameRecipe.java b/src/main/java/tk/booky/cloudplane/recipes/InvisibleItemFrameRecipe.java
-new file mode 100644
-index 0000000000000000000000000000000000000000..d85e6605e600f7d5fdb4cc40619aaed2c1a26ad1
---- /dev/null
-+++ b/src/main/java/tk/booky/cloudplane/recipes/InvisibleItemFrameRecipe.java
-@@ -0,0 +1,30 @@
-+package tk.booky.cloudplane.recipes;
-+
-+import net.kyori.adventure.text.Component;
-+import net.kyori.adventure.text.format.TextDecoration;
-+import org.bukkit.Material;
-+import org.bukkit.NamespacedKey;
-+import org.bukkit.inventory.ItemStack;
-+import org.bukkit.inventory.Recipe;
-+import org.bukkit.inventory.ShapedRecipe;
-+import org.bukkit.inventory.meta.ItemMeta;
-+
-+public class InvisibleItemFrameRecipe {
-+
-+    private static final Component NAME = Component.text("Invisible Item Frame").decoration(TextDecoration.ITALIC, false);
-+    private static final NamespacedKey KEY = NamespacedKey.minecraft("invisible_item_frame");
-+
-+    public static Recipe get() {
-+        ItemStack item = new ItemStack(Material.ITEM_FRAME);
-+        ItemMeta meta = item.getItemMeta();
-+
-+        meta.setCustomModelData(1);
-+        meta.displayName(NAME);
-+
-+        item.setItemMeta(meta);
-+        return new ShapedRecipe(KEY, item)
-+                .shape("###", "#+#", "###")
-+                .setIngredient('#', Material.GLASS_PANE)
-+                .setIngredient('+', Material.ITEM_FRAME);
-+    }
-+}

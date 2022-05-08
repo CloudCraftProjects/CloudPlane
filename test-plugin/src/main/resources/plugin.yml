@@ -1,6 +1,6 @@
 name: CloudPlane-Test-Plugin
 version: ${version}
-main: tk.booky.cloudplane.testplugin.TestPlugin
+main: dev.booky.cloudplane.testplugin.TestPlugin
 description: CloudPlane Test Plugin
 author: booky10
 api-version: 1.17

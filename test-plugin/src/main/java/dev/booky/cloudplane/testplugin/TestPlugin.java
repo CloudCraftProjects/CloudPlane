@@ -1,4 +1,4 @@
-package tk.booky.cloudplane.testplugin;
+package dev.booky.cloudplane.testplugin;
 
 import org.bukkit.Bukkit;
 import org.bukkit.event.Listener;
