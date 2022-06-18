@@ -5,27 +5,27 @@ Subject: [PATCH] Added a configurable sleep message
 
 
 diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
-index 23d3de9c01c46c742128f49ea113360722c5c7d0..1c3cea8a2244f0997b091759e832c0ff11fc0965 100644
+index 3b5402bf06f68a3914b9728fb26dbac0bd59c76a..013d2507e96b0ed19239a5760e4e1003345cca2f 100644
 --- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
 +++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
-@@ -126,4 +126,15 @@ public class CloudPlaneConfig {
-         config.addDefault(path, def);
-         return config.getString(path, config.getString(path));
+@@ -132,4 +132,15 @@ public class CloudPlaneConfig {
+     private static Component getComponent(String path, Component def) {
+         return MiniMessage.miniMessage().deserialize(getString(path, MiniMessage.miniMessage().serialize(def)));
      }
 +
-+    public static String sleepMessage = "The night has been skipped!";
++    public static Component sleepMessage = Component.text("The night has been skipped!");
 +    private static void sleepMessage() {
 +        if (version == 1) {
-+            sleepMessage = getString("settings.sleeping.message", sleepMessage);
-+            set("settings.sleep-message", sleepMessage);
++            sleepMessage = getComponent("settings.sleeping.message", sleepMessage);
++            set("settings.sleep-message", MiniMessage.miniMessage().serialize(sleepMessage));
 +            set("settings.sleeping", null);
 +        }
 +
-+        sleepMessage = getString("settings.sleep-message", sleepMessage);
++        sleepMessage = getComponent("settings.sleep-message", sleepMessage);
 +    }
  }
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 8043a1aa9d785c78e220ea54a6ffa7388f2d501e..5b52b846f642799ece0664eeac2c017e9ea79611 100644
+index 9e3c82e5c35ee6df68942ba505d098d7a6ae59de..b0bf6546d9af4d4b75fca4cba56c51324f424668 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -622,6 +622,11 @@ public class ServerLevel extends Level implements WorldGenLevel {
@@ -33,8 +33,8 @@ index 8043a1aa9d785c78e220ea54a6ffa7388f2d501e..5b52b846f642799ece0664eeac2c017e
                  this.resetWeatherCycle();
              }
 +            // CloudPlane start - configurable sleeping over message
-+            if (!org.apache.commons.lang3.StringUtils.isEmpty(dev.booky.cloudplane.CloudPlaneConfig.sleepMessage)) {
-+                Bukkit.broadcast(net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer.legacyAmpersand().deserialize(dev.booky.cloudplane.CloudPlaneConfig.sleepMessage));
++            if (!dev.booky.cloudplane.CloudPlaneConfig.sleepMessage.equals(net.kyori.adventure.text.Component.empty())) {
++                Bukkit.broadcast(dev.booky.cloudplane.CloudPlaneConfig.sleepMessage);
 +            }
 +            // CloudPlane end
          }

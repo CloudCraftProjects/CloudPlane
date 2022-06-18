@@ -6,10 +6,10 @@ Subject: [PATCH] Added optional version in debug view
 This patch sends the server git hash within the 'minecraft:brand' packet.
 
 diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
-index 333ac116512c77cbc0a9912f376e6ad47b382760..f73052f518d96de587838d5e012b15e63615995f 100644
+index a1ae67d161fb898e4eedf7abd20ddfb5d90225aa..45f39d2645f28f40a751a3a2b26bb95bcb531eec 100644
 --- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
 +++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
-@@ -151,4 +151,9 @@ public class CloudPlaneConfig {
+@@ -157,4 +157,9 @@ public class CloudPlaneConfig {
              localizeItems = getBoolean("settings.adventure.localize-items", localizeItems);
          }
      }
@@ -33,7 +33,7 @@ index 8fa049de5fd7e9f6f9c5b6e7673861c53755c3e3..464a47176ce271cddaca4ce251af9ff5
          playerconnection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
          playerconnection.send(new ClientboundSetCarriedItemPacket(player.getInventory().selected));
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 536862a4c2dddafc2edb18a304da20f61dc5fbd5..6bd9f23edd06a8214cacbb9cf3dad425feb86826 100644
+index a8d33ae7d1b82819c098af4be099832a66926edb..4319cacab0614397683ca36f7317c0861d068509 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -244,7 +244,7 @@ import javax.annotation.Nonnull; // Paper

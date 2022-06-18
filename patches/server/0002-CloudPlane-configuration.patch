@@ -6,13 +6,15 @@ Subject: [PATCH] CloudPlane configuration
 
 diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..4be7a6c94b00bd8f136ac2d054e1faa2624644ea
+index 0000000000000000000000000000000000000000..99e1da1d360f53c7b224f3050e33016be1facbc4
 --- /dev/null
 +++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
-@@ -0,0 +1,128 @@
+@@ -0,0 +1,134 @@
 +package dev.booky.cloudplane;
 +
 +import com.mojang.brigadier.CommandDispatcher;
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.minimessage.MiniMessage;
 +import net.minecraft.commands.CommandSourceStack;
 +import org.bukkit.Bukkit;
 +import org.bukkit.Server;
@@ -137,15 +139,21 @@ index 0000000000000000000000000000000000000000..4be7a6c94b00bd8f136ac2d054e1faa2
 +        config.addDefault(path, def);
 +        return config.getString(path, config.getString(path));
 +    }
++
++    private static Component getComponent(String path, Component def) {
++        return MiniMessage.miniMessage().deserialize(getString(path, MiniMessage.miniMessage().serialize(def)));
++    }
 +}
 diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneWorldConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneWorldConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..43bb16441c6ff2106cfc39124419cbe120ef349c
+index 0000000000000000000000000000000000000000..0bba071dd01550b504a435b94fa8ed8b888636bd
 --- /dev/null
 +++ b/src/main/java/dev/booky/cloudplane/CloudPlaneWorldConfig.java
-@@ -0,0 +1,73 @@
+@@ -0,0 +1,79 @@
 +package dev.booky.cloudplane;
 +
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.minimessage.MiniMessage;
 +import org.apache.commons.lang.BooleanUtils;
 +import org.bukkit.World;
 +import org.bukkit.configuration.ConfigurationSection;
@@ -216,6 +224,10 @@ index 0000000000000000000000000000000000000000..43bb16441c6ff2106cfc39124419cbe1
 +        CloudPlaneConfig.config.addDefault("world-settings.default." + path, def);
 +        return CloudPlaneConfig.config.getString("world-settings." + worldName + "." + path, CloudPlaneConfig.config.getString("world-settings.default." + path));
 +    }
++
++    private Component getComponent(String path, Component def) {
++        return MiniMessage.miniMessage().deserialize(getString(path, MiniMessage.miniMessage().serialize(def)));
++    }
 +}
 diff --git a/src/main/java/dev/booky/cloudplane/commands/CloudPlaneCommand.java b/src/main/java/dev/booky/cloudplane/commands/CloudPlaneCommand.java
 new file mode 100644
@@ -245,7 +257,7 @@ index ea5f0600d47b0f7c08b96eed91e5de255114637b..334ad18bcbaaba1a5f13112732a4f0a9
  
          if (environment.includeIntegrated) {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 49607088f95abf3cb973afe457c7ef851572f84f..145fc7cea4ea6482d8065c57f170e664e5ed077e 100644
+index fb89fb10e7213e6dca8fcd8be7c06796bb908208..bbde50021b4fb6e1db2d13ee7c9287289d16b6c5 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -632,6 +632,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -276,7 +288,7 @@ index 5d6ceeecfbb55a1bfe77a1f1ac39b02993e714e3..9ea80653201d54428ad4726ff090efd2
          io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // init PaperBrigadierProvider
          // Paper end
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index e845d4af797b8eeb75ab094e1cb1062c7ab2d8b9..070f660759bcaa3cea6e496cb169408f574784cc 100644
+index a26799f92db1699d2d5173e2e93be29273e1a317..168f7d53751ca0dac9ecc05531c1c5a384d690ae 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -175,6 +175,8 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
@@ -297,7 +309,7 @@ index e845d4af797b8eeb75ab094e1cb1062c7ab2d8b9..070f660759bcaa3cea6e496cb169408f
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 47d7beb1e0fec280020608ce18d55d5082b5673a..536862a4c2dddafc2edb18a304da20f61dc5fbd5 100644
+index 0f8305e2a8b4fab93616ef2491fa2e18df7f46cf..a8d33ae7d1b82819c098af4be099832a66926edb 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -950,6 +950,7 @@ public final class CraftServer implements Server {

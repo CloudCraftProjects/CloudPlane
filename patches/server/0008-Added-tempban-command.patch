@@ -5,10 +5,10 @@ Subject: [PATCH] Added tempban command
 
 
 diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
-index 36cb41a6f596bfc9fa63bc3c9c5b620008427dc2..731a8b642ac7e84a4d7ee60e54944aa87ed064d9 100644
+index 8d565e8f2731f99c489f9976e674896c07456c17..c82a687e763ffbb614ed383f45fd9975721b4c0a 100644
 --- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
 +++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
-@@ -64,6 +64,7 @@ public class CloudPlaneConfig {
+@@ -66,6 +66,7 @@ public class CloudPlaneConfig {
  
          commands.add(new dev.booky.cloudplane.commands.FlyCommand());
          commands.add(new dev.booky.cloudplane.commands.ReplyCommand());

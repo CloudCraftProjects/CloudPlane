@@ -8,10 +8,10 @@ Took + modified from https://github.com/PurpurMC/Purpur/.
 Co-authored-by: William Blake Galbreath <blake.galbreath@gmail.com>
 
 diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
-index f73052f518d96de587838d5e012b15e63615995f..c73137cfd589be44a318d27b4410f8493de1bd56 100644
+index 45f39d2645f28f40a751a3a2b26bb95bcb531eec..92330295ba2b4c1d10ac5ee091fc9346caed7d6a 100644
 --- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
 +++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
-@@ -156,4 +156,9 @@ public class CloudPlaneConfig {
+@@ -162,4 +162,9 @@ public class CloudPlaneConfig {
      private static void debugVersion() {
          debugVersion = getBoolean("settings.debug-version", debugVersion);
      }
@@ -22,7 +22,7 @@ index f73052f518d96de587838d5e012b15e63615995f..c73137cfd589be44a318d27b4410f849
 +    }
  }
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 145fc7cea4ea6482d8065c57f170e664e5ed077e..763eb33e7aa35aed9537df4ee1d50ac2cc9a976e 100644
+index bbde50021b4fb6e1db2d13ee7c9287289d16b6c5..2d86406f9f2ceea6fcef0bafe71c31fa3922c217 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1190,7 +1190,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa

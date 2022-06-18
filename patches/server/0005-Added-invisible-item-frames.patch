@@ -5,10 +5,10 @@ Subject: [PATCH] Added invisible item frames
 
 
 diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
-index 1c3cea8a2244f0997b091759e832c0ff11fc0965..5e940de79d9b1f5082916d6fdd0665526789c71c 100644
+index 013d2507e96b0ed19239a5760e4e1003345cca2f..3729f3c87b177d79ff2dd13525721d73fab4bc49 100644
 --- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
 +++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
-@@ -70,6 +70,7 @@ public class CloudPlaneConfig {
+@@ -72,6 +72,7 @@ public class CloudPlaneConfig {
      public static void registerRecipes(Server server) {
          recipes.clear();
  
