@@ -3,15 +3,23 @@ From: booky10 <boooky10@gmail.com>
 Date: Fri, 24 Sep 2021 21:24:42 +0200
 Subject: [PATCH] Allow reloading of more configurations
 
-This adds the possibility to reload the bukkit.yml and server.properties file.
-It can be called using the API (Bukkit#reloadBukkit(), Bukkit#reloadProperties())
-or as a command using /reload <bukkit|properties>.
+This adds the possibility to reload the bukkit.yml, server.properties and cloudplane.yml file.
+It can be called using the API (Bukkit#reloadBukkit(), Bukkit#reloadProperties(), Bukkit#reloadCloudPlane())
+or as a command using /reload <bukkit|properties|cloudplane>.
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 6bd9f23edd06a8214cacbb9cf3dad425feb86826..cafab5d9ffd9d1819ca77bf84cf4cb826bb82872 100644
+index 4319cacab0614397683ca36f7317c0861d068509..9960393845e28c4a5a5070afe44225b30192691f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -2882,4 +2882,64 @@ public final class CraftServer implements Server {
+@@ -966,6 +966,7 @@ public final class CraftServer implements Server {
+                 }
+             }
+             world.spigotConfig.init(); // Spigot
++            world.cloudplaneConfig.init(); // CloudPlane
+         }
+ 
+         Plugin[] pluginClone = pluginManager.getPlugins().clone(); // Paper
+@@ -2882,4 +2883,72 @@ public final class CraftServer implements Server {
      }
  
      // Paper end
@@ -72,6 +80,14 @@ index 6bd9f23edd06a8214cacbb9cf3dad425feb86826..cafab5d9ffd9d1819ca77bf84cf4cb82
 +        for (ServerLevel level : console.getAllLevels()) {
 +            level.serverLevelData.setDifficulty(config.difficulty);
 +            level.setSpawnSettings(config.spawnMonsters, config.spawnAnimals);
++        }
++    }
++
++    @Override
++    public void reloadCloudPlane() {
++        dev.booky.cloudplane.CloudPlaneConfig.init((File) console.options.valueOf("cloudplane-settings"));
++        for (ServerLevel level : console.getAllLevels()) {
++            level.cloudplaneConfig.init();
 +        }
 +    }
 +    // CloudPlane end

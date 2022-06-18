@@ -3,9 +3,9 @@ From: booky10 <boooky10@gmail.com>
 Date: Fri, 24 Sep 2021 21:24:42 +0200
 Subject: [PATCH] Allow reloading of more configurations
 
-This adds the possibility to reload the bukkit.yml and server.properties file.
-It can be called using the API (Bukkit#reloadBukkit(), Bukkit#reloadProperties())
-or as a command using /reload <bukkit|properties>.
+This adds the possibility to reload the bukkit.yml, server.properties and cloudplane.yml file.
+It can be called using the API (Bukkit#reloadBukkit(), Bukkit#reloadProperties(), Bukkit#reloadCloudPlane())
+or as a command using /reload <bukkit|properties|cloudplane>.
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
 index fc16e897f4ebaf9d79e49774e15a1cded33ef725..756fb3d9aa540e8b468cb43136adff514d2805ec 100644
@@ -27,10 +27,10 @@ index fc16e897f4ebaf9d79e49774e15a1cded33ef725..756fb3d9aa540e8b468cb43136adff51
 +    // CloudPlane end
  }
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 64b396b1b3b451a3523b4c31d8226f1383a1ec27..f69e87d4f27a1282017fcaffae40dd98d4516a98 100644
+index 64b396b1b3b451a3523b4c31d8226f1383a1ec27..e64ef9c5e1934c81afcb73215b26c0046d97ca02 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -2072,4 +2072,10 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -2072,4 +2072,12 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
       */
      @NotNull org.bukkit.potion.PotionBrewer getPotionBrewer();
      // Paper end
@@ -39,10 +39,12 @@ index 64b396b1b3b451a3523b4c31d8226f1383a1ec27..f69e87d4f27a1282017fcaffae40dd98
 +    void reloadBukkit();
 +
 +    void reloadProperties();
++
++    void reloadCloudPlane();
 +    // CloudPlane end
  }
 diff --git a/src/main/java/org/bukkit/command/defaults/ReloadCommand.java b/src/main/java/org/bukkit/command/defaults/ReloadCommand.java
-index 3ec32b46264cfff857b50129b5e0fa5584943ec6..2c5e684d0d0729ad1a1f58c0e7b283b15551e16b 100644
+index 3ec32b46264cfff857b50129b5e0fa5584943ec6..c163811a372fb4f6538c675fbcba8222c39aa01b 100644
 --- a/src/main/java/org/bukkit/command/defaults/ReloadCommand.java
 +++ b/src/main/java/org/bukkit/command/defaults/ReloadCommand.java
 @@ -13,7 +13,7 @@ public class ReloadCommand extends BukkitCommand {
@@ -50,11 +52,11 @@ index 3ec32b46264cfff857b50129b5e0fa5584943ec6..2c5e684d0d0729ad1a1f58c0e7b283b1
          super(name);
          this.description = "Reloads the server configuration and plugins";
 -        this.usageMessage = "/reload [permissions|commands|confirm]"; // Paper
-+        this.usageMessage = "/reload [permissions|commands|confirm|bukkit|properties]"; // Paper // CloudPlane
++        this.usageMessage = "/reload [permissions|commands|confirm|bukkit|properties|cloudplane]"; // Paper // CloudPlane
          this.setPermission("bukkit.command.reload");
          this.setAliases(Arrays.asList("rl"));
      }
-@@ -29,6 +29,16 @@ public class ReloadCommand extends BukkitCommand {
+@@ -29,6 +29,20 @@ public class ReloadCommand extends BukkitCommand {
                  Bukkit.getServer().reloadPermissions();
                  Command.broadcastCommandMessage(sender, net.kyori.adventure.text.Component.text("Permissions successfully reloaded.", net.kyori.adventure.text.format.NamedTextColor.GREEN));
                  return true;
@@ -67,15 +69,19 @@ index 3ec32b46264cfff857b50129b5e0fa5584943ec6..2c5e684d0d0729ad1a1f58c0e7b283b1
 +                Bukkit.getServer().reloadProperties();
 +                Command.broadcastCommandMessage(sender, ChatColor.GREEN + "The server properties have been reloaded.");
 +                return true;
++            } else if ("cloudplane".equalsIgnoreCase(args[0])) {
++                Bukkit.getServer().reloadCloudPlane();
++                Command.broadcastCommandMessage(sender, ChatColor.GREEN + "The CloudPlane configuration has been reloaded.");
++                return true;
 +                // CloudPlane end
              } else if ("commands".equalsIgnoreCase(args[0])) {
                  if (Bukkit.getServer().reloadCommandAliases()) {
                      Command.broadcastCommandMessage(sender, net.kyori.adventure.text.Component.text("Command aliases successfully reloaded.", net.kyori.adventure.text.format.NamedTextColor.GREEN));
-@@ -60,6 +70,6 @@ public class ReloadCommand extends BukkitCommand {
+@@ -60,6 +74,6 @@ public class ReloadCommand extends BukkitCommand {
      @NotNull
      @Override
      public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
 -        return com.google.common.collect.Lists.newArrayList("permissions", "commands"); // Paper
-+        return com.google.common.collect.Lists.newArrayList("permissions", "commands", "bukkit", "properties"); // Paper // CloudPlane
++        return com.google.common.collect.Lists.newArrayList("permissions", "commands", "bukkit", "properties", "cloudplane"); // Paper // CloudPlane
      }
  }
