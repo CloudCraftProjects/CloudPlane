@@ -20,12 +20,12 @@ index 333ac116512c77cbc0a9912f376e6ad47b382760..f73052f518d96de587838d5e012b15e6
 +    }
  }
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index c15096ec90c87cb5af349acecc7ced03bc54fe92..9ff2ffccdd3d972d4e867e4e89d6908fd0fa3180 100644
+index 8fa049de5fd7e9f6f9c5b6e7673861c53755c3e3..464a47176ce271cddaca4ce251af9ff581241af3 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -273,7 +273,7 @@ public abstract class PlayerList {
+@@ -275,7 +275,7 @@ public abstract class PlayerList {
          // Spigot - view distance
-         playerconnection.send(new ClientboundLoginPacket(player.getId(), worlddata.isHardcore(), player.gameMode.getGameModeForPlayer(), player.gameMode.getPreviousGameModeForPlayer(), this.server.levelKeys(), this.registryHolder, worldserver1.dimensionTypeRegistration(), worldserver1.dimension(), BiomeManager.obfuscateSeed(worldserver1.getSeed()), this.getMaxPlayers(), worldserver1.getChunkSource().chunkMap.playerChunkManager.getTargetSendDistance(), worldserver1.getChunkSource().chunkMap.playerChunkManager.getTargetTickViewDistance(), flag1, !flag, worldserver1.isDebug(), worldserver1.isFlat())); // Paper - replace old player chunk management
+         playerconnection.send(new ClientboundLoginPacket(player.getId(), worlddata.isHardcore(), player.gameMode.getGameModeForPlayer(), player.gameMode.getPreviousGameModeForPlayer(), this.server.levelKeys(), this.registryHolder, worldserver1.dimensionTypeId(), worldserver1.dimension(), BiomeManager.obfuscateSeed(worldserver1.getSeed()), this.getMaxPlayers(), worldserver1.getChunkSource().chunkMap.playerChunkManager.getTargetSendDistance(), worldserver1.getChunkSource().chunkMap.playerChunkManager.getTargetTickViewDistance(), flag1, !flag, worldserver1.isDebug(), worldserver1.isFlat(), player.getLastDeathLocation())); // Paper - replace old player chunk management
          player.getBukkitEntity().sendSupportedChannels(); // CraftBukkit
 -        playerconnection.send(new ClientboundCustomPayloadPacket(ClientboundCustomPayloadPacket.BRAND, (new FriendlyByteBuf(Unpooled.buffer())).writeUtf(this.getServer().getServerModName())));
 +        playerconnection.send(new ClientboundCustomPayloadPacket(ClientboundCustomPayloadPacket.BRAND, (new FriendlyByteBuf(Unpooled.buffer())).writeUtf(dev.booky.cloudplane.CloudPlaneConfig.debugVersion ? getServer().server.serverVersion : this.getServer().getServerModName()))); // CloudPlane
@@ -33,10 +33,10 @@ index c15096ec90c87cb5af349acecc7ced03bc54fe92..9ff2ffccdd3d972d4e867e4e89d6908f
          playerconnection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
          playerconnection.send(new ClientboundSetCarriedItemPacket(player.getInventory().selected));
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 61bac41b772c93eba042a0b6b94896b54e69c778..431c7a088e3b052e30efabb1273642996227f4d4 100644
+index 536862a4c2dddafc2edb18a304da20f61dc5fbd5..6bd9f23edd06a8214cacbb9cf3dad425feb86826 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -250,7 +250,7 @@ import javax.annotation.Nonnull; // Paper
+@@ -244,7 +244,7 @@ import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
      private final String serverName = "CloudPlane"; // Paper // Pufferfish // CloudPlane

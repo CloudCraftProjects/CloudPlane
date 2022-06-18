@@ -25,32 +25,34 @@ index 731a8b642ac7e84a4d7ee60e54944aa87ed064d9..333ac116512c77cbc0a9912f376e6ad4
 +    }
  }
 diff --git a/src/main/java/net/minecraft/network/FriendlyByteBuf.java b/src/main/java/net/minecraft/network/FriendlyByteBuf.java
-index 896a4237f871d46cf39b0721e909c2cc3b5fc728..c391d5138fa729aae201cb9d6e7f0f909ac2539d 100644
+index 35377576ed182814051c11f902e02e8e921e84e3..2a3be7f605f8dc4cb04bfb078aa819c1164cf324 100644
 --- a/src/main/java/net/minecraft/network/FriendlyByteBuf.java
 +++ b/src/main/java/net/minecraft/network/FriendlyByteBuf.java
-@@ -508,6 +508,29 @@ public class FriendlyByteBuf extends ByteBuf {
-                     }
-                 }
-                 // Paper end
+@@ -582,6 +582,31 @@ public class FriendlyByteBuf extends ByteBuf {
+                 // CraftItemStack.setItemMeta(stack, CraftItemStack.getItemMeta(stack)); // Paper - This is no longer with raw NBT being handled in metadata
+                 // Spigot end
+                 nbttagcompound = stack.getTag();
 +
 +                // CloudPlane start
 +                if (nbttagcompound != null && dev.booky.cloudplane.CloudPlaneConfig.localizeItems) {
-+                    CompoundTag display = nbttagcompound.getCompound("display");
-+                    if (display != null) {
-+                        String name = display.getString("Name");
++                    final CompoundTag display = nbttagcompound.getCompound("display");
++                    if (!display.isEmpty()) {
++                        final String name = display.getString("Name");
 +                        if (!name.isEmpty()) {
 +                            try {
-+                                net.kyori.adventure.text.Component nameComponent = io.papermc.paper.adventure.PaperAdventure.GSON.deserialize(name);
++                                final net.kyori.adventure.text.Component nameComponent = net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson().deserialize(name);
 +                                display.putString("Name", io.papermc.paper.adventure.PaperAdventure.asJsonString(nameComponent, adventure$locale));
-+                            } catch (com.google.gson.JsonSyntaxException ignored) {}
++                            } catch (com.google.gson.JsonSyntaxException ignored) {
++                            }
 +                        }
 +
-+                        net.minecraft.nbt.ListTag lore = display.getList("Lore", net.minecraft.nbt.Tag.TAG_STRING);
++                        final net.minecraft.nbt.ListTag lore = display.getList("Lore", net.minecraft.nbt.Tag.TAG_STRING);
 +                        for (int i = 0; i < lore.size(); i++) {
 +                            try {
-+                                net.kyori.adventure.text.Component loreComponent = io.papermc.paper.adventure.PaperAdventure.GSON.deserialize(lore.getString(i));
++                                final net.kyori.adventure.text.Component loreComponent = net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson().deserialize(lore.getString(i));
 +                                lore.set(i, net.minecraft.nbt.StringTag.valueOf(io.papermc.paper.adventure.PaperAdventure.asJsonString(loreComponent, adventure$locale)));
-+                            } catch (com.google.gson.JsonSyntaxException ignored) {}
++                            } catch (com.google.gson.JsonSyntaxException ignored) {
++                            }
 +                        }
 +                    }
 +                }

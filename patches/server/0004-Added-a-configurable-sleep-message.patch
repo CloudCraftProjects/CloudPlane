@@ -25,10 +25,10 @@ index 23d3de9c01c46c742128f49ea113360722c5c7d0..1c3cea8a2244f0997b091759e832c0ff
 +    }
  }
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index c63ee396e990d11e2f613f3b5a478b486076ed56..effc5d9513b7e318a2da2756f168f95c98f0e2ea 100644
+index 8043a1aa9d785c78e220ea54a6ffa7388f2d501e..5b52b846f642799ece0664eeac2c017e9ea79611 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -603,6 +603,11 @@ public class ServerLevel extends Level implements WorldGenLevel {
+@@ -622,6 +622,11 @@ public class ServerLevel extends Level implements WorldGenLevel {
              if (this.getGameRules().getBoolean(GameRules.RULE_WEATHER_CYCLE) && this.isRaining()) {
                  this.resetWeatherCycle();
              }

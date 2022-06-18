@@ -18,7 +18,7 @@ index 4be7a6c94b00bd8f136ac2d054e1faa2624644ea..23d3de9c01c46c742128f49ea1133607
      }
 diff --git a/src/main/java/dev/booky/cloudplane/commands/FlyCommand.java b/src/main/java/dev/booky/cloudplane/commands/FlyCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..82d75e70d2fa28f542ffea7257210b57c37346df
+index 0000000000000000000000000000000000000000..2833965cfd126e6534840ee2c40a346acd89d98b
 --- /dev/null
 +++ b/src/main/java/dev/booky/cloudplane/commands/FlyCommand.java
 @@ -0,0 +1,45 @@
@@ -29,7 +29,7 @@ index 0000000000000000000000000000000000000000..82d75e70d2fa28f542ffea7257210b57
 +import net.minecraft.commands.CommandSourceStack;
 +import net.minecraft.commands.Commands;
 +import net.minecraft.commands.arguments.EntityArgument;
-+import net.minecraft.network.chat.TextComponent;
++import net.minecraft.network.chat.Component;
 +import net.minecraft.server.level.ServerPlayer;
 +import org.bukkit.entity.Player;
 +
@@ -61,7 +61,7 @@ index 0000000000000000000000000000000000000000..82d75e70d2fa28f542ffea7257210b57
 +            }
 +
 +            bukkit.setAllowFlight(allowFlight);
-+            sender.sendSuccess(new TextComponent(bukkit.getName() + "'s fly mode was " + (allowFlight ? "enabled" : "disabled")), true);
++            sender.sendSuccess(Component.literal(bukkit.getName() + "'s fly mode was " + (allowFlight ? "enabled" : "disabled")), true);
 +        }
 +
 +        return targets.size();

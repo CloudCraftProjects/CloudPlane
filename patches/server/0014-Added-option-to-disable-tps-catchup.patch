@@ -1,0 +1,37 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Thu, 16 Dec 2021 22:04:05 +0100
+Subject: [PATCH] Added option to disable tps catchup
+
+Took + modified from https://github.com/PurpurMC/Purpur/.
+
+Co-authored-by: William Blake Galbreath <blake.galbreath@gmail.com>
+
+diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+index f73052f518d96de587838d5e012b15e63615995f..c73137cfd589be44a318d27b4410f8493de1bd56 100644
+--- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
++++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+@@ -156,4 +156,9 @@ public class CloudPlaneConfig {
+     private static void debugVersion() {
+         debugVersion = getBoolean("settings.debug-version", debugVersion);
+     }
++
++    public static boolean tpsCatchup = true;
++    private static void tpsCatchup() {
++        tpsCatchup = getBoolean("settings.tps-catchup", tpsCatchup);
++    }
+ }
+diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
+index 145fc7cea4ea6482d8065c57f170e664e5ed077e..763eb33e7aa35aed9537df4ee1d50ac2cc9a976e 100644
+--- a/src/main/java/net/minecraft/server/MinecraftServer.java
++++ b/src/main/java/net/minecraft/server/MinecraftServer.java
+@@ -1190,7 +1190,9 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+                 this.tickServer(this::haveTime);
+                 this.profiler.popPush("nextTickWait");
+                 this.mayHaveDelayedTasks = true;
++                if (dev.booky.cloudplane.CloudPlaneConfig.tpsCatchup) // CloudPlane
+                 this.delayedTasksMaxNextTickTime = Math.max(Util.getMillis() + 50L, this.nextTickTime);
++                else this.delayedTasksMaxNextTickTime = this.nextTickTime = curTime / 1_000_000L + 50L; // CloudPlane
+                 this.waitUntilNextTick();
+                 this.profiler.pop();
+                 this.endMetricsRecordingTick();

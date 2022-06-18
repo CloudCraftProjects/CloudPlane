@@ -1,8 +1,7 @@
 plugins {
-    `java-library`
-
-    id("com.github.johnrengelman.shadow") version "7.1.2"
-    id("io.papermc.paperweight.patcher") version "1.3.5"
+    id("java-library")
+    id("com.github.johnrengelman.shadow") version "7.1.2" apply false
+    id("io.papermc.paperweight.patcher") version "1.3.7"
 }
 
 repositories {
@@ -13,8 +12,8 @@ repositories {
 }
 
 dependencies {
-    decompiler("net.minecraftforge:forgeflower:1.5.498.29")
-    remapper("net.fabricmc:tiny-remapper:0.8.1:fat")
+    remapper("net.fabricmc:tiny-remapper:0.8.2:fat")
+    decompiler("net.minecraftforge:forgeflower:1.5.605.7")
     paperclip("io.papermc:paperclip:3.0.2")
 }
 
@@ -24,7 +23,6 @@ subprojects {
 
     java {
         withSourcesJar()
-        withJavadocJar()
 
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
@@ -48,7 +46,7 @@ subprojects {
         maven("https://repo.aikar.co/content/groups/aikar")
         maven("https://repo.md-5.net/content/repositories/releases/")
         maven("https://hub.spigotmc.org/nexus/content/groups/public/")
-        maven("https://jitpack.io")
+        maven("https://jitpack.io/")
     }
 }
 

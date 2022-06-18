@@ -53,10 +53,10 @@ index 0000000000000000000000000000000000000000..f7f89b002f07c459058f51a1324f3a16
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/world/entity/decoration/ItemFrame.java b/src/main/java/net/minecraft/world/entity/decoration/ItemFrame.java
-index f134a2e68d50fba021b19fac4c75fb35d0e252c6..1c06957ecdec3dd63d49cd6ea0afa9703f4bd8ad 100644
+index d2a77b4ca343d19e1c70afe3f3906a9bd53d0eec..9cd671337a5ab86924ea79eb6003eb255a982c35 100644
 --- a/src/main/java/net/minecraft/world/entity/decoration/ItemFrame.java
 +++ b/src/main/java/net/minecraft/world/entity/decoration/ItemFrame.java
-@@ -45,6 +45,7 @@ public class ItemFrame extends HangingEntity {
+@@ -47,6 +47,7 @@ public class ItemFrame extends HangingEntity {
      public static final int NUM_ROTATIONS = 8;
      public float dropChance;
      public boolean fixed;
@@ -64,7 +64,7 @@ index f134a2e68d50fba021b19fac4c75fb35d0e252c6..1c06957ecdec3dd63d49cd6ea0afa970
  
      public ItemFrame(EntityType<? extends ItemFrame> type, Level world) {
          super(type, world);
-@@ -195,6 +196,12 @@ public class ItemFrame extends HangingEntity {
+@@ -197,6 +198,12 @@ public class ItemFrame extends HangingEntity {
                  // Paper end
                  this.dropItem(source.getEntity(), false);
                  this.playSound(this.getRemoveItemSound(), 1.0F, 1.0F);
@@ -77,7 +77,7 @@ index f134a2e68d50fba021b19fac4c75fb35d0e252c6..1c06957ecdec3dd63d49cd6ea0afa970
              }
  
              return true;
-@@ -385,6 +392,7 @@ public class ItemFrame extends HangingEntity {
+@@ -409,6 +416,7 @@ public class ItemFrame extends HangingEntity {
          nbt.putByte("Facing", (byte) this.direction.get3DDataValue());
          nbt.putBoolean("Invisible", this.isInvisible());
          nbt.putBoolean("Fixed", this.fixed);
@@ -85,7 +85,7 @@ index f134a2e68d50fba021b19fac4c75fb35d0e252c6..1c06957ecdec3dd63d49cd6ea0afa970
      }
  
      @Override
-@@ -415,6 +423,14 @@ public class ItemFrame extends HangingEntity {
+@@ -439,6 +447,14 @@ public class ItemFrame extends HangingEntity {
          this.setDirection(Direction.from3DDataValue(nbt.getByte("Facing")));
          this.setInvisible(nbt.getBoolean("Invisible"));
          this.fixed = nbt.getBoolean("Fixed");
@@ -100,7 +100,7 @@ index f134a2e68d50fba021b19fac4c75fb35d0e252c6..1c06957ecdec3dd63d49cd6ea0afa970
      }
  
      @Override
-@@ -441,6 +457,12 @@ public class ItemFrame extends HangingEntity {
+@@ -465,6 +481,12 @@ public class ItemFrame extends HangingEntity {
                      this.setItem(ItemStack.fromBukkitCopy(event.getItemStack()));
                      // this.setItem(itemstack);
                      // Paper end
@@ -113,7 +113,7 @@ index f134a2e68d50fba021b19fac4c75fb35d0e252c6..1c06957ecdec3dd63d49cd6ea0afa970
                      if (!player.getAbilities().instabuild) {
                          itemstack.shrink(1);
                      }
-@@ -488,6 +510,14 @@ public class ItemFrame extends HangingEntity {
+@@ -512,6 +534,14 @@ public class ItemFrame extends HangingEntity {
      }
  
      protected ItemStack getFrameItemStack() {
@@ -127,13 +127,13 @@ index f134a2e68d50fba021b19fac4c75fb35d0e252c6..1c06957ecdec3dd63d49cd6ea0afa970
 +        // CloudPlane end
          return new ItemStack(Items.ITEM_FRAME);
      }
- }
+ 
 diff --git a/src/main/java/net/minecraft/world/item/HangingEntityItem.java b/src/main/java/net/minecraft/world/item/HangingEntityItem.java
-index 0284201b0bb0f5c9a4a2393cf0d83e8e21262df3..c9e670d57227f627d7df17338a090986a90e2e1e 100644
+index 4c5671cd4c26c23e61b2196577c554f504a03c55..420f93f719871f0d2fec2939bfc7d799756485db 100644
 --- a/src/main/java/net/minecraft/world/item/HangingEntityItem.java
 +++ b/src/main/java/net/minecraft/world/item/HangingEntityItem.java
-@@ -46,6 +46,14 @@ public class HangingEntityItem extends Item {
-                 object = new Painting(world, blockposition1, enumdirection);
+@@ -53,6 +53,14 @@ public class HangingEntityItem extends Item {
+                 object = (HangingEntity) optional.get();
              } else if (this.type == EntityType.ITEM_FRAME) {
                  object = new ItemFrame(world, blockposition1, enumdirection);
 +                // CloudPlane start - invisible item frames

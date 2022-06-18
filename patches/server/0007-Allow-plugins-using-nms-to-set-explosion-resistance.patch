@@ -5,10 +5,10 @@ Subject: [PATCH] Allow plugins using nms to set explosion resistance
 
 
 diff --git a/src/main/java/net/minecraft/world/level/block/state/BlockBehaviour.java b/src/main/java/net/minecraft/world/level/block/state/BlockBehaviour.java
-index 61590f2f04a797235299f1bd6b78a08f5bfe4a33..c95094e1ed55fa90445850f8d58fa1d3516fd491 100644
+index 939aca929038b90738c9b78c2fc3611088b18e72..e544459e6db76978521cf002cd0c9138bf4c7311 100644
 --- a/src/main/java/net/minecraft/world/level/block/state/BlockBehaviour.java
 +++ b/src/main/java/net/minecraft/world/level/block/state/BlockBehaviour.java
-@@ -73,7 +73,7 @@ public abstract class BlockBehaviour {
+@@ -74,7 +74,7 @@ public abstract class BlockBehaviour {
      protected static final Direction[] UPDATE_SHAPE_ORDER = new Direction[]{Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH, Direction.DOWN, Direction.UP};
      protected final Material material;
      public final boolean hasCollision;

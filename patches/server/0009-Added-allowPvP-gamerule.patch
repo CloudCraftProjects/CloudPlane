@@ -5,23 +5,23 @@ Subject: [PATCH] Added allowPvP gamerule
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 570a9f1a3387ac42a3c935519aa1656f9d016504..406a2e9732cd6baeb343dc810d5d45793108185b 100644
+index e6d25ab2e7e19d9fb993fdad6f650212f560cc1d..980f5dd3710bceb634a43d27789ae901d056d8b6 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -3206,7 +3206,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -3295,7 +3295,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      }
  
      public boolean isInvulnerableTo(DamageSource damageSource) {
--        return this.isRemoved() || this.invulnerable && damageSource != DamageSource.OUT_OF_WORLD && !damageSource.isCreativePlayer();
-+        return (this.isRemoved() || this.invulnerable && damageSource != DamageSource.OUT_OF_WORLD && !damageSource.isCreativePlayer()) || (this instanceof Player && damageSource.getEntity() instanceof Player && !level.getGameRules().getBoolean(GameRules.RULE_ALLOW_PVP)); // CloudPlane - added allowPvP gamerule
+-        return this.isRemoved() || this.invulnerable && damageSource != DamageSource.OUT_OF_WORLD && !damageSource.isCreativePlayer() || damageSource.isFire() && this.fireImmune();
++        return this.isRemoved() || this.invulnerable && damageSource != DamageSource.OUT_OF_WORLD && !damageSource.isCreativePlayer() || damageSource.isFire() && this.fireImmune() || (this instanceof Player && damageSource.getEntity() instanceof Player && !level.getGameRules().getBoolean(GameRules.RULE_ALLOW_PVP)); // CloudPlane - added allowPvP gamerule;
      }
  
      public boolean isInvulnerable() {
 diff --git a/src/main/java/net/minecraft/world/level/GameRules.java b/src/main/java/net/minecraft/world/level/GameRules.java
-index fb2626d2a6babe531dd1849333b119ab36200d80..605756b748b12bf66151781375eeabec272448d4 100644
+index 17e869074b8cf29a8c3280499a27e95179896750..2a803c4021e8358b4d50b5dbd1ec013b5c1a5199 100644
 --- a/src/main/java/net/minecraft/world/level/GameRules.java
 +++ b/src/main/java/net/minecraft/world/level/GameRules.java
-@@ -89,6 +89,7 @@ public class GameRules {
+@@ -90,6 +90,7 @@ public class GameRules {
      public static final GameRules.Key<GameRules.BooleanValue> RULE_FORGIVE_DEAD_PLAYERS = GameRules.register("forgiveDeadPlayers", GameRules.Category.MOBS, GameRules.BooleanValue.create(true));
      public static final GameRules.Key<GameRules.BooleanValue> RULE_UNIVERSAL_ANGER = GameRules.register("universalAnger", GameRules.Category.MOBS, GameRules.BooleanValue.create(false));
      public static final GameRules.Key<GameRules.IntegerValue> RULE_PLAYERS_SLEEPING_PERCENTAGE = GameRules.register("playersSleepingPercentage", GameRules.Category.PLAYER, GameRules.IntegerValue.create(100));

@@ -18,10 +18,10 @@ index 5e940de79d9b1f5082916d6fdd0665526789c71c..36cb41a6f596bfc9fa63bc3c9c5b6200
      }
 diff --git a/src/main/java/dev/booky/cloudplane/commands/ReplyCommand.java b/src/main/java/dev/booky/cloudplane/commands/ReplyCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..929ca8aca7deab7f0820ef1468f3f1bb90a617d2
+index 0000000000000000000000000000000000000000..cbd530e955260b210bd6c41d1584a78c44d158da
 --- /dev/null
 +++ b/src/main/java/dev/booky/cloudplane/commands/ReplyCommand.java
-@@ -0,0 +1,43 @@
+@@ -0,0 +1,48 @@
 +package dev.booky.cloudplane.commands;
 +// Created by booky10 in CloudPlane (15:08 04.12.21)
 +
@@ -32,9 +32,9 @@ index 0000000000000000000000000000000000000000..929ca8aca7deab7f0820ef1468f3f1bb
 +import net.minecraft.commands.CommandSourceStack;
 +import net.minecraft.commands.Commands;
 +import net.minecraft.commands.arguments.MessageArgument;
++import net.minecraft.network.chat.ChatType;
 +import net.minecraft.network.chat.Component;
-+import net.minecraft.network.chat.TextComponent;
-+import net.minecraft.network.chat.TranslatableComponent;
++import net.minecraft.network.chat.PlayerChatMessage;
 +import net.minecraft.server.level.ServerPlayer;
 +
 +public class ReplyCommand implements CloudPlaneCommand {
@@ -42,56 +42,60 @@ index 0000000000000000000000000000000000000000..929ca8aca7deab7f0820ef1468f3f1bb
 +    @Override
 +    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
 +        LiteralCommandNode<CommandSourceStack> node = dispatcher.register(Commands.literal("reply")
-+                .requires((listener) -> listener.hasPermission(1, "cloudplane.command.reply"))
++                .requires((listener) -> listener.hasPermission(1, "cloudplane.command.reply") && listener.isPlayer())
 +                .then(Commands.argument("message", MessageArgument.message())
-+                        .executes((context) -> execute(context.getSource(), MessageArgument.getMessage(context, "message")))));
++                        .executes((context) -> execute(context.getSource(), MessageArgument.getChatMessage(context, "message")))));
 +
 +        dispatcher.register(Commands.literal("r")
 +                .requires((listener) -> listener.hasPermission(1, "cloudplane.command.reply"))
 +                .redirect(node));
 +    }
 +
-+    private int execute(CommandSourceStack sender, Component message) throws CommandSyntaxException {
++    private int execute(CommandSourceStack sender, MessageArgument.ChatMessage signedMessage) throws CommandSyntaxException {
 +        ServerPlayer player = sender.getPlayerOrException();
 +
 +        if (player.replyTarget == null) {
-+            sender.sendFailure(new TextComponent("You have not received or sent a message to a player recently"));
-+        } else {
-+            player.sendMessage(new TranslatableComponent("commands.message.display.outgoing", player.replyTarget.getDisplayName(), message).withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC), player.getUUID());
-+            player.replyTarget.sendMessage(new TranslatableComponent("commands.message.display.incoming", sender.getDisplayName(), message).withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC), player.getUUID());
-+            player.replyTarget.replyTarget = player;
++            sender.sendFailure(Component.literal("You have not received or sent a message to a player recently"));
++            return 0;
 +        }
 +
++        signedMessage.resolve(sender).thenAcceptAsync((decoratedMessage) -> {
++            Component serverContent = decoratedMessage.raw().serverContent();
++            sender.sendSuccess(Component.translatable("commands.message.display.outgoing", player.replyTarget.getDisplayName(), serverContent).withStyle(ChatFormatting.GRAY, ChatFormatting.ITALIC), false);
++
++            PlayerChatMessage chatMessage = decoratedMessage.filter(sender, player.replyTarget);
++            if (chatMessage != null) player.replyTarget.sendChatMessage(chatMessage, sender.asChatSender(), ChatType.MSG_COMMAND);
++            player.replyTarget.replyTarget = player;
++        }, sender.getServer());
 +        return 1;
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/commands/MsgCommand.java b/src/main/java/net/minecraft/server/commands/MsgCommand.java
-index 1326e7d09e25b19b6f8a3911b3a3944514d77173..450eeba0210c458f8b6c95d179c80d5cb9f9e7bd 100644
+index 6f93bf27ac12a77b9b66362230e8b13d16ecf702..030e0836e3f28130a05c3a31acd121f1aad8ae1f 100644
 --- a/src/main/java/net/minecraft/server/commands/MsgCommand.java
 +++ b/src/main/java/net/minecraft/server/commands/MsgCommand.java
-@@ -43,6 +43,13 @@ public class MsgCommand {
-         for(ServerPlayer serverPlayer2 : targets) {
-             consumer.accept(serverPlayer2.getDisplayName());
-             serverPlayer2.sendMessage((new TranslatableComponent("commands.message.display.incoming", source.getDisplayName(), message)).withStyle(new ChatFormatting[]{ChatFormatting.GRAY, ChatFormatting.ITALIC}), uUID);
-+
-+            // CloudPlane start
-+            if (entity instanceof ServerPlayer) {
-+                ((ServerPlayer) entity).replyTarget = serverPlayer2;
-+                serverPlayer2.replyTarget = ((ServerPlayer) entity);
-+            }
-+            // CloudPlane end
-         }
+@@ -35,6 +35,12 @@ public class MsgCommand {
+                     if (playerChatMessage != null) {
+                         serverPlayer.sendChatMessage(playerChatMessage, source.asChatSender(), ChatType.MSG_COMMAND);
+                     }
++                    // CloudPlane start
++                    if (source.isPlayer()) {
++                        source.getPlayer().replyTarget = serverPlayer;
++                        serverPlayer.replyTarget = source.getPlayer();
++                    }
++                    // CloudPlane end
+                 }
  
-         return targets.size();
+             }, source.getServer());
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 2f5e40437d1865a874c352999edd084226d4e47b..5b404f73e006a24d87a1102c99b7a6e86eb719f3 100644
+index c8057f98e16ba6e19640e0b250e5201e0f4f57db..f51c9ad168a6ecd271609b620f328bf473a2bad9 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -257,6 +257,7 @@ public class ServerPlayer extends Player {
+@@ -264,6 +264,7 @@ public class ServerPlayer extends Player {
      public double lastEntitySpawnRadiusSquared; // Paper - optimise isOutsideRange, this field is in blocks
      public final com.destroystokyo.paper.util.misc.PooledLinkedHashSets.PooledObjectLinkedOpenHashSet<ServerPlayer> cachedSingleHashSet; // Paper
      public org.bukkit.event.player.PlayerQuitEvent.QuitReason quitReason = null; // Paper - there are a lot of changes to do if we change all methods leading to the event
 +    @Nullable public ServerPlayer replyTarget; // CloudPlane - reply command
  
-     public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile) {
-         super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);
+     public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile, @Nullable ProfilePublicKey publicKey) {
+         super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile, publicKey);

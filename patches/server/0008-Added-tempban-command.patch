@@ -18,10 +18,10 @@ index 36cb41a6f596bfc9fa63bc3c9c5b620008427dc2..731a8b642ac7e84a4d7ee60e54944aa8
      }
 diff --git a/src/main/java/dev/booky/cloudplane/commands/TempBanCommand.java b/src/main/java/dev/booky/cloudplane/commands/TempBanCommand.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..6f8c813a15ccd89d67ae7fe5e21e0eb81a2c5f83
+index 0000000000000000000000000000000000000000..82431d1063de6db6a8de5f36e6a2a87a6a3e747d
 --- /dev/null
 +++ b/src/main/java/dev/booky/cloudplane/commands/TempBanCommand.java
-@@ -0,0 +1,71 @@
+@@ -0,0 +1,70 @@
 +package dev.booky.cloudplane.commands;
 +
 +import com.mojang.authlib.GameProfile;
@@ -29,21 +29,20 @@ index 0000000000000000000000000000000000000000..6f8c813a15ccd89d67ae7fe5e21e0eb8
 +import com.mojang.brigadier.arguments.StringArgumentType;
 +import com.mojang.brigadier.exceptions.CommandSyntaxException;
 +import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
++import dev.booky.cloudplane.parser.DurationParser;
 +import net.minecraft.commands.CommandSourceStack;
 +import net.minecraft.commands.Commands;
 +import net.minecraft.commands.arguments.GameProfileArgument;
 +import net.minecraft.commands.arguments.MessageArgument;
-+import net.minecraft.network.chat.BaseComponent;
 +import net.minecraft.network.chat.Component;
 +import net.minecraft.network.chat.ComponentUtils;
-+import net.minecraft.network.chat.TranslatableComponent;
++import net.minecraft.network.chat.MutableComponent;
 +import net.minecraft.server.level.ServerPlayer;
 +import net.minecraft.server.players.PlayerList;
 +import net.minecraft.server.players.UserBanList;
 +import net.minecraft.server.players.UserBanListEntry;
 +import org.bukkit.event.player.PlayerKickEvent;
 +import org.jetbrains.annotations.Nullable;
-+import dev.booky.cloudplane.parser.DurationParser;
 +
 +import java.util.ArrayList;
 +import java.util.Collection;
@@ -52,7 +51,7 @@ index 0000000000000000000000000000000000000000..6f8c813a15ccd89d67ae7fe5e21e0eb8
 +
 +public class TempBanCommand implements CloudPlaneCommand {
 +
-+    private static final SimpleCommandExceptionType ERROR_ALREADY_BANNED = new SimpleCommandExceptionType(new TranslatableComponent("commands.ban.failed"));
++    private static final SimpleCommandExceptionType ERROR_ALREADY_BANNED = new SimpleCommandExceptionType(Component.translatable("commands.ban.failed"));
 +
 +    @Override
 +    public void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -77,12 +76,12 @@ index 0000000000000000000000000000000000000000..6f8c813a15ccd89d67ae7fe5e21e0eb8
 +            UserBanListEntry entry = new UserBanListEntry(profile, null, source.getTextName(), expirationDate, reason == null ? null : reason.getString());
 +            banlist.add(entry);
 +
-+            source.sendSuccess(new TranslatableComponent("commands.ban.success", ComponentUtils.getDisplayName(profile), entry.getReason()), true);
++            source.sendSuccess(Component.translatable("commands.ban.success", ComponentUtils.getDisplayName(profile), entry.getReason()), true);
 +            ServerPlayer target = source.getServer().getPlayerList().getPlayer(profile.getId());
 +
 +            if (target == null) continue;
-+            BaseComponent component = new TranslatableComponent("multiplayer.disconnect.banned");
-+            component.append(new TranslatableComponent("multiplayer.disconnect.banned.expiration", PlayerList.BAN_DATE_FORMAT.format(expirationDate)));
++            MutableComponent component = Component.translatable("multiplayer.disconnect.banned");
++            component.append(Component.translatable("multiplayer.disconnect.banned.expiration", PlayerList.BAN_DATE_FORMAT.format(expirationDate)));
 +            target.connection.disconnect(component, PlayerKickEvent.Cause.BANNED);
 +        }
 +
@@ -95,27 +94,26 @@ index 0000000000000000000000000000000000000000..6f8c813a15ccd89d67ae7fe5e21e0eb8
 +}
 diff --git a/src/main/java/dev/booky/cloudplane/parser/DurationParser.java b/src/main/java/dev/booky/cloudplane/parser/DurationParser.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..141d9a266cb5417031d0a68b4f05209a4927c55a
+index 0000000000000000000000000000000000000000..8361593b37a37c22906fcde950d6882ea258182b
 --- /dev/null
 +++ b/src/main/java/dev/booky/cloudplane/parser/DurationParser.java
-@@ -0,0 +1,54 @@
+@@ -0,0 +1,53 @@
 +package dev.booky.cloudplane.parser;
 +
-+import com.mojang.brigadier.LiteralMessage;
 +import com.mojang.brigadier.exceptions.CommandSyntaxException;
 +import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 +import com.mojang.brigadier.exceptions.SimpleCommandExceptionType;
 +import it.unimi.dsi.fastutil.objects.Object2LongMap;
 +import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
-+import net.minecraft.network.chat.TranslatableComponent;
++import net.minecraft.network.chat.Component;
 +
 +public class DurationParser {
 +
 +    private static final Object2LongMap<String> UNITS = new Object2LongOpenHashMap<>();
 +
-+    private static final SimpleCommandExceptionType ERROR_EXPECTED_LONG = new SimpleCommandExceptionType((new LiteralMessage("Expected long")));
-+    private static final SimpleCommandExceptionType ERROR_INVALID_UNIT = new SimpleCommandExceptionType(new TranslatableComponent("argument.time.invalid_unit"));
-+    private static final DynamicCommandExceptionType ERROR_INVALID_TICK_COUNT = new DynamicCommandExceptionType((object) -> new TranslatableComponent("argument.time.invalid_tick_count", object));
++    private static final SimpleCommandExceptionType ERROR_EXPECTED_LONG = new SimpleCommandExceptionType(Component.literal("Expected long"));
++    private static final SimpleCommandExceptionType ERROR_INVALID_UNIT = new SimpleCommandExceptionType(Component.translatable("argument.time.invalid_unit"));
++    private static final DynamicCommandExceptionType ERROR_INVALID_TICK_COUNT = new DynamicCommandExceptionType((object) -> Component.translatable("argument.time.invalid_tick_count", object));
 +
 +    static {
 +        UNITS.put("s", 1000L);
@@ -154,10 +152,10 @@ index 0000000000000000000000000000000000000000..141d9a266cb5417031d0a68b4f05209a
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 95fe4240f3e1174ec36598f24d63f0073c13b376..c15096ec90c87cb5af349acecc7ced03bc54fe92 100644
+index 20cdfdb3b9351f74e89bc45b3ab972384165659a..8fa049de5fd7e9f6f9c5b6e7673861c53755c3e3 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -128,7 +128,7 @@ public abstract class PlayerList {
+@@ -130,7 +130,7 @@ public abstract class PlayerList {
      public static final File WHITELIST_FILE = new File("whitelist.json");
      private static final Logger LOGGER = LogUtils.getLogger();
      private static final int SEND_PLAYER_INFO_INTERVAL = 600;

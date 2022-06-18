@@ -5,10 +5,10 @@ Subject: [PATCH] Added allowPvP gamerule
 
 
 diff --git a/src/main/java/org/bukkit/GameRule.java b/src/main/java/org/bukkit/GameRule.java
-index d3365e44e64c2e72416d3a50be20ada79320ba2a..d9631875e90e3c317348438d14e5e7a38a066238 100644
+index 38a1b02c006af766b0c10ee65e9fc28f5a922774..e17eb73ae2bd8d01b2ca07405c063f7768c99b61 100644
 --- a/src/main/java/org/bukkit/GameRule.java
 +++ b/src/main/java/org/bukkit/GameRule.java
-@@ -173,6 +173,13 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
+@@ -178,6 +178,13 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
       */
      public static final GameRule<Boolean> UNIVERSAL_ANGER = new GameRule<>("universalAnger", Boolean.class);
  

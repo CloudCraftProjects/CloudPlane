@@ -8,10 +8,10 @@ It can be called using the API (Bukkit#reloadBukkit(), Bukkit#reloadProperties()
 or as a command using /reload <bukkit|properties>.
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index 5dc245bfbc1d466ab96294bbc10ead1fcec4f841..d959fb6f96580cb713e3dbd9069f18fb10246b62 100644
+index fc16e897f4ebaf9d79e49774e15a1cded33ef725..756fb3d9aa540e8b468cb43136adff514d2805ec 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -2370,4 +2370,14 @@ public final class Bukkit {
+@@ -2381,4 +2381,14 @@ public final class Bukkit {
      public static Server.Spigot spigot() {
          return server.spigot();
      }
@@ -27,10 +27,10 @@ index 5dc245bfbc1d466ab96294bbc10ead1fcec4f841..d959fb6f96580cb713e3dbd9069f18fb
 +    // CloudPlane end
  }
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index a76ed4f846b89d7bf4f962eb35d0f188702df7a2..3b088ccc72a96602b7fab13447a0f5be67f02c9d 100644
+index 64b396b1b3b451a3523b4c31d8226f1383a1ec27..f69e87d4f27a1282017fcaffae40dd98d4516a98 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -2067,4 +2067,10 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -2072,4 +2072,10 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
       */
      @NotNull org.bukkit.potion.PotionBrewer getPotionBrewer();
      // Paper end
@@ -42,7 +42,7 @@ index a76ed4f846b89d7bf4f962eb35d0f188702df7a2..3b088ccc72a96602b7fab13447a0f5be
 +    // CloudPlane end
  }
 diff --git a/src/main/java/org/bukkit/command/defaults/ReloadCommand.java b/src/main/java/org/bukkit/command/defaults/ReloadCommand.java
-index 0c7ba0718de2b93d013968ca0fec34ffd423990f..74a7dc3c27324508625147f339223775c82982d9 100644
+index 3ec32b46264cfff857b50129b5e0fa5584943ec6..2c5e684d0d0729ad1a1f58c0e7b283b15551e16b 100644
 --- a/src/main/java/org/bukkit/command/defaults/ReloadCommand.java
 +++ b/src/main/java/org/bukkit/command/defaults/ReloadCommand.java
 @@ -13,7 +13,7 @@ public class ReloadCommand extends BukkitCommand {
@@ -56,7 +56,7 @@ index 0c7ba0718de2b93d013968ca0fec34ffd423990f..74a7dc3c27324508625147f339223775
      }
 @@ -29,6 +29,16 @@ public class ReloadCommand extends BukkitCommand {
                  Bukkit.getServer().reloadPermissions();
-                 Command.broadcastCommandMessage(sender, ChatColor.GREEN + "Permissions successfully reloaded.");
+                 Command.broadcastCommandMessage(sender, net.kyori.adventure.text.Component.text("Permissions successfully reloaded.", net.kyori.adventure.text.format.NamedTextColor.GREEN));
                  return true;
 +                // CloudPlane
 +            } else if ("bukkit".equalsIgnoreCase(args[0])) {
@@ -70,7 +70,7 @@ index 0c7ba0718de2b93d013968ca0fec34ffd423990f..74a7dc3c27324508625147f339223775
 +                // CloudPlane end
              } else if ("commands".equalsIgnoreCase(args[0])) {
                  if (Bukkit.getServer().reloadCommandAliases()) {
-                     Command.broadcastCommandMessage(sender, ChatColor.GREEN + "Command aliases successfully reloaded.");
+                     Command.broadcastCommandMessage(sender, net.kyori.adventure.text.Component.text("Command aliases successfully reloaded.", net.kyori.adventure.text.format.NamedTextColor.GREEN));
 @@ -60,6 +70,6 @@ public class ReloadCommand extends BukkitCommand {
      @NotNull
      @Override

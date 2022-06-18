@@ -5,7 +5,7 @@ Subject: [PATCH] Changed branding
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 9521971e9e597834e785b36d1657064dc1621b9b..c74ecc5909db03ffff500d7697b0a3779dbd962d 100644
+index a4a146d9c3e07bdf941d81147ca31daf4689a687..6ded573ff7759489d1c0f02e9ad381d2462cd707 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -9,7 +9,7 @@ plugins {
@@ -15,9 +15,9 @@ index 9521971e9e597834e785b36d1657064dc1621b9b..c74ecc5909db03ffff500d7697b0a377
 -    implementation(project(":pufferfish-api")) // Pufferfish // Paper
 +    implementation(project(":CloudPlane-API")) // CloudPlane // Pufferfish // Paper
      // Pufferfish start
-     implementation("io.papermc.paper:paper-mojangapi:1.18.2-R0.1-SNAPSHOT") {
+     implementation("io.papermc.paper:paper-mojangapi:1.19-R0.1-SNAPSHOT") {
          exclude("io.papermc.paper", "paper-api")
-@@ -78,7 +78,7 @@ tasks.jar {
+@@ -84,7 +84,7 @@ tasks.jar {
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
              "Implementation-Title" to "CraftBukkit",
@@ -27,10 +27,10 @@ index 9521971e9e597834e785b36d1657064dc1621b9b..c74ecc5909db03ffff500d7697b0a377
              "Specification-Title" to "Bukkit",
              "Specification-Version" to project.version,
 diff --git a/src/main/java/co/aikar/timings/TimingsExport.java b/src/main/java/co/aikar/timings/TimingsExport.java
-index a5e4467382422df6cff2b9f61f44feabfe7084f3..b12b6fb07f58291e4cb7ff7f6b2767c2e7294756 100644
+index 2cc44fbf8e5bd436b6d4e19f6c06b351e750cb31..bb6f7f76661c416b06e05ee988350af35d84d633 100644
 --- a/src/main/java/co/aikar/timings/TimingsExport.java
 +++ b/src/main/java/co/aikar/timings/TimingsExport.java
-@@ -239,7 +239,8 @@ public class TimingsExport extends Thread {
+@@ -242,7 +242,8 @@ public class TimingsExport extends Thread {
              pair("spigot", mapAsJSON(Bukkit.spigot().getSpigotConfig(), null)),
              pair("bukkit", mapAsJSON(Bukkit.spigot().getBukkitConfig(), null)),
              pair("paper", mapAsJSON(Bukkit.spigot().getPaperConfig(), null)), // Pufferfish
@@ -41,7 +41,7 @@ index a5e4467382422df6cff2b9f61f44feabfe7084f3..b12b6fb07f58291e4cb7ff7f6b2767c2
  
          new TimingsExport(listeners, parent, history).start();
 diff --git a/src/main/java/com/destroystokyo/paper/Metrics.java b/src/main/java/com/destroystokyo/paper/Metrics.java
-index f2fe6ea3719ff8b2913b7a3a939d7a5b75cb8b28..c5f3d465b40525d2e8c8c8bab1c204e286877683 100644
+index 061716934ba0a1f01e4d85d664034f72b3c7a765..9b118ce66999c914eb3d51e373101872fc4072f5 100644
 --- a/src/main/java/com/destroystokyo/paper/Metrics.java
 +++ b/src/main/java/com/destroystokyo/paper/Metrics.java
 @@ -593,7 +593,7 @@ public class Metrics {
@@ -62,35 +62,31 @@ index f2fe6ea3719ff8b2913b7a3a939d7a5b75cb8b28..c5f3d465b40525d2e8c8c8bab1c204e2
  
                  metrics.addCustomChart(new Metrics.DrilldownPie("java_version", () -> {
                      Map<String, Map<String, Integer>> map = new HashMap<>();
-diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index ece77f5ea4b14bbed7c070131b3251ea86764538..d81697a54abf664fb0d714185036d099159852c9 100644
---- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-+++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-@@ -20,7 +20,7 @@ import java.util.stream.StreamSupport;
- public class PaperVersionFetcher implements VersionFetcher {
-     private static final java.util.regex.Pattern VER_PATTERN = java.util.regex.Pattern.compile("^([0-9\\.]*)\\-.*R"); // R is an anchor, will always give '-R' at end
-     private static final String GITHUB_BRANCH_NAME = "master";
--    private static final String DOWNLOAD_PAGE = "https://papermc.io/downloads";
-+    private static final String DOWNLOAD_PAGE = "https://github.com/CloudCraftProjects/CloudPlane/actions/"; // CloudPlane
-     private static @Nullable String mcVer;
- 
-     @Override
-@@ -31,8 +31,8 @@ public class PaperVersionFetcher implements VersionFetcher {
-     @Nonnull
-     @Override
-     public Component getVersionMessage(@Nonnull String serverVersion) {
--        String[] parts = serverVersion.substring("git-Paper-".length()).split("[-\\s]");
--        final Component updateMessage = getUpdateStatusMessage("PaperMC/Paper", GITHUB_BRANCH_NAME, parts[0]);
-+        String[] parts = serverVersion.substring("git-CloudPlane-".length()).split("[-\\s]"); // CloudPlane
-+        final Component updateMessage = getUpdateStatusMessage("CloudCraftProjects/CloudPlane", GITHUB_BRANCH_NAME, parts[0]); // CloudPlane
-         final Component history = getHistory();
- 
-         return history != null ? TextComponent.ofChildren(updateMessage, Component.newline(), history) : updateMessage;
+diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishVersionFetcher.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishVersionFetcher.java
+index e877921370f6009a4bd204d9b17d2d58834b8822..5952c9b62ec1be814193855e682d07a8d5f413b6 100644
+--- a/src/main/java/gg/pufferfish/pufferfish/PufferfishVersionFetcher.java
++++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishVersionFetcher.java
+@@ -31,7 +31,7 @@ public class PufferfishVersionFetcher implements VersionFetcher {
+ 	private static final HttpClient client = HttpClient.newHttpClient();
+ 	
+ 	private static final URI JENKINS_URI = URI.create("https://ci.pufferfish.host/job/Pufferfish-1.19/lastSuccessfulBuild/buildNumber");
+-	private static final String GITHUB_FORMAT = "https://api.github.com/repos/pufferfish-gg/Pufferfish/compare/ver/1.19...%s";
++	private static final String GITHUB_FORMAT = "https://api.github.com/repos/CloudCraftProjects/CloudPlane/compare/master...%s"; // CloudPlane
+ 	
+ 	private static final HttpResponse.BodyHandler<JsonObject> JSON_OBJECT_BODY_HANDLER = responseInfo -> HttpResponse.BodySubscribers
+ 			.mapping(
+@@ -133,4 +133,4 @@ public class PufferfishVersionFetcher implements VersionFetcher {
+ 		
+ 		return Component.text("Previous version: " + oldVersion, NamedTextColor.GRAY, TextDecoration.ITALIC);
+ 	}
+-}
+\ No newline at end of file
++}
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 371b0f95b23d67c9913875a3dd7888e722551f18..836b296fee24aae75adafbd4a4bd73656c69414b 100644
+index 99751fc36a332f2f9115b56ed6ca66ab037825d3..49607088f95abf3cb973afe457c7ef851572f84f 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1695,7 +1695,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1656,7 +1656,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
      @DontObfuscate
      public String getServerModName() {
@@ -100,10 +96,10 @@ index 371b0f95b23d67c9913875a3dd7888e722551f18..836b296fee24aae75adafbd4a4bd7365
  
      public SystemReport fillSystemReport(SystemReport details) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index f4a82b1f2dc26f938d3dcb23ec32f135a1bfd163..178830884f8a8d5da73e93200ad339a7b4f81ed4 100644
+index 7899ae5e60ee2b30c6d4d7056c59bb38cc05b7c8..47d7beb1e0fec280020608ce18d55d5082b5673a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -249,7 +249,7 @@ import javax.annotation.Nullable; // Paper
+@@ -243,7 +243,7 @@ import javax.annotation.Nullable; // Paper
  import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
@@ -112,19 +108,6 @@ index f4a82b1f2dc26f938d3dcb23ec32f135a1bfd163..178830884f8a8d5da73e93200ad339a7
      private final String serverVersion;
      private final String bukkitVersion = Versioning.getBukkitVersion();
      private final Logger logger = Logger.getLogger("Minecraft");
-diff --git a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
-index 7e06f263cf618b82f77101ef86d819d5dc37a24e..3f450f7c5a3cd9ef15ee564e264de64d28579ca6 100644
---- a/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
-+++ b/src/main/java/org/bukkit/craftbukkit/util/CraftMagicNumbers.java
-@@ -430,7 +430,7 @@ public final class CraftMagicNumbers implements UnsafeValues {
- 
-     @Override
-     public com.destroystokyo.paper.util.VersionFetcher getVersionFetcher() {
--        return new gg.pufferfish.pufferfish.PufferfishVersionFetcher(); // Pufferfish
-+        return new com.destroystokyo.paper.PaperVersionFetcher(); // Pufferfish // CloudPlane
-     }
- 
-     @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
 index 80553face9c70c2a3d897681e7761df85b22d464..fc6707b71e90b170c93d45f82c8c9c6b1110f8af 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java

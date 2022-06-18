@@ -8,10 +8,10 @@ It can be called using the API (Bukkit#reloadBukkit(), Bukkit#reloadProperties()
 or as a command using /reload <bukkit|properties>.
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index c0a7f84c0b8af84963976771093aca4757fd1c5a..afca048836f859127551059bab91a4df2bd2d8a8 100644
+index 6bd9f23edd06a8214cacbb9cf3dad425feb86826..cafab5d9ffd9d1819ca77bf84cf4cb826bb82872 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -2886,4 +2886,66 @@ public final class CraftServer implements Server {
+@@ -2882,4 +2882,64 @@ public final class CraftServer implements Server {
      }
  
      // Paper end
@@ -59,17 +59,15 @@ index c0a7f84c0b8af84963976771093aca4757fd1c5a..afca048836f859127551059bab91a4df
 +        console.settings = new DedicatedServerSettings(console.options);
 +        DedicatedServerProperties config = console.settings.getProperties();
 +
++        this.console.setPvpAllowed(config.pvp);
++        this.console.setFlightAllowed(config.allowFlight);
++        this.console.setMotd(config.motd);
 +        loadIcon();
-+        console.setMotd(config.motd);
-+        console.setPvpAllowed(config.pvp);
-+        console.setPort(config.serverPort);
-+        console.setLocalIp(config.serverIp);
-+        console.setFlightAllowed(config.allowFlight);
++
 +        console.setUsesAuthentication(config.onlineMode);
 +        console.setEnforceWhitelist(config.enforceWhitelist);
 +        console.setPlayerIdleTimeout(config.playerIdleTimeout.get());
 +        console.setPreventProxyConnections(config.preventProxyConnections);
-+        console.setResourcePack(config.resourcePack, console.getPackHash());
 +
 +        for (ServerLevel level : console.getAllLevels()) {
 +            level.serverLevelData.setDifficulty(config.difficulty);
