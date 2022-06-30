@@ -33,10 +33,10 @@ index 8fa049de5fd7e9f6f9c5b6e7673861c53755c3e3..464a47176ce271cddaca4ce251af9ff5
          playerconnection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
          playerconnection.send(new ClientboundSetCarriedItemPacket(player.getInventory().selected));
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index a8d33ae7d1b82819c098af4be099832a66926edb..4319cacab0614397683ca36f7317c0861d068509 100644
+index f45eee588b322c18aca7fc78c50150341edecfd9..cb986151bb6009da93200064509e96c47c502199 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -244,7 +244,7 @@ import javax.annotation.Nonnull; // Paper
+@@ -246,7 +246,7 @@ import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
      private final String serverName = "CloudPlane"; // Paper // Pufferfish // CloudPlane

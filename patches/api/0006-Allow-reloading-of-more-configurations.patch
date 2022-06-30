@@ -8,10 +8,10 @@ It can be called using the API (Bukkit#reloadBukkit(), Bukkit#reloadProperties()
 or as a command using /reload <bukkit|properties|cloudplane>.
 
 diff --git a/src/main/java/org/bukkit/Bukkit.java b/src/main/java/org/bukkit/Bukkit.java
-index fc16e897f4ebaf9d79e49774e15a1cded33ef725..756fb3d9aa540e8b468cb43136adff514d2805ec 100644
+index 3506a7fa07ee6e53704b1df8d8d2bb08704bfc37..46cc89845c9f4a83c56f5fc15a25f64e1f163241 100644
 --- a/src/main/java/org/bukkit/Bukkit.java
 +++ b/src/main/java/org/bukkit/Bukkit.java
-@@ -2381,4 +2381,14 @@ public final class Bukkit {
+@@ -2412,4 +2412,14 @@ public final class Bukkit {
      public static Server.Spigot spigot() {
          return server.spigot();
      }
@@ -27,10 +27,10 @@ index fc16e897f4ebaf9d79e49774e15a1cded33ef725..756fb3d9aa540e8b468cb43136adff51
 +    // CloudPlane end
  }
 diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
-index 64b396b1b3b451a3523b4c31d8226f1383a1ec27..e64ef9c5e1934c81afcb73215b26c0046d97ca02 100644
+index 5dc115ee04a13ef253a330c6851589445558fea2..9bd63374ffd9d83ebaa7bfc3ca188440b9ea0040 100644
 --- a/src/main/java/org/bukkit/Server.java
 +++ b/src/main/java/org/bukkit/Server.java
-@@ -2072,4 +2072,12 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+@@ -2097,4 +2097,12 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
       */
      @NotNull org.bukkit.potion.PotionBrewer getPotionBrewer();
      // Paper end
