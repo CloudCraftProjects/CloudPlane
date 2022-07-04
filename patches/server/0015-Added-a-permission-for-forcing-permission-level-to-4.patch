@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Mon, 4 Jul 2022 13:19:33 +0200
+Subject: [PATCH] Added a permission for forcing permission level to 4
+
+
+diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
+index 464a47176ce271cddaca4ce251af9ff581241af3..fdf942d48a40dbebb5952c4413fe36e0954fc848 100644
+--- a/src/main/java/net/minecraft/server/players/PlayerList.java
++++ b/src/main/java/net/minecraft/server/players/PlayerList.java
+@@ -1013,6 +1013,12 @@ public abstract class PlayerList {
+ 
+     public void sendPlayerPermissionLevel(ServerPlayer player) {
+         GameProfile gameprofile = player.getGameProfile();
++        // CloudPlane start
++        if (player.getBukkitEntity().hasPermission("minecraft.admin.f3n")) {
++            sendPlayerPermissionLevel(player, 4);
++            return;
++        }
++        // CloudPlane end
+         int i = this.server.getProfilePermissions(gameprofile);
+ 
+         this.sendPlayerPermissionLevel(player, i);
