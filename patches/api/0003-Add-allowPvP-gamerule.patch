@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Fri, 9 Jul 2021 13:02:30 +0200
+Subject: [PATCH] Add allowPvP gamerule
+
+
+diff --git a/src/main/java/org/bukkit/GameRule.java b/src/main/java/org/bukkit/GameRule.java
+index c6bc84a8755b2fe5d7d8d3ec857700ec1cba3c9b..0003450b36a1755f6ace9a2ff747773d771bde9b 100644
+--- a/src/main/java/org/bukkit/GameRule.java
++++ b/src/main/java/org/bukkit/GameRule.java
+@@ -207,6 +207,13 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
+      */
+     public static final GameRule<Boolean> DO_VINES_SPREAD = new GameRule<>("doVinesSpread", Boolean.class);
+ 
++    // CloudPlane start - added allowPvP gamerule
++    /**
++     * Enables or disables player damage by other players in the world.
++     */
++    public static final GameRule<Boolean> ALLOW_PVP = new GameRule<>("allowPvP", Boolean.class);
++    // CloudPlane end
++
+     // Numerical rules
+     /**
+      * How often a random block tick occurs (such as plant growth, leaf decay,

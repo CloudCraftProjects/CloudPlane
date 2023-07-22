@@ -1,0 +1,288 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Sun, 27 Jun 2021 20:30:37 +0200
+Subject: [PATCH] Add CloudPlane configuration
+
+
+diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..26e393051d2c5fe84b8ae6a33b376efab6198816
+--- /dev/null
++++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+@@ -0,0 +1,110 @@
++package dev.booky.cloudplane;
++
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.minimessage.MiniMessage;
++import org.bukkit.Bukkit;
++import org.bukkit.configuration.InvalidConfigurationException;
++import org.bukkit.configuration.file.YamlConfiguration;
++
++import java.io.File;
++import java.io.IOException;
++import java.lang.reflect.InvocationTargetException;
++import java.lang.reflect.Method;
++import java.lang.reflect.Modifier;
++import java.util.List;
++import java.util.logging.Level;
++
++public class CloudPlaneConfig {
++
++    private static File CONFIG_FILE;
++    public static YamlConfiguration config;
++
++    static int version, currentVersion = 4;
++    static boolean verbose;
++
++    public static void init(File configFile) {
++        CONFIG_FILE = configFile;
++        config = new YamlConfiguration();
++
++        try {
++            config.load(CONFIG_FILE);
++        } catch (IOException ignored) {
++        } catch (InvalidConfigurationException exception) {
++            Bukkit.getLogger().log(Level.SEVERE, "Could not load " + configFile.getName() + ", please correct your syntax errors", exception);
++            throw new RuntimeException(exception);
++        }
++
++        config.options().copyDefaults(true);
++        verbose = getBoolean("verbose", false);
++
++        version = getInt("config-version", currentVersion);
++        set("config-version", currentVersion);
++
++        readConfig(CloudPlaneConfig.class, null);
++    }
++
++    protected static void log(String string) {
++        if (verbose) log(Level.INFO, string);
++    }
++
++    protected static void log(Level level, String string) {
++        Bukkit.getLogger().log(level, string);
++    }
++
++    public static void readConfig(Class<?> clazz, Object instance) {
++        for (Method method : clazz.getDeclaredMethods()) {
++            if (!Modifier.isPrivate(method.getModifiers())) continue;
++            if (method.getParameterTypes().length != 0 || method.getReturnType() != Void.TYPE) continue;
++
++            try {
++                method.setAccessible(true);
++                method.invoke(instance);
++            } catch (InvocationTargetException exception) {
++                throw new RuntimeException(exception);
++            } catch (Exception exception) {
++                Bukkit.getLogger().log(Level.SEVERE, "Error invoking " + method, exception);
++            }
++        }
++
++        try {
++            config.save(CONFIG_FILE);
++        } catch (IOException exception) {
++            Bukkit.getLogger().log(Level.SEVERE, "Could not save " + CONFIG_FILE, exception);
++        }
++    }
++
++    private static void set(String path, Object val) {
++        config.addDefault(path, val);
++        config.set(path, val);
++    }
++
++    private static boolean getBoolean(String path, boolean def) {
++        config.addDefault(path, def);
++        return config.getBoolean(path, config.getBoolean(path));
++    }
++
++    private static double getDouble(String path, double def) {
++        config.addDefault(path, def);
++        return config.getDouble(path, config.getDouble(path));
++    }
++
++    private static int getInt(String path, int def) {
++        config.addDefault(path, def);
++        return config.getInt(path, config.getInt(path));
++    }
++
++    @SuppressWarnings("unchecked")
++    private static <T> List<T> getList(String path, List<T> def) {
++        config.addDefault(path, def);
++        return (List<T>) config.getList(path, config.getList(path));
++    }
++
++    private static String getString(String path, String def) {
++        config.addDefault(path, def);
++        return config.getString(path, config.getString(path));
++    }
++
++    private static Component getComponent(String path, Component def) {
++        return MiniMessage.miniMessage().deserialize(getString(path, MiniMessage.miniMessage().serialize(def)));
++    }
++}
+diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneWorldConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneWorldConfig.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..0bba071dd01550b504a435b94fa8ed8b888636bd
+--- /dev/null
++++ b/src/main/java/dev/booky/cloudplane/CloudPlaneWorldConfig.java
+@@ -0,0 +1,79 @@
++package dev.booky.cloudplane;
++
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.minimessage.MiniMessage;
++import org.apache.commons.lang.BooleanUtils;
++import org.bukkit.World;
++import org.bukkit.configuration.ConfigurationSection;
++
++import java.util.List;
++import java.util.function.Predicate;
++
++import static dev.booky.cloudplane.CloudPlaneConfig.log;
++
++public class CloudPlaneWorldConfig {
++
++    private final String worldName;
++    private final World.Environment environment;
++
++    public CloudPlaneWorldConfig(String worldName, World.Environment environment) {
++        this.worldName = worldName;
++        this.environment = environment;
++        init();
++    }
++
++    public void init() {
++        log("-------- World Settings For [" + worldName + "] --------");
++        CloudPlaneConfig.readConfig(CloudPlaneWorldConfig.class, this);
++    }
++
++    private void set(String path, Object val) {
++        CloudPlaneConfig.config.addDefault("world-settings.default." + path, val);
++        CloudPlaneConfig.config.set("world-settings.default." + path, val);
++        if (CloudPlaneConfig.config.get("world-settings." + worldName + "." + path) != null) {
++            CloudPlaneConfig.config.addDefault("world-settings." + worldName + "." + path, val);
++            CloudPlaneConfig.config.set("world-settings." + worldName + "." + path, val);
++        }
++    }
++
++    private ConfigurationSection getConfigurationSection(String path) {
++        ConfigurationSection section = CloudPlaneConfig.config.getConfigurationSection("world-settings." + worldName + "." + path);
++        return section != null ? section : CloudPlaneConfig.config.getConfigurationSection("world-settings.default." + path);
++    }
++
++    private boolean getBoolean(String path, boolean def) {
++        CloudPlaneConfig.config.addDefault("world-settings.default." + path, def);
++        return CloudPlaneConfig.config.getBoolean("world-settings." + worldName + "." + path, CloudPlaneConfig.config.getBoolean("world-settings.default." + path));
++    }
++
++    private boolean getBoolean(String path, Predicate<Boolean> predicate) {
++        String val = getString(path, "default").toLowerCase();
++        Boolean bool = BooleanUtils.toBooleanObject(val, "true", "false", "default");
++        return predicate.test(bool);
++    }
++
++    private double getDouble(String path, double def) {
++        CloudPlaneConfig.config.addDefault("world-settings.default." + path, def);
++        return CloudPlaneConfig.config.getDouble("world-settings." + worldName + "." + path, CloudPlaneConfig.config.getDouble("world-settings.default." + path));
++    }
++
++    private int getInt(String path, int def) {
++        CloudPlaneConfig.config.addDefault("world-settings.default." + path, def);
++        return CloudPlaneConfig.config.getInt("world-settings." + worldName + "." + path, CloudPlaneConfig.config.getInt("world-settings.default." + path));
++    }
++
++    @SuppressWarnings("unchecked")
++    private <T> List<T> getList(String path, List<T> def) {
++        CloudPlaneConfig.config.addDefault("world-settings.default." + path, def);
++        return (List<T>) CloudPlaneConfig.config.getList("world-settings." + worldName + "." + path, CloudPlaneConfig.config.getList("world-settings.default." + path));
++    }
++
++    private String getString(String path, String def) {
++        CloudPlaneConfig.config.addDefault("world-settings.default." + path, def);
++        return CloudPlaneConfig.config.getString("world-settings." + worldName + "." + path, CloudPlaneConfig.config.getString("world-settings.default." + path));
++    }
++
++    private Component getComponent(String path, Component def) {
++        return MiniMessage.miniMessage().deserialize(getString(path, MiniMessage.miniMessage().serialize(def)));
++    }
++}
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+index 28af96ce4f9f1a83316b6fd9e1625c71b5874c3f..da36db4270f9e97534b7221dbc29b3fcaec8396d 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -218,6 +218,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         thread.start(); // Paper - start console thread after MinecraftServer.console & PaperConfig are initialized
+         io.papermc.paper.command.PaperCommands.registerCommands(this);
+         com.destroystokyo.paper.Metrics.PaperMetrics.startMetrics();
++        // CloudPlane start
++        try {
++            dev.booky.cloudplane.CloudPlaneConfig.init((java.io.File) options.valueOf("cloudplane-settings"));
++        } catch (Exception e) {
++            DedicatedServer.LOGGER.error("Unable to load server configuration", e);
++            return false;
++        }
++        // CloudPlane end
+         com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // load version history now
+         io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // init PaperBrigadierProvider
+         // Paper end
+diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
+index 4c7dc6eb008fe4a5d521e40e6ff0798b612700fb..ac84f18bf9cf2251366b7e391bafba743fa4d31e 100644
+--- a/src/main/java/net/minecraft/world/level/Level.java
++++ b/src/main/java/net/minecraft/world/level/Level.java
+@@ -284,9 +284,12 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+     @Override public final int getHeight() { return this.height; }
+     // Pufferfish end
+ 
++    public final dev.booky.cloudplane.CloudPlaneWorldConfig cloudplaneConfig; // CloudPlane
++
+     protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.concurrent.Executor executor) { // Paper - Async-Anti-Xray - Pass executor
+         this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
+         this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper
++        this.cloudplaneConfig = new dev.booky.cloudplane.CloudPlaneWorldConfig((((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()), env); // CloudPlane
+         this.generator = gen;
+         this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 47c52266b435b5130bb2530c2c07c01a8904204b..7f9622a8a2b29a35b7698bbbc2a7fb023da088b2 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -1056,6 +1056,7 @@ public final class CraftServer implements Server {
+ 
+         org.spigotmc.SpigotConfig.init((File) console.options.valueOf("spigot-settings")); // Spigot
+         this.console.paperConfigurations.reloadConfigs(this.console);
++        dev.booky.cloudplane.CloudPlaneConfig.init((File) console.options.valueOf("cloudplane-settings")); // CloudPlane
+         for (ServerLevel world : this.console.getAllLevels()) {
+             // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
+             world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters, config.spawnAnimals); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
+@@ -2869,6 +2870,13 @@ public final class CraftServer implements Server {
+             return CraftServer.this.console.paperConfigurations.createLegacyObject(CraftServer.this.console);
+         }
+ 
++        // CloudPlane start
++        @Override
++        public YamlConfiguration getCloudPlaneConfig() {
++            return dev.booky.cloudplane.CloudPlaneConfig.config;
++        }
++        // CloudPlane end
++
+         @Override
+         public void restart() {
+             org.spigotmc.RestartCommand.restart();
+diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
+index 168130d0adbfd9b404182a234db8edb6705777d9..64bbfa68c8fdf1d4e52698b15f28f41b1bd20072 100644
+--- a/src/main/java/org/bukkit/craftbukkit/Main.java
++++ b/src/main/java/org/bukkit/craftbukkit/Main.java
+@@ -173,6 +173,14 @@ public class Main {
+                         .describedAs("Jar file");
+                 // Paper end
+ 
++                // CloudPlane start
++                acceptsAll(asList("cloudplane", "cloudplane-settings"), "File for cloudplane settings")
++                        .withRequiredArg()
++                        .ofType(File.class)
++                        .defaultsTo(new File("cloudplane.yml"))
++                        .describedAs("Yml file");
++                // CloudPlane end
++
+                 // Paper start
+                 acceptsAll(asList("server-name"), "Name of the server")
+                         .withRequiredArg()

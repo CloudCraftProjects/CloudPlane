@@ -1,0 +1,57 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Tue, 24 Aug 2021 20:43:57 +0200
+Subject: [PATCH] Add more detailed brand info
+
+Sends version info to player in brand packet
+
+diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+index b21f7a41581ddf36d61e206366c6398738a47813..9d3dafc4989b9fbaa32a337df9b3c56ea04f4568 100644
+--- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
++++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+@@ -123,4 +123,14 @@ public class CloudPlaneConfig {
+ 
+         localizeItems = getBoolean("settings.translate-items", localizeItems);
+     }
++
++    public static boolean detailedBrand = true;
++    private static void detailedBrand() {
++        if (version <= 3) {
++            detailedBrand = getBoolean("settings.debug-version", detailedBrand);
++            set("settings.detailed-brand-info", detailedBrand);
++            set("settings.debug-version", null);
++        }
++        detailedBrand = getBoolean("settings.detailed-brand-info", detailedBrand);
++    }
+ }
+diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
+index fff7ad7a45f310783ac96b44575ad3db13d537fa..76c42363fe207e688a50e69ff513401a922191c7 100644
+--- a/src/main/java/net/minecraft/server/players/PlayerList.java
++++ b/src/main/java/net/minecraft/server/players/PlayerList.java
+@@ -288,7 +288,12 @@ public abstract class PlayerList {
+         playerconnection.send(new ClientboundLoginPacket(player.getId(), worlddata.isHardcore(), player.gameMode.getGameModeForPlayer(), player.gameMode.getPreviousGameModeForPlayer(), this.server.levelKeys(), this.synchronizedRegistries, worldserver1.dimensionTypeId(), worldserver1.dimension(), BiomeManager.obfuscateSeed(worldserver1.getSeed()), this.getMaxPlayers(), worldserver1.getWorld().getSendViewDistance(), worldserver1.getWorld().getSimulationDistance(), flag1, !flag, worldserver1.isDebug(), worldserver1.isFlat(), player.getLastDeathLocation(), player.getPortalCooldown())); // Paper - replace old player chunk management
+         player.getBukkitEntity().sendSupportedChannels(); // CraftBukkit
+         playerconnection.send(new ClientboundUpdateEnabledFeaturesPacket(FeatureFlags.REGISTRY.toNames(worldserver1.enabledFeatures())));
+-        playerconnection.send(new ClientboundCustomPayloadPacket(ClientboundCustomPayloadPacket.BRAND, (new FriendlyByteBuf(Unpooled.buffer())).writeUtf(this.getServer().getServerModName())));
++
++        // CloudPlane start
++        String serverBrand = dev.booky.cloudplane.CloudPlaneConfig.detailedBrand ? this.getServer().server.serverVersion : this.getServer().getServerModName();
++        playerconnection.send(new ClientboundCustomPayloadPacket(ClientboundCustomPayloadPacket.BRAND, (new FriendlyByteBuf(Unpooled.buffer())).writeUtf(serverBrand)));
++        // CloudPlane end
++
+         playerconnection.send(new ClientboundChangeDifficultyPacket(worlddata.getDifficulty(), worlddata.isDifficultyLocked()));
+         playerconnection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
+         playerconnection.send(new ClientboundSetCarriedItemPacket(player.getInventory().selected));
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 7f9622a8a2b29a35b7698bbbc2a7fb023da088b2..1989dd412b33395923ebe7fdd162a0b5b383ec24 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -265,7 +265,7 @@ import javax.annotation.Nonnull; // Paper
+ 
+ public final class CraftServer implements Server {
+     private final String serverName = "CloudPlane"; // Paper // CloudPlane
+-    private final String serverVersion;
++    public final String serverVersion; // CloudPlane - private-f -> public-f
+     private final String bukkitVersion = Versioning.getBukkitVersion();
+     private final Logger logger = Logger.getLogger("Minecraft");
+     private final ServicesManager servicesManager = new SimpleServicesManager();

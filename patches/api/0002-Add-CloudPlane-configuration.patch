@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Sun, 27 Jun 2021 20:30:37 +0200
+Subject: [PATCH] Add CloudPlane configuration
+
+
+diff --git a/src/main/java/org/bukkit/Server.java b/src/main/java/org/bukkit/Server.java
+index 6b72eccdcb6f75534a4267a1dd0a4cc2f39e917b..14d87be45ac92e207369f9e596a52ac9c5abf68c 100644
+--- a/src/main/java/org/bukkit/Server.java
++++ b/src/main/java/org/bukkit/Server.java
+@@ -2030,6 +2030,13 @@ public interface Server extends PluginMessageRecipient, net.kyori.adventure.audi
+         }
+         // Paper end
+ 
++        // CloudPlane start
++        @NotNull
++        public org.bukkit.configuration.file.YamlConfiguration getCloudPlaneConfig() {
++            throw new UnsupportedOperationException("Not supported yet.");
++        }
++        // CloudPlane end
++
+         /**
+          * Sends the component to the player
+          *

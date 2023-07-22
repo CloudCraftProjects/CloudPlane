@@ -1,0 +1,113 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Sun, 22 Aug 2021 20:30:16 +0200
+Subject: [PATCH] Add option to translate custom item names and lore
+
+
+diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+index 26e393051d2c5fe84b8ae6a33b376efab6198816..b21f7a41581ddf36d61e206366c6398738a47813 100644
+--- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
++++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+@@ -107,4 +107,20 @@ public class CloudPlaneConfig {
+     private static Component getComponent(String path, Component def) {
+         return MiniMessage.miniMessage().deserialize(getString(path, MiniMessage.miniMessage().serialize(def)));
+     }
++
++    public static boolean localizeItems = true;
++    private static void adventure() {
++        if (version <= 2) {
++            localizeItems = getBoolean("settings.localize.items", localizeItems);
++            set("settings.adventure.localize-items", localizeItems);
++            set("settings.localize", null);
++        }
++        if (version <= 3) {
++            localizeItems = getBoolean("settings.adventure.localize-items", localizeItems);
++            set("settings.translate-items", localizeItems);
++            set("settings.adventure", null);
++        }
++
++        localizeItems = getBoolean("settings.translate-items", localizeItems);
++    }
+ }
+diff --git a/src/main/java/net/minecraft/network/FriendlyByteBuf.java b/src/main/java/net/minecraft/network/FriendlyByteBuf.java
+index 9938bb90bef84cf784f9a1ceb02a1a45aa8b48a1..cf414bb00b3bcce806f0741c3fd2965858ad5214 100644
+--- a/src/main/java/net/minecraft/network/FriendlyByteBuf.java
++++ b/src/main/java/net/minecraft/network/FriendlyByteBuf.java
+@@ -691,6 +691,53 @@ public class FriendlyByteBuf extends ByteBuf {
+                 // CraftItemStack.setItemMeta(stack, CraftItemStack.getItemMeta(stack)); // Paper - This is no longer with raw NBT being handled in metadata
+                 // Spigot end
+                 nbttagcompound = stack.getTag();
++
++                // CloudPlane start
++                if (nbttagcompound != null && dev.booky.cloudplane.CloudPlaneConfig.localizeItems
++                        && nbttagcompound.contains(ItemStack.TAG_DISPLAY, Tag.TAG_COMPOUND)
++                        && this.adventure$locale != null) {
++                    final CompoundTag display = nbttagcompound.getCompound(ItemStack.TAG_DISPLAY);
++
++                    final String name = display.getString(ItemStack.TAG_DISPLAY_NAME);
++                    if (!name.isEmpty()) {
++                        display.putString("OriginalName", name);
++
++                        try {
++                            final net.kyori.adventure.text.Component nameComponent = net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson().deserialize(name);
++                            display.putString(ItemStack.TAG_DISPLAY_NAME, io.papermc.paper.adventure.PaperAdventure.asJsonString(nameComponent, this.adventure$locale));
++                        } catch (com.google.gson.JsonSyntaxException exception) {
++                            // just print the exception in console and ignore the lore part which is broken
++                            com.mojang.logging.LogUtils.getLogger().warn("Error while trying to localize name of item: '" + name + "'", exception);
++                            display.remove(ItemStack.TAG_DISPLAY_NAME); // prevent errors on the client
++                        }
++                    }
++
++                    if (display.contains(ItemStack.TAG_LORE, Tag.TAG_LIST)) {
++                        final net.minecraft.nbt.ListTag lore = display.getList(ItemStack.TAG_LORE, Tag.TAG_STRING);
++                        if (!lore.isEmpty()) {
++                            display.put("OriginalLore", lore);
++
++                            final net.minecraft.nbt.ListTag newLore = new net.minecraft.nbt.ListTag();
++                            for (int i = 0; i < lore.size(); i++) {
++                                String lorePart = lore.getString(i);
++                                try {
++                                    final net.kyori.adventure.text.Component loreComponent = net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson().deserialize(lorePart);
++                                    newLore.add(net.minecraft.nbt.StringTag.valueOf(io.papermc.paper.adventure.PaperAdventure.asJsonString(loreComponent, this.adventure$locale)));
++                                } catch (com.google.gson.JsonSyntaxException exception) {
++                                    // just print the exception in console and ignore the lore part which is broken
++                                    com.mojang.logging.LogUtils.getLogger().warn("Error while trying to localize lore part of item: '" + lorePart + "'", exception);
++                                }
++                            }
++
++                            if (newLore.isEmpty()) {
++                                display.remove(ItemStack.TAG_LORE);
++                            } else {
++                                display.put(ItemStack.TAG_LORE, newLore);
++                            }
++                        }
++                    }
++                }
++                // CloudPlane end
+             }
+ 
+             this.writeNbt(nbttagcompound);
+@@ -707,7 +754,22 @@ public class FriendlyByteBuf extends ByteBuf {
+             byte b0 = this.readByte();
+             ItemStack itemstack = new ItemStack(item, b0);
+ 
+-            itemstack.setTag(this.readNbt());
++            // CloudPlane start
++            CompoundTag nbt = this.readNbt();
++            if (nbt != null && nbt.contains(ItemStack.TAG_DISPLAY, Tag.TAG_COMPOUND)) {
++                CompoundTag display = nbt.getCompound(ItemStack.TAG_DISPLAY);
++                if (display.contains("OriginalName", Tag.TAG_STRING)) {
++                    display.putString(ItemStack.TAG_DISPLAY_NAME, display.getString("OriginalName"));
++                    display.remove("OriginalName");
++                }
++                if (display.contains("OriginalLore", Tag.TAG_LIST)) {
++                    display.put(ItemStack.TAG_LORE, display.getList("OriginalLore", Tag.TAG_STRING));
++                    display.remove("OriginalLore");
++                }
++            }
++            itemstack.setTag(nbt);
++            // CloudPlane end
++
+             // CraftBukkit start
+             if (false && itemstack.getTag() != null) { // Paper - This is no longer needed with raw NBT being handled in metadata
+                 CraftItemStack.setItemMeta(itemstack, CraftItemStack.getItemMeta(itemstack));

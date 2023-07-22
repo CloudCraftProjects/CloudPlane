@@ -1,0 +1,113 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Mon, 17 Jul 2023 20:11:44 +0200
+Subject: [PATCH] Resend more data on locale change
+
+Includes advancements, inventories, entity custom names and text display texts
+
+diff --git a/src/main/java/net/minecraft/server/PlayerAdvancements.java b/src/main/java/net/minecraft/server/PlayerAdvancements.java
+index acc49f66bf34e2507d0ee6fec0a56b11bfc68f46..6ca487aaede00451628ff136156250544b5f3026 100644
+--- a/src/main/java/net/minecraft/server/PlayerAdvancements.java
++++ b/src/main/java/net/minecraft/server/PlayerAdvancements.java
+@@ -72,6 +72,16 @@ public class PlayerAdvancements {
+         this.load(advancementLoader);
+     }
+ 
++    // CloudPlane start
++    public void refreshAll() {
++        this.isFirstPacket = true;
++        for (Advancement advancement : this.visible) {
++            this.markForVisibilityUpdate(advancement);
++        }
++        this.visible.clear();
++    }
++    // CloudPlane end
++
+     public void setPlayer(ServerPlayer owner) {
+         this.player = owner;
+     }
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+index 0163decb654acf86a0507e041dd5c6344ea58802..c74e172654529efd677ae7cae8bf56103f4909ae 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+@@ -320,6 +320,10 @@ public class ServerPlayer extends Player {
+         });
+     }
+ 
++    // CloudPlane start
++    private long lastLocaleChange = 0L;
++    // CloudPlane end
++
+     public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile) {
+         super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);
+         this.chatVisibility = ChatVisiblity.FULL;
+@@ -2037,15 +2041,41 @@ public class ServerPlayer extends Player {
+             PlayerChangedMainHandEvent event = new PlayerChangedMainHandEvent(this.getBukkitEntity(), getMainArm() == HumanoidArm.LEFT ? MainHand.LEFT : MainHand.RIGHT);
+             this.server.server.getPluginManager().callEvent(event);
+         }
++        java.util.Locale adventure$locale = net.kyori.adventure.translation.Translator.parseLocale(packet.language); // CloudPlane - parsing was was moved up
++        this.connection.connection.channel.attr(PaperAdventure.LOCALE_ATTRIBUTE).set(adventure$locale); // CloudPlane - was moved up
+         if (this.locale == null || !this.locale.equals(packet.language)) { // Paper - check for null
+             PlayerLocaleChangeEvent event = new PlayerLocaleChangeEvent(this.getBukkitEntity(), packet.language);
+             this.server.server.getPluginManager().callEvent(event);
+             this.server.server.getPluginManager().callEvent(new com.destroystokyo.paper.event.player.PlayerLocaleChangeEvent(this.getBukkitEntity(), this.locale, packet.language)); // Paper
++
++            // CloudPlane start - update more data on locale change
++            // don't allow players to destroy the server by sending not that many packets
++            if (this.lastLocaleChange + 1000L < System.currentTimeMillis()) {
++                this.advancements.refreshAll();
++                this.inventoryMenu.sendAllDataToRemote();
++                if (this.containerMenu != this.inventoryMenu) {
++                    this.containerMenu.sendAllDataToRemote();
++                }
++
++                for (Entity entity : this.serverLevel().getEntities().getAll()) {
++                    if (!entity.tracker.seenBy.contains(this.connection)) {
++                        continue;
++                    }
++
++                    if (entity.hasCustomName()) {
++                        entity.getEntityData().markDirty(Entity.DATA_CUSTOM_NAME);
++                    }
++                    if (entity instanceof net.minecraft.world.entity.Display.TextDisplay) {
++                        entity.getEntityData().markDirty(net.minecraft.world.entity.Display.TextDisplay.DATA_TEXT_ID);
++                    }
++                }
++            }
++            // CloudPlane end
+         }
+         this.locale = packet.language;
+         // Paper start
+-        this.adventure$locale = net.kyori.adventure.translation.Translator.parseLocale(this.locale);
+-        this.connection.connection.channel.attr(PaperAdventure.LOCALE_ATTRIBUTE).set(this.adventure$locale);
++        this.adventure$locale = adventure$locale; // CloudPlane - parsing moved up
++        // this.connection.connection.channel.attr(PaperAdventure.LOCALE_ATTRIBUTE).set(this.adventure$locale); // CloudPlane - moved up
+         // Paper end
+         this.clientViewDistance = packet.viewDistance;
+         // CraftBukkit end
+diff --git a/src/main/java/net/minecraft/world/entity/Display.java b/src/main/java/net/minecraft/world/entity/Display.java
+index b7e77397c3c20d8112e17c8aed24e2186c1a72bc..b4ad94508334dcd7b993297379c521984c9ea355 100644
+--- a/src/main/java/net/minecraft/world/entity/Display.java
++++ b/src/main/java/net/minecraft/world/entity/Display.java
+@@ -704,7 +704,7 @@ public abstract class Display extends Entity {
+         public static final byte FLAG_ALIGN_RIGHT = 16;
+         private static final byte INITIAL_TEXT_OPACITY = -1;
+         public static final int INITIAL_BACKGROUND = 1073741824;
+-        private static final EntityDataAccessor<Component> DATA_TEXT_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.COMPONENT);
++        public static final EntityDataAccessor<Component> DATA_TEXT_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.COMPONENT); // CloudPlane - private -> public
+         private static final EntityDataAccessor<Integer> DATA_LINE_WIDTH_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.INT);
+         private static final EntityDataAccessor<Integer> DATA_BACKGROUND_COLOR_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.INT);
+         private static final EntityDataAccessor<Byte> DATA_TEXT_OPACITY_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.BYTE);
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index 53a3c45afadbdbbd5e2ef5b6602726ebe0523be0..9ddc4dc895347e8d06db8e2a5a121350bdc7445c 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -355,7 +355,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+     protected static final int FLAG_GLOWING = 6;
+     protected static final int FLAG_FALL_FLYING = 7;
+     private static final EntityDataAccessor<Integer> DATA_AIR_SUPPLY_ID = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.INT);
+-    private static final EntityDataAccessor<Optional<Component>> DATA_CUSTOM_NAME = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.OPTIONAL_COMPONENT);
++    protected static final EntityDataAccessor<Optional<Component>> DATA_CUSTOM_NAME = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.OPTIONAL_COMPONENT); // CloudPlane - private -> protected
+     private static final EntityDataAccessor<Boolean> DATA_CUSTOM_NAME_VISIBLE = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.BOOLEAN);
+     private static final EntityDataAccessor<Boolean> DATA_SILENT = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.BOOLEAN);
+     private static final EntityDataAccessor<Boolean> DATA_NO_GRAVITY = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.BOOLEAN);

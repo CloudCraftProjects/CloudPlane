@@ -1,0 +1,61 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Tue, 21 Mar 2023 15:24:33 +0100
+Subject: [PATCH] Save shulker box openers
+
+Would bug out when opening a shulker box multiple times in a tick, caused by ping or fast clicking
+
+diff --git a/src/main/java/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java
+index b7686fd63b7c5d88c3a12ec4ee9bc01a17f997e0..f0089440711ee5fddadf528c9451a04e794ba474 100644
+--- a/src/main/java/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java
++++ b/src/main/java/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java
+@@ -47,7 +47,7 @@ public class ShulkerBoxBlockEntity extends RandomizableContainerBlockEntity impl
+     public static final String ITEMS_TAG = "Items";
+     private static final int[] SLOTS = IntStream.range(0, 27).toArray();
+     private NonNullList<ItemStack> itemStacks;
+-    public int openCount;
++    public java.util.Collection<Player> openers = new org.bukkit.craftbukkit.util.WeakCollection<>(); // CloudPlane
+     private ShulkerBoxBlockEntity.AnimationStatus animationStatus;
+     private float progress;
+     private float progressOld;
+@@ -168,7 +168,7 @@ public class ShulkerBoxBlockEntity extends RandomizableContainerBlockEntity impl
+     @Override
+     public boolean triggerEvent(int type, int data) {
+         if (type == 1) {
+-            this.openCount = data;
++            // this.openCount = data; // CloudPlane
+             if (data == 0) {
+                 this.animationStatus = ShulkerBoxBlockEntity.AnimationStatus.CLOSING;
+                 ShulkerBoxBlockEntity.doNeighborUpdates(this.getLevel(), this.worldPosition, this.getBlockState());
+@@ -192,14 +192,10 @@ public class ShulkerBoxBlockEntity extends RandomizableContainerBlockEntity impl
+     @Override
+     public void startOpen(Player player) {
+         if (!this.remove && !player.isSpectator()) {
+-            if (this.openCount < 0) {
+-                this.openCount = 0;
+-            }
+-
+-            ++this.openCount;
++            this.openers.add(player); // CloudPlane
+             if (this.opened) return; // CraftBukkit - only animate if the ShulkerBox hasn't been forced open already by an API call.
+-            this.level.blockEvent(this.worldPosition, this.getBlockState().getBlock(), 1, this.openCount);
+-            if (this.openCount == 1) {
++            this.level.blockEvent(this.worldPosition, this.getBlockState().getBlock(), 1, this.openers.size()); // CloudPlane
++            if (this.openers.size() == 1) { // CloudPlane
+                 this.level.gameEvent((Entity) player, GameEvent.CONTAINER_OPEN, this.worldPosition);
+                 this.level.playSound((Player) null, this.worldPosition, SoundEvents.SHULKER_BOX_OPEN, SoundSource.BLOCKS, 0.5F, this.level.random.nextFloat() * 0.1F + 0.9F);
+             }
+@@ -210,10 +206,10 @@ public class ShulkerBoxBlockEntity extends RandomizableContainerBlockEntity impl
+     @Override
+     public void stopOpen(Player player) {
+         if (!this.remove && !player.isSpectator()) {
+-            --this.openCount;
++            this.openers.remove(player); // CloudPlane
+             if (this.opened) return; // CraftBukkit - only animate if the ShulkerBox hasn't been forced open already by an API call.
+-            this.level.blockEvent(this.worldPosition, this.getBlockState().getBlock(), 1, this.openCount);
+-            if (this.openCount <= 0) {
++            this.level.blockEvent(this.worldPosition, this.getBlockState().getBlock(), 1, this.openers.size()); // CloudPlane
++            if (this.openers.isEmpty()) { // CloudPlane
+                 this.level.gameEvent((Entity) player, GameEvent.CONTAINER_CLOSE, this.worldPosition);
+                 this.level.playSound((Player) null, this.worldPosition, SoundEvents.SHULKER_BOX_CLOSE, SoundSource.BLOCKS, 0.5F, this.level.random.nextFloat() * 0.1F + 0.9F);
+             }

@@ -1,0 +1,33 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Fri, 21 Apr 2023 21:29:41 +0200
+Subject: [PATCH] Only broadcast item pickup to picker viewers
+
+Stops people with modified clients from detecting vanished players based on invalid entities in this packet
+
+diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
+index 68ac88b150ae5fa5e18958a5e2a83b00a26258ae..c63fb21b40278f8d36e53413e6380d80d230f110 100644
+--- a/src/main/java/net/minecraft/server/level/ChunkMap.java
++++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
+@@ -1331,7 +1331,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+ 
+     }
+ 
+-    protected void broadcastAndSend(Entity entity, Packet<?> packet) {
++    public void broadcastAndSend(Entity entity, Packet<?> packet) { // CloudPlane - protected -> public
+         ChunkMap.TrackedEntity playerchunkmap_entitytracker = (ChunkMap.TrackedEntity) this.entityMap.get(entity.getId());
+ 
+         if (playerchunkmap_entitytracker != null) {
+diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+index 4646840234a9147bbe4b44cd2e8d83ffbddede01..82b96142c6db261970b642aaa82b5b54a09d3e8f 100644
+--- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
++++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
+@@ -3658,7 +3658,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+ 
+     public void take(Entity item, int count) {
+         if (!item.isRemoved() && !this.level().isClientSide && (item instanceof ItemEntity || item instanceof AbstractArrow || item instanceof ExperienceOrb)) {
+-            ((ServerLevel) this.level()).getChunkSource().broadcast(item, new ClientboundTakeItemEntityPacket(item.getId(), this.getId(), count));
++            ((ServerLevel) this.level()).getChunkSource().chunkMap.broadcastAndSend(this, new ClientboundTakeItemEntityPacket(item.getId(), this.getId(), count)); // CloudPlane - broadcast to pickup viewers
+         }
+ 
+     }

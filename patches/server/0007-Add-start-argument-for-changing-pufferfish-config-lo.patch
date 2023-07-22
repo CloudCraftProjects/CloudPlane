@@ -1,0 +1,64 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Sun, 12 Sep 2021 12:50:09 +0200
+Subject: [PATCH] Add start argument for changing pufferfish config location
+
+
+diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishCommand.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishCommand.java
+index 020368da69b9a492155f6de6297f74732f4ab6ea..4a5ad92c7989d4f85eea3f2908732fb527f7868f 100644
+--- a/src/main/java/gg/pufferfish/pufferfish/PufferfishCommand.java
++++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishCommand.java
+@@ -50,7 +50,7 @@ public class PufferfishCommand extends Command {
+         if (args[0].equalsIgnoreCase("reload")) {
+             MinecraftServer console = MinecraftServer.getServer();
+             try {
+-                PufferfishConfig.load();
++                PufferfishConfig.load((java.io.File) console.options.valueOf("pufferfish-settings")); // CloudPlane
+             } catch (IOException e) {
+                 sender.sendMessage(Component.text("Failed to reload.", NamedTextColor.RED));
+                 e.printStackTrace();
+diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
+index 73e4bf17c75c0ac2e69ecb1be0fc8b290d1dd46e..73c46eac57f4f159ca0d92d08f263db80b7c9960 100644
+--- a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
++++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
+@@ -58,8 +58,8 @@ public class PufferfishConfig {
+ 		return updates;
+ 	}
+ 	
+-	public static void load() throws IOException {
+-		File configFile = new File("pufferfish.yml");
++	public static void load(File configFile) throws IOException { // CloudPlane
++		// File configFile = new File("pufferfish.yml"); // CloudPlane
+ 		
+ 		if (configFile.exists()) {
+ 			try {
+diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+index da36db4270f9e97534b7221dbc29b3fcaec8396d..42cc126e659b5ed2f352d18ffaae7d7ced52242e 100644
+--- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
++++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
+@@ -229,7 +229,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // load version history now
+         io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // init PaperBrigadierProvider
+         // Paper end
+-        gg.pufferfish.pufferfish.PufferfishConfig.load(); // Pufferfish
++        gg.pufferfish.pufferfish.PufferfishConfig.load((java.io.File) options.valueOf("pufferfish-settings")); // Pufferfish // CloudPlane
+         gg.pufferfish.pufferfish.PufferfishCommand.init(); // Pufferfish
+ 
+         this.setPvpAllowed(dedicatedserverproperties.pvp);
+diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
+index 64bbfa68c8fdf1d4e52698b15f28f41b1bd20072..c09ca14133d566550acd7913819abcfcbc85e205 100644
+--- a/src/main/java/org/bukkit/craftbukkit/Main.java
++++ b/src/main/java/org/bukkit/craftbukkit/Main.java
+@@ -179,6 +179,12 @@ public class Main {
+                         .ofType(File.class)
+                         .defaultsTo(new File("cloudplane.yml"))
+                         .describedAs("Yml file");
++
++                acceptsAll(asList("pufferfish", "pufferfish-settings"), "File for pufferfish settings")
++                        .withRequiredArg()
++                        .ofType(File.class)
++                        .defaultsTo(new File("pufferfish.yml"))
++                        .describedAs("Yml file");
+                 // CloudPlane end
+ 
+                 // Paper start

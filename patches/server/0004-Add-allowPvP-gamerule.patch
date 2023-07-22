@@ -1,0 +1,32 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Fri, 9 Jul 2021 11:28:12 +0200
+Subject: [PATCH] Add allowPvP gamerule
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+index 8a1fde50b82a8b0718ae04124c2611b7cff4bcd6..6809bc38b382f1f74abdaedbda84537cbe9f7681 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+@@ -1509,7 +1509,7 @@ public class ServerPlayer extends Player {
+ 
+     @Override
+     public boolean isInvulnerableTo(DamageSource damageSource) {
+-        return super.isInvulnerableTo(damageSource) || this.isChangingDimension()  || !this.level().paperConfig().collisions.allowPlayerCrammingDamage && damageSource == damageSources().cramming(); // Paper - disable player cramming
++        return super.isInvulnerableTo(damageSource) || this.isChangingDimension()  || !this.level().paperConfig().collisions.allowPlayerCrammingDamage && damageSource == damageSources().cramming() || damageSource.getEntity() instanceof Player && !this.level().getGameRules().getBoolean(GameRules.RULE_ALLOW_PVP); // Paper - disable player cramming // CloudPlane - allowPvP gamerule
+     }
+ 
+     @Override
+diff --git a/src/main/java/net/minecraft/world/level/GameRules.java b/src/main/java/net/minecraft/world/level/GameRules.java
+index 6fa00d9239546aa82b9e92e25a33103868084c38..772227d71c157148182965d389800f13ba726a95 100644
+--- a/src/main/java/net/minecraft/world/level/GameRules.java
++++ b/src/main/java/net/minecraft/world/level/GameRules.java
+@@ -99,6 +99,8 @@ public class GameRules {
+     public static final GameRules.Key<GameRules.BooleanValue> RULE_LAVA_SOURCE_CONVERSION = GameRules.register("lavaSourceConversion", GameRules.Category.UPDATES, GameRules.BooleanValue.create(false));
+     public static final GameRules.Key<GameRules.BooleanValue> RULE_GLOBAL_SOUND_EVENTS = GameRules.register("globalSoundEvents", GameRules.Category.MISC, GameRules.BooleanValue.create(true));
+     public static final GameRules.Key<GameRules.BooleanValue> RULE_DO_VINES_SPREAD = GameRules.register("doVinesSpread", GameRules.Category.UPDATES, GameRules.BooleanValue.create(true));
++    public static final GameRules.Key<GameRules.BooleanValue> RULE_ALLOW_PVP = GameRules.register("allowPvP", Category.PLAYER, GameRules.BooleanValue.create(true)); // CloudPlane - allowPvP gamerule
++
+     private final Map<GameRules.Key<?>, GameRules.Value<?>> rules;
+     private final GameRules.Value<?>[] gameruleArray; // Paper
+ 
