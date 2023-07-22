@@ -3,7 +3,7 @@ From: booky10 <boooky10@gmail.com>
 Date: Mon, 17 Jul 2023 20:11:44 +0200
 Subject: [PATCH] Resend more data on locale change
 
-Includes advancements, inventories, entity custom names and text display texts
+Includes advancements, inventories, entity custom names, text display texts and item frame items
 
 diff --git a/src/main/java/net/minecraft/server/PlayerAdvancements.java b/src/main/java/net/minecraft/server/PlayerAdvancements.java
 index acc49f66bf34e2507d0ee6fec0a56b11bfc68f46..6ca487aaede00451628ff136156250544b5f3026 100644
@@ -27,7 +27,7 @@ index acc49f66bf34e2507d0ee6fec0a56b11bfc68f46..6ca487aaede00451628ff13615625054
          this.player = owner;
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 0163decb654acf86a0507e041dd5c6344ea58802..135f66ea77e7bfae983aee5d594cf4fa5b23a89d 100644
+index 0163decb654acf86a0507e041dd5c6344ea58802..bd84cf5503248e72f797e548f1400592c87a27f8 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -320,6 +320,10 @@ public class ServerPlayer extends Player {
@@ -41,7 +41,7 @@ index 0163decb654acf86a0507e041dd5c6344ea58802..135f66ea77e7bfae983aee5d594cf4fa
      public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile) {
          super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);
          this.chatVisibility = ChatVisiblity.FULL;
-@@ -2037,15 +2041,42 @@ public class ServerPlayer extends Player {
+@@ -2037,15 +2041,45 @@ public class ServerPlayer extends Player {
              PlayerChangedMainHandEvent event = new PlayerChangedMainHandEvent(this.getBukkitEntity(), getMainArm() == HumanoidArm.LEFT ? MainHand.LEFT : MainHand.RIGHT);
              this.server.server.getPluginManager().callEvent(event);
          }
@@ -72,6 +72,9 @@ index 0163decb654acf86a0507e041dd5c6344ea58802..135f66ea77e7bfae983aee5d594cf4fa
 +                    }
 +                    if (entity instanceof net.minecraft.world.entity.Display.TextDisplay) {
 +                        entity.getEntityData().markDirty(net.minecraft.world.entity.Display.TextDisplay.DATA_TEXT_ID);
++                    } else if (entity instanceof net.minecraft.world.entity.decoration.ItemFrame
++                            && !((net.minecraft.world.entity.decoration.ItemFrame) entity).getItem().isEmpty()) {
++                        entity.getEntityData().markDirty(net.minecraft.world.entity.decoration.ItemFrame.DATA_ITEM);
 +                    }
 +                }
 +            }
