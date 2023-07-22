@@ -1,0 +1,12 @@
+name: CloudPlane-Test-Plugin
+version: ${version}
+main: dev.booky.cloudplane.testplugin.TestPlugin
+description: CloudPlane Test Plugin
+author: booky10
+api-version: '${api_version}'
+load: STARTUP
+bootstrapper: dev.booky.cloudplane.testplugin.TestBootstrap
+loader: dev.booky.cloudplane.testplugin.TestLoader
+defaultPerm: FALSE
+permissions:
+dependencies:
