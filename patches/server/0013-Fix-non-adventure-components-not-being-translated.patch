@@ -1,0 +1,50 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Sun, 16 Jul 2023 20:32:10 +0200
+Subject: [PATCH] Fix non-adventure components not being translated
+
+If an entity ever gets unloaded, this destroys every translation system
+
+diff --git a/src/main/java/io/papermc/paper/adventure/PaperAdventure.java b/src/main/java/io/papermc/paper/adventure/PaperAdventure.java
+index db54a9c32578defa02fa58dc694c96684a4885ac..e0b2db9c553950f8c348f403ff69a94c73c7fa69 100644
+--- a/src/main/java/io/papermc/paper/adventure/PaperAdventure.java
++++ b/src/main/java/io/papermc/paper/adventure/PaperAdventure.java
+@@ -147,6 +147,12 @@ public final class PaperAdventure {
+     // Component
+ 
+     public static Component asAdventure(final net.minecraft.network.chat.Component component) {
++        // CloudPlane start
++        if (component instanceof AdventureComponent) {
++            return ((AdventureComponent) component).adventure;
++        }
++        // CloudPlane end
++
+         return component == null ? Component.empty() : GsonComponentSerializer.gson().serializer().fromJson(net.minecraft.network.chat.Component.Serializer.toJsonTree(component), Component.class);
+     }
+ 
+@@ -193,6 +199,12 @@ public final class PaperAdventure {
+     }
+ 
+     public static String asJsonString(final net.minecraft.network.chat.Component component, final Locale locale) {
++        // CloudPlane start
++        if (true) {
++            return asJsonString(asAdventure(component), locale);
++        }
++        // CloudPlane end
++
+         if (component instanceof AdventureComponent) {
+             return asJsonString(((AdventureComponent) component).adventure, locale);
+         }
+diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
+index f938d3ecfb4f7b9cb5add4faf07a53c5bf8f0307..53a3c45afadbdbbd5e2ef5b6602726ebe0523be0 100644
+--- a/src/main/java/net/minecraft/world/entity/Entity.java
++++ b/src/main/java/net/minecraft/world/entity/Entity.java
+@@ -2523,7 +2523,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+                         String s = nbt.getString("CustomName");
+ 
+                         try {
+-                            this.setCustomName(Component.Serializer.fromJson(s));
++                            this.setCustomName(io.papermc.paper.adventure.PaperAdventure.asVanilla(net.kyori.adventure.text.serializer.gson.GsonComponentSerializer.gson().deserialize(s))); // CloudPlane
+                         } catch (Exception exception) {
+                             Entity.LOGGER.warn("Failed to parse entity custom name {}", s, exception);
+                         }
