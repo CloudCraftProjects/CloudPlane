@@ -19,7 +19,6 @@ https://nightly.link/CloudCraftProjects/CloudPlane/workflows/build/master/CloudP
 ## Building
 
 _Building on Windows is untested and not recommended!_
-After installing the dependencies, clone this repository, don't download the ZIP.
 
-After downloading, apply the patches using `./gradlew applyPatches`. Then the reobfuscated paperclip jar can be compiled
-using `./gradlew createReobfPaperclipJar`.
+Clone this repository, don't download the ZIP. After cloning, apply the patches using `./gradlew applyPatches`.
+Then the reobfuscated paperclip jar can be compiled using `./gradlew createReobfPaperclipJar`.
