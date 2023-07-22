@@ -27,7 +27,7 @@ index acc49f66bf34e2507d0ee6fec0a56b11bfc68f46..6ca487aaede00451628ff13615625054
          this.player = owner;
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 0163decb654acf86a0507e041dd5c6344ea58802..c74e172654529efd677ae7cae8bf56103f4909ae 100644
+index 0163decb654acf86a0507e041dd5c6344ea58802..135f66ea77e7bfae983aee5d594cf4fa5b23a89d 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -320,6 +320,10 @@ public class ServerPlayer extends Player {
@@ -41,7 +41,7 @@ index 0163decb654acf86a0507e041dd5c6344ea58802..c74e172654529efd677ae7cae8bf5610
      public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile) {
          super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);
          this.chatVisibility = ChatVisiblity.FULL;
-@@ -2037,15 +2041,41 @@ public class ServerPlayer extends Player {
+@@ -2037,15 +2041,42 @@ public class ServerPlayer extends Player {
              PlayerChangedMainHandEvent event = new PlayerChangedMainHandEvent(this.getBukkitEntity(), getMainArm() == HumanoidArm.LEFT ? MainHand.LEFT : MainHand.RIGHT);
              this.server.server.getPluginManager().callEvent(event);
          }
@@ -55,6 +55,7 @@ index 0163decb654acf86a0507e041dd5c6344ea58802..c74e172654529efd677ae7cae8bf5610
 +            // CloudPlane start - update more data on locale change
 +            // don't allow players to destroy the server by sending not that many packets
 +            if (this.lastLocaleChange + 1000L < System.currentTimeMillis()) {
++                this.lastLocaleChange = System.currentTimeMillis();
 +                this.advancements.refreshAll();
 +                this.inventoryMenu.sendAllDataToRemote();
 +                if (this.containerMenu != this.inventoryMenu) {
