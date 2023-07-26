@@ -31,7 +31,7 @@ index 26e393051d2c5fe84b8ae6a33b376efab6198816..b21f7a41581ddf36d61e206366c63987
  }
 diff --git a/src/main/java/dev/booky/cloudplane/ComponentUtil.java b/src/main/java/dev/booky/cloudplane/ComponentUtil.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..d8b15521dea2c5bbb75f943df03b3aafb0219c83
+index 0000000000000000000000000000000000000000..a9a0117234026f119a64c2ae6c51473015ae2eab
 --- /dev/null
 +++ b/src/main/java/dev/booky/cloudplane/ComponentUtil.java
 @@ -0,0 +1,70 @@
@@ -80,7 +80,7 @@ index 0000000000000000000000000000000000000000..d8b15521dea2c5bbb75f943df03b3aaf
 +                continue;
 +            }
 +
-+            String[] strings = StringUtils.split(textComp.content(), '\n');
++            String[] strings = StringUtils.splitPreserveAllTokens(textComp.content(), '\n');
 +            if (strings.length == 1) {
 +                currentComponents.add(part);
 +                continue;
