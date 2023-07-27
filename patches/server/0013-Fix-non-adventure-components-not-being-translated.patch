@@ -6,7 +6,7 @@ Subject: [PATCH] Fix non-adventure components not being translated
 If an entity ever gets unloaded, this destroys every translation system
 
 diff --git a/src/main/java/io/papermc/paper/adventure/PaperAdventure.java b/src/main/java/io/papermc/paper/adventure/PaperAdventure.java
-index db54a9c32578defa02fa58dc694c96684a4885ac..e0b2db9c553950f8c348f403ff69a94c73c7fa69 100644
+index f2f4575e6ec4f5a90b8f48306b0edfef2e5527f5..5ec4339fde101cbf1380dc7104f6d7894e8b9031 100644
 --- a/src/main/java/io/papermc/paper/adventure/PaperAdventure.java
 +++ b/src/main/java/io/papermc/paper/adventure/PaperAdventure.java
 @@ -147,6 +147,12 @@ public final class PaperAdventure {
@@ -36,10 +36,10 @@ index db54a9c32578defa02fa58dc694c96684a4885ac..e0b2db9c553950f8c348f403ff69a94c
              return asJsonString(((AdventureComponent) component).adventure, locale);
          }
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index f938d3ecfb4f7b9cb5add4faf07a53c5bf8f0307..53a3c45afadbdbbd5e2ef5b6602726ebe0523be0 100644
+index 2c9fc0ac0e41a84cf23b1f11dc3d4eb4ed319947..e5978e27c88341eb9461b1532fdc803282296c40 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -2523,7 +2523,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -2522,7 +2522,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
                          String s = nbt.getString("CustomName");
  
                          try {

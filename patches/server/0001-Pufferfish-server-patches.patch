@@ -1971,7 +1971,7 @@ index 0000000000000000000000000000000000000000..facd55463d44cb7e3d2ca6892982f549
 +	}
 +}
 diff --git a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
-index 4ac3fa45cd155ae8a852e26d4d4d1f16b28efdc2..6061457962aa86180a722a00f77668aadbf4890e 100644
+index d7f541d94941a341a70dfac025a3d3601dd1aca8..e332e123d84fb528ffce40b409f184d0ad9619a0 100644
 --- a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
 +++ b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
 @@ -7,6 +7,7 @@ import net.kyori.adventure.text.Component;
@@ -2474,7 +2474,7 @@ index 04b1531572e8fff1e46fe1c94e7fc863841e0f66..3b8649e342b740cf16b2fc1dfecc280d
      int DEFAULT_DISTANCE_LIMIT = 8;
  
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 305b43071aa1cf8feee75fae757bb7734ae33771..f938d3ecfb4f7b9cb5add4faf07a53c5bf8f0307 100644
+index 4c298406ce06d39f8279049270c88ec0830733b1..2c9fc0ac0e41a84cf23b1f11dc3d4eb4ed319947 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -306,7 +306,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
@@ -2549,7 +2549,7 @@ index 305b43071aa1cf8feee75fae757bb7734ae33771..f938d3ecfb4f7b9cb5add4faf07a53c5
  
          return chunkMap.playerEntityTrackerTrackMaps[type.ordinal()].getObjectsInRange(MCUtil.getCoordinateKey(this));
      }
-@@ -797,6 +825,13 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -796,6 +824,13 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      }
  
      public void tick() {
@@ -2563,7 +2563,7 @@ index 305b43071aa1cf8feee75fae757bb7734ae33771..f938d3ecfb4f7b9cb5add4faf07a53c5
          this.baseTick();
      }
  
-@@ -4289,16 +4324,18 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -4288,16 +4323,18 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      }
  
      public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> tag, double speed) {
@@ -2589,7 +2589,7 @@ index 305b43071aa1cf8feee75fae757bb7734ae33771..f938d3ecfb4f7b9cb5add4faf07a53c5
              double d1 = 0.0D;
              boolean flag = this.isPushedByFluid();
              boolean flag1 = false;
-@@ -4306,14 +4343,61 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -4305,14 +4342,61 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
              int k1 = 0;
              BlockPos.MutableBlockPos blockposition_mutableblockposition = new BlockPos.MutableBlockPos();
  
@@ -2657,7 +2657,7 @@ index 305b43071aa1cf8feee75fae757bb7734ae33771..f938d3ecfb4f7b9cb5add4faf07a53c5
  
                              if (d2 >= axisalignedbb.minY) {
                                  flag1 = true;
-@@ -4335,9 +4419,12 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -4334,9 +4418,12 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
                                  // CraftBukkit end
                              }
                          }
@@ -3697,7 +3697,7 @@ index a71414397bd45ee7bcacfeef0041d80dfa25f114..d66806565770cb03a21794f99e5c4b0f
  
      @Override
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index a8a26a0a37a08b6bbeb5a1fde417d6f448d3c79f..c30c5ece90ff7d5292937a170453cd367cca7b80 100644
+index b11f51762ca289d99eaa49e66e31e58595bcea4e..a4db7b4c240647f9f2d1379a52249166b52cc9ca 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 @@ -47,7 +47,10 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
@@ -3760,7 +3760,7 @@ index a8a26a0a37a08b6bbeb5a1fde417d6f448d3c79f..c30c5ece90ff7d5292937a170453cd36
                      flag |= booleansupplier.getAsBoolean();
                  }
  
-@@ -451,11 +477,11 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -452,11 +478,11 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
      }
  
      private static boolean isFullContainer(Container inventory, Direction direction) {
@@ -3774,7 +3774,7 @@ index a8a26a0a37a08b6bbeb5a1fde417d6f448d3c79f..c30c5ece90ff7d5292937a170453cd36
      }
  
      public static boolean suckInItems(Level world, Hopper hopper) {
-@@ -636,7 +662,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -637,7 +663,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
  
          if (HopperBlockEntity.canPlaceItemInContainer(to, stack, slot, side)) {
              boolean flag = false;
@@ -3783,7 +3783,7 @@ index a8a26a0a37a08b6bbeb5a1fde417d6f448d3c79f..c30c5ece90ff7d5292937a170453cd36
  
              if (itemstack1.isEmpty()) {
                  // Spigot start - SPIGOT-6693, InventorySubcontainer#setItem
-@@ -831,7 +857,10 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -832,7 +858,10 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
  
      @Override
      protected void setItems(NonNullList<ItemStack> list) {
