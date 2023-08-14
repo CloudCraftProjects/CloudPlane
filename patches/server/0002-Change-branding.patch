@@ -5,7 +5,7 @@ Subject: [PATCH] Change branding
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index c6766a64f8f813f887d0d30754b2fdd0c8d6db11..45972d692fbe4b4d887960b341b0b9060e050fea 100644
+index 2d245d1470c3b1ff9bf3d791d19a82999e7d3efd..ca6eebc3548eec8d821090278bfae27de12f30c6 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -13,8 +13,10 @@ configurations.named(log4jPlugins.compileClasspathConfigurationName) {
@@ -118,10 +118,10 @@ index 3aff94cd3c825125bba334c003aa5c1085a7b4a8..4ab16edd644c1ae02f218debe79ea620
  
      public SystemReport fillSystemReport(SystemReport details) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 8a5a6842d7697d07bde9a282216677c5a9f32c00..47c52266b435b5130bb2530c2c07c01a8904204b 100644
+index cc133e4eec67ec3aed27a4a5df1005e0556a643f..f51abd84df0f1befb4786c3513dfdc12f4ddb82a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -264,7 +264,7 @@ import javax.annotation.Nullable; // Paper
+@@ -265,7 +265,7 @@ import javax.annotation.Nullable; // Paper
  import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
@@ -131,7 +131,7 @@ index 8a5a6842d7697d07bde9a282216677c5a9f32c00..47c52266b435b5130bb2530c2c07c01a
      private final String bukkitVersion = Versioning.getBukkitVersion();
      private final Logger logger = Logger.getLogger("Minecraft");
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index daed278d1bcf84ee42749f24e311b22b70015d79..168130d0adbfd9b404182a234db8edb6705777d9 100644
+index 776b7fc26fe96b69be260bbd36efae147d988640..c191dffe3de45d66f067220ba7224dab4ed07550 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
 @@ -292,7 +292,7 @@ public class Main {

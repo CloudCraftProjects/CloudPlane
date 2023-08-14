@@ -27,7 +27,7 @@ index acc49f66bf34e2507d0ee6fec0a56b11bfc68f46..6ca487aaede00451628ff13615625054
          this.player = owner;
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 0163decb654acf86a0507e041dd5c6344ea58802..bd84cf5503248e72f797e548f1400592c87a27f8 100644
+index 670033bf5d72a12e44b76d55c4343de1490e873b..83adabab10c71f26d238625f2fa1d61749dbf322 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -320,6 +320,10 @@ public class ServerPlayer extends Player {
@@ -90,20 +90,20 @@ index 0163decb654acf86a0507e041dd5c6344ea58802..bd84cf5503248e72f797e548f1400592
          this.clientViewDistance = packet.viewDistance;
          // CraftBukkit end
 diff --git a/src/main/java/net/minecraft/world/entity/Display.java b/src/main/java/net/minecraft/world/entity/Display.java
-index b7e77397c3c20d8112e17c8aed24e2186c1a72bc..b4ad94508334dcd7b993297379c521984c9ea355 100644
+index 2a5a4027e5d0d9d48a727834f3f5af65ea83aa23..ecef4ec4f67da8fdddd473733000b0002c65ff9f 100644
 --- a/src/main/java/net/minecraft/world/entity/Display.java
 +++ b/src/main/java/net/minecraft/world/entity/Display.java
-@@ -704,7 +704,7 @@ public abstract class Display extends Entity {
+@@ -593,7 +593,7 @@ public abstract class Display extends Entity {
          public static final byte FLAG_ALIGN_RIGHT = 16;
          private static final byte INITIAL_TEXT_OPACITY = -1;
          public static final int INITIAL_BACKGROUND = 1073741824;
 -        private static final EntityDataAccessor<Component> DATA_TEXT_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.COMPONENT);
 +        public static final EntityDataAccessor<Component> DATA_TEXT_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.COMPONENT); // CloudPlane - private -> public
-         private static final EntityDataAccessor<Integer> DATA_LINE_WIDTH_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.INT);
-         private static final EntityDataAccessor<Integer> DATA_BACKGROUND_COLOR_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.INT);
+         public static final EntityDataAccessor<Integer> DATA_LINE_WIDTH_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.INT);
+         public static final EntityDataAccessor<Integer> DATA_BACKGROUND_COLOR_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.INT);
          private static final EntityDataAccessor<Byte> DATA_TEXT_OPACITY_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.BYTE);
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 53a3c45afadbdbbd5e2ef5b6602726ebe0523be0..9ddc4dc895347e8d06db8e2a5a121350bdc7445c 100644
+index e1aa3b24019eace573603647a5efbf01f316e4ee..e7dbb9f0c44a5b68274aca7210783ae2a39c541e 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -355,7 +355,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {

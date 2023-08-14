@@ -5,7 +5,7 @@ Subject: [PATCH] Pufferfish server patches
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 57f2c414dbfe127c193002fbc8eeb22e94e9cb55..c6766a64f8f813f887d0d30754b2fdd0c8d6db11 100644
+index fb98936bb8a5488db75d676c5bcb4060597fbbf8..2d245d1470c3b1ff9bf3d791d19a82999e7d3efd 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -52,6 +52,14 @@ dependencies {
@@ -2217,7 +2217,7 @@ index 488a253e218409b5f0b4a872cee0928578fa7582..6e3b2863f04419ee6914ac3fd4f12a4f
  
      private void getFullChunk(long pos, Consumer<LevelChunk> chunkConsumer) {
 diff --git a/src/main/java/net/minecraft/server/level/ServerEntity.java b/src/main/java/net/minecraft/server/level/ServerEntity.java
-index 81d0b2933040a451441f660f9e46199ae3b111e3..7021540b6d231fd954dc8b9114f4a513e891199c 100644
+index 196280f54e397c69d32bd4d1f6ae666efdd93773..ecc21cb6fc87b9c048b2b4027e54bd2ebddbc5e7 100644
 --- a/src/main/java/net/minecraft/server/level/ServerEntity.java
 +++ b/src/main/java/net/minecraft/server/level/ServerEntity.java
 @@ -181,6 +181,7 @@ public class ServerEntity {
@@ -2302,7 +2302,7 @@ index 18aac3da3c88f33b1a71a5920a8daa27e9723913..4267ff0c534932ae6327b280d0b82363
              this.getRandomBlockPosition(j, 0, k, 15, blockposition);
              int normalY = chunk.getHeight(Heightmap.Types.MOTION_BLOCKING, blockposition.getX() & 15, blockposition.getZ() & 15) + 1;
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 9d46536f80b5b3e6641fd377c02166a431edfd77..8a1fde50b82a8b0718ae04124c2611b7cff4bcd6 100644
+index dc5fda83a66afbfeb7897fc20b4742899d8aca08..1f49a53033a6f7f0e70b655531f2fbb4117f687b 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -1245,6 +1245,7 @@ public class ServerPlayer extends Player {
@@ -2338,10 +2338,10 @@ index 9d46536f80b5b3e6641fd377c02166a431edfd77..8a1fde50b82a8b0718ae04124c2611b7
  
      @Override
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 316740b2ba4c85828f544249c8cdd6fa1b525d3f..22d2e0e262cbc9b0c95e9978adf5561df4774d25 100644
+index 80e050603e36134754136a8ee2bd14624f976e91..f2e71c26c889bdee2cd2b86dcde9d4c35a3574bd 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-@@ -1219,6 +1219,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -1221,6 +1221,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
  
      @Override
      public void handleEditBook(ServerboundEditBookPacket packet) {
@@ -2349,7 +2349,7 @@ index 316740b2ba4c85828f544249c8cdd6fa1b525d3f..22d2e0e262cbc9b0c95e9978adf5561d
          // Paper start
          if (!this.cserver.isPrimaryThread()) {
              List<String> pageList = packet.getPages();
-@@ -2365,6 +2366,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
+@@ -2408,6 +2409,7 @@ public class ServerGamePacketListenerImpl implements ServerPlayerConnection, Tic
      }
  
      private boolean updateChatOrder(Instant timestamp) {
@@ -2474,7 +2474,7 @@ index 04b1531572e8fff1e46fe1c94e7fc863841e0f66..3b8649e342b740cf16b2fc1dfecc280d
      int DEFAULT_DISTANCE_LIMIT = 8;
  
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 4c298406ce06d39f8279049270c88ec0830733b1..2c9fc0ac0e41a84cf23b1f11dc3d4eb4ed319947 100644
+index 2edab21bb271405f200de5a19e9c748bb14aba7d..bfe147385b92fc8822a851d770805747fdc83482 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -306,7 +306,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
@@ -2563,7 +2563,7 @@ index 4c298406ce06d39f8279049270c88ec0830733b1..2c9fc0ac0e41a84cf23b1f11dc3d4eb4
          this.baseTick();
      }
  
-@@ -4288,16 +4323,18 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -4293,16 +4328,18 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      }
  
      public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> tag, double speed) {
@@ -2589,7 +2589,7 @@ index 4c298406ce06d39f8279049270c88ec0830733b1..2c9fc0ac0e41a84cf23b1f11dc3d4eb4
              double d1 = 0.0D;
              boolean flag = this.isPushedByFluid();
              boolean flag1 = false;
-@@ -4305,14 +4342,61 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -4310,14 +4347,61 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
              int k1 = 0;
              BlockPos.MutableBlockPos blockposition_mutableblockposition = new BlockPos.MutableBlockPos();
  
@@ -2657,7 +2657,7 @@ index 4c298406ce06d39f8279049270c88ec0830733b1..2c9fc0ac0e41a84cf23b1f11dc3d4eb4
  
                              if (d2 >= axisalignedbb.minY) {
                                  flag1 = true;
-@@ -4334,9 +4418,12 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -4339,9 +4423,12 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
                                  // CraftBukkit end
                              }
                          }
@@ -4072,10 +4072,10 @@ index ebe65474a4a05ff1637d7f37ebcfe690af59def5..42142c512b12e5b269c19f1e821c50e7
  
      @Nullable
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index a05c1bc8874ef5e380544a6a344c848e37da49c4..8a5a6842d7697d07bde9a282216677c5a9f32c00 100644
+index 249d76acac9a91cd46f0b8a477511974a75d6f4a..cc133e4eec67ec3aed27a4a5df1005e0556a643f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1139,6 +1139,11 @@ public final class CraftServer implements Server {
+@@ -1140,6 +1140,11 @@ public final class CraftServer implements Server {
                  plugin.getPluginMeta().getDisplayName(),
                  "This plugin is not properly shutting down its async tasks when it is being shut down. This task may throw errors during the final shutdown logs and might not complete before process dies."
              ));

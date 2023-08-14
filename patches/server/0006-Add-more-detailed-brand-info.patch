@@ -25,7 +25,7 @@ index b21f7a41581ddf36d61e206366c6398738a47813..9d3dafc4989b9fbaa32a337df9b3c56e
 +    }
  }
 diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index fff7ad7a45f310783ac96b44575ad3db13d537fa..76c42363fe207e688a50e69ff513401a922191c7 100644
+index 640e9bd618dc8286933318744c2064ede1fd9b5f..debb5b81412206e943548fe70a7cdccf37c333c4 100644
 --- a/src/main/java/net/minecraft/server/players/PlayerList.java
 +++ b/src/main/java/net/minecraft/server/players/PlayerList.java
 @@ -288,7 +288,12 @@ public abstract class PlayerList {
@@ -43,10 +43,10 @@ index fff7ad7a45f310783ac96b44575ad3db13d537fa..76c42363fe207e688a50e69ff513401a
          playerconnection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
          playerconnection.send(new ClientboundSetCarriedItemPacket(player.getInventory().selected));
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 7f9622a8a2b29a35b7698bbbc2a7fb023da088b2..1989dd412b33395923ebe7fdd162a0b5b383ec24 100644
+index 9777fdcf0b0ed284a3eacb74b5deb1627b53ddd8..2644ba4d5d5af4c6200643de11010ccc0584e7ab 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -265,7 +265,7 @@ import javax.annotation.Nonnull; // Paper
+@@ -266,7 +266,7 @@ import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
      private final String serverName = "CloudPlane"; // Paper // CloudPlane
