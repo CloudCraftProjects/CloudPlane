@@ -5,10 +5,10 @@ Subject: [PATCH] Fix cancelling spectate event not doing anything
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 6809bc38b382f1f74abdaedbda84537cbe9f7681..0163decb654acf86a0507e041dd5c6344ea58802 100644
+index d583ffdeb3fda0f436eae116051e23675089baae..d20871961ae66b021eb7af871b21ac933eceb598 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -2122,11 +2122,13 @@ public class ServerPlayer extends Player {
+@@ -2128,11 +2128,13 @@ public class ServerPlayer extends Player {
              if (this.camera == this) {
                  com.destroystokyo.paper.event.player.PlayerStopSpectatingEntityEvent playerStopSpectatingEntityEvent = new com.destroystokyo.paper.event.player.PlayerStopSpectatingEntityEvent(this.getBukkitEntity(), entity1.getBukkitEntity());
                  if (!playerStopSpectatingEntityEvent.callEvent()) {

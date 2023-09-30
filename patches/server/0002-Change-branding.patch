@@ -5,7 +5,7 @@ Subject: [PATCH] Change branding
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 2d245d1470c3b1ff9bf3d791d19a82999e7d3efd..ca6eebc3548eec8d821090278bfae27de12f30c6 100644
+index cfbf31d3f992037b2b5319b661f16c1bdcf4a36e..a373a22b17cd7b2ce0db454302f6673adb8197ab 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -13,8 +13,10 @@ configurations.named(log4jPlugins.compileClasspathConfigurationName) {
@@ -105,10 +105,10 @@ index 9d687da5bdf398bb3f6c84cdf1249a7213d09f2e..b650f1f7390374dd50b0a281441d0ddb
                  org.bukkit.Bukkit.getLogger().warning("Version: " + org.bukkit.Bukkit.getBukkitVersion());
              }
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 3aff94cd3c825125bba334c003aa5c1085a7b4a8..4ab16edd644c1ae02f218debe79ea6201be6d7a5 100644
+index ebd525f15a8b0955b88ea5f30be8f8b3c6590206..fac25947c5eef7b48df4c22ac0929bcb04a87a06 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1695,7 +1695,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1694,7 +1694,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
      @DontObfuscate
      public String getServerModName() {
@@ -118,7 +118,7 @@ index 3aff94cd3c825125bba334c003aa5c1085a7b4a8..4ab16edd644c1ae02f218debe79ea620
  
      public SystemReport fillSystemReport(SystemReport details) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index cc133e4eec67ec3aed27a4a5df1005e0556a643f..f51abd84df0f1befb4786c3513dfdc12f4ddb82a 100644
+index c69421e2ff9c7686f5f7763779659bc162ab5615..0b0babc211247839107f3e52f7f801f7bb3f9cd3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -265,7 +265,7 @@ import javax.annotation.Nullable; // Paper
@@ -131,10 +131,10 @@ index cc133e4eec67ec3aed27a4a5df1005e0556a643f..f51abd84df0f1befb4786c3513dfdc12
      private final String bukkitVersion = Versioning.getBukkitVersion();
      private final Logger logger = Logger.getLogger("Minecraft");
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index 776b7fc26fe96b69be260bbd36efae147d988640..c191dffe3de45d66f067220ba7224dab4ed07550 100644
+index 7c29d92362a82330440dff151bcf421f15c68f71..a7f817d770367681c3f4c1a8bde30d6f44d96a9a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
-@@ -292,7 +292,7 @@ public class Main {
+@@ -300,7 +300,7 @@ public class Main {
                      if (buildDate.before(deadline.getTime())) {
                          // Paper start - This is some stupid bullshit
                          System.err.println("*** Warning, you've not updated in a while! ***");

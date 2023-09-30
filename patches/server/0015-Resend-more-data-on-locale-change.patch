@@ -27,10 +27,10 @@ index acc49f66bf34e2507d0ee6fec0a56b11bfc68f46..6ca487aaede00451628ff13615625054
          this.player = owner;
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 670033bf5d72a12e44b76d55c4343de1490e873b..83adabab10c71f26d238625f2fa1d61749dbf322 100644
+index d20871961ae66b021eb7af871b21ac933eceb598..5784d7b1469b304c506c391a1515ab86af5a6553 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -320,6 +320,10 @@ public class ServerPlayer extends Player {
+@@ -321,6 +321,10 @@ public class ServerPlayer extends Player {
          });
      }
  
@@ -41,7 +41,7 @@ index 670033bf5d72a12e44b76d55c4343de1490e873b..83adabab10c71f26d238625f2fa1d617
      public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile) {
          super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);
          this.chatVisibility = ChatVisiblity.FULL;
-@@ -2037,15 +2041,45 @@ public class ServerPlayer extends Player {
+@@ -2043,15 +2047,45 @@ public class ServerPlayer extends Player {
              PlayerChangedMainHandEvent event = new PlayerChangedMainHandEvent(this.getBukkitEntity(), getMainArm() == HumanoidArm.LEFT ? MainHand.LEFT : MainHand.RIGHT);
              this.server.server.getPluginManager().callEvent(event);
          }
@@ -103,7 +103,7 @@ index 2a5a4027e5d0d9d48a727834f3f5af65ea83aa23..ecef4ec4f67da8fdddd473733000b000
          public static final EntityDataAccessor<Integer> DATA_BACKGROUND_COLOR_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.INT);
          private static final EntityDataAccessor<Byte> DATA_TEXT_OPACITY_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.BYTE);
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index e1aa3b24019eace573603647a5efbf01f316e4ee..e7dbb9f0c44a5b68274aca7210783ae2a39c541e 100644
+index 0d268023415202be1908439aaa0913588d1cc91a..befe870f0a6b9136e5d2d74b2a30c2e465a26290 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -355,7 +355,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
