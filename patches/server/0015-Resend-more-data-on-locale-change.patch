@@ -6,7 +6,7 @@ Subject: [PATCH] Resend more data on locale change
 Includes advancements, inventories, entity custom names, text display texts and item frame items
 
 diff --git a/src/main/java/net/minecraft/server/PlayerAdvancements.java b/src/main/java/net/minecraft/server/PlayerAdvancements.java
-index e38e2e5a7ddba9c140f362021b6be0b0974f7cd1..fdd399dfcd76315cbcf44fac3001a2f1a4d355bd 100644
+index e38e2e5a7ddba9c140f362021b6be0b0974f7cd1..44140141b3e727131cfdc9fae2d847325c62f13f 100644
 --- a/src/main/java/net/minecraft/server/PlayerAdvancements.java
 +++ b/src/main/java/net/minecraft/server/PlayerAdvancements.java
 @@ -77,6 +77,16 @@ public class PlayerAdvancements {
@@ -16,7 +16,7 @@ index e38e2e5a7ddba9c140f362021b6be0b0974f7cd1..fdd399dfcd76315cbcf44fac3001a2f1
 +    // CloudPlane start
 +    public void refreshAll() {
 +        this.isFirstPacket = true;
-+        for (Advancement advancement : this.visible) {
++        for (AdvancementHolder advancement : this.visible) {
 +            this.markForVisibilityUpdate(advancement);
 +        }
 +        this.visible.clear();
@@ -27,7 +27,7 @@ index e38e2e5a7ddba9c140f362021b6be0b0974f7cd1..fdd399dfcd76315cbcf44fac3001a2f1
          this.player = owner;
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 4ddab3a77e7436906dd46c126dd3ce907cecbeb5..5ebc24e5a1abdec79b8abbe59aa23c1ea9ddbca7 100644
+index 4ddab3a77e7436906dd46c126dd3ce907cecbeb5..09518ec94c5c8c0ffb7bf7fa71be6dcf91de2cb4 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -321,6 +321,10 @@ public class ServerPlayer extends Player {
@@ -45,7 +45,7 @@ index 4ddab3a77e7436906dd46c126dd3ce907cecbeb5..5ebc24e5a1abdec79b8abbe59aa23c1e
              PlayerChangedMainHandEvent event = new PlayerChangedMainHandEvent(this.getBukkitEntity(), getMainArm() == HumanoidArm.LEFT ? MainHand.LEFT : MainHand.RIGHT);
              this.server.server.getPluginManager().callEvent(event);
          }
-+        java.util.Locale adventure$locale = net.kyori.adventure.translation.Translator.parseLocale(this.language); // CloudPlane - parsing was moved up
++        java.util.Locale adventure$locale = net.kyori.adventure.translation.Translator.parseLocale(clientOptions.language()); // CloudPlane - parsing was moved up
          if (this.language == null || !this.language.equals(clientOptions.language())) { // Paper
              PlayerLocaleChangeEvent event = new PlayerLocaleChangeEvent(this.getBukkitEntity(), clientOptions.language());
              this.server.server.getPluginManager().callEvent(event);
