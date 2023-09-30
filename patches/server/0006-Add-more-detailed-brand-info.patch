@@ -25,7 +25,7 @@ index b21f7a41581ddf36d61e206366c6398738a47813..9d3dafc4989b9fbaa32a337df9b3c56e
 +    }
  }
 diff --git a/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-index 8dbcc1b3a70b6bbea3bd2d15b6d66cc4f9cd53f8..95e539e5c69f3d58863847d6ed052712afa9a20c 100644
+index 8dbcc1b3a70b6bbea3bd2d15b6d66cc4f9cd53f8..b111f06b4da7f0b57ef9cd878fcf967daa2d48fc 100644
 --- a/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 @@ -67,7 +67,12 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
@@ -35,7 +35,7 @@ index 8dbcc1b3a70b6bbea3bd2d15b6d66cc4f9cd53f8..95e539e5c69f3d58863847d6ed052712
 -        this.send(new ClientboundCustomPayloadPacket(new BrandPayload(this.server.getServerModName())));
 +        // CloudPlane start
 +        String serverBrand = dev.booky.cloudplane.CloudPlaneConfig.detailedBrand
-+                ? this.server.server.serverVersion : this.server.getServerModName();
++                ? String.valueOf(this.server.server.serverVersion) : this.server.getServerModName();
 +        this.send(new ClientboundCustomPayloadPacket(new BrandPayload(serverBrand)));
 +        // CloudPlane end
 +
