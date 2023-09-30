@@ -5,12 +5,12 @@ Subject: [PATCH] Add allowPvP gamerule
 
 
 diff --git a/src/main/java/org/bukkit/GameRule.java b/src/main/java/org/bukkit/GameRule.java
-index c6bc84a8755b2fe5d7d8d3ec857700ec1cba3c9b..0003450b36a1755f6ace9a2ff747773d771bde9b 100644
+index 695a299a3544547bbc24095980221205ce5469ba..786741ef8ee75d57ac0f9536c7e743c00d8cdf1e 100644
 --- a/src/main/java/org/bukkit/GameRule.java
 +++ b/src/main/java/org/bukkit/GameRule.java
-@@ -207,6 +207,13 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
+@@ -211,6 +211,13 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
       */
-     public static final GameRule<Boolean> DO_VINES_SPREAD = new GameRule<>("doVinesSpread", Boolean.class);
+     public static final GameRule<Boolean> ENDER_PEARLS_VANISH_ON_DEATH = new GameRule<>("enderPearlsVanishOnDeath", Boolean.class);
  
 +    // CloudPlane start - added allowPvP gamerule
 +    /**

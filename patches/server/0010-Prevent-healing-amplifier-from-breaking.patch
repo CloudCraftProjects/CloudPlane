@@ -4,35 +4,24 @@ Date: Tue, 5 Apr 2022 17:05:14 +0200
 Subject: [PATCH] Prevent healing amplifier from breaking
 
 
-diff --git a/src/main/java/net/minecraft/world/effect/MobEffect.java b/src/main/java/net/minecraft/world/effect/MobEffect.java
-index 53cc6befb752affcfec65e18365f6d369448d407..099e1daaf27a1172fbd9cedd2a7b48a8d121d8a0 100644
---- a/src/main/java/net/minecraft/world/effect/MobEffect.java
-+++ b/src/main/java/net/minecraft/world/effect/MobEffect.java
-@@ -87,7 +87,13 @@ public class MobEffect {
-                 entity.hurt(entity.damageSources().magic(), (float) (6 << amplifier));
-             }
-         } else {
--            entity.heal((float) Math.max(4 << amplifier, 0), RegainReason.MAGIC); // CraftBukkit
-+            // CloudPlane start
-+            // This additional check here prevents healing by zero,
-+            // which doesn't do anything, but is still unnecessary.
-+            int health = 4 << amplifier;
-+            if (health > 0) entity.heal(health, RegainReason.MAGIC);
-+            // entity.heal((float) Math.max(4 << amplifier, 0), RegainReason.MAGIC); // CraftBukkit
-+            // CloudPlane end
-         }
+diff --git a/src/main/java/net/minecraft/world/effect/HealOrHarmMobEffect.java b/src/main/java/net/minecraft/world/effect/HealOrHarmMobEffect.java
+index 1c7794de5f0a7238b944c9473e2cc9d011ef2306..c343c2920943d40d8ec560bbfd03dd245336704a 100644
+--- a/src/main/java/net/minecraft/world/effect/HealOrHarmMobEffect.java
++++ b/src/main/java/net/minecraft/world/effect/HealOrHarmMobEffect.java
+@@ -30,13 +30,13 @@ class HealOrHarmMobEffect extends InstantenousMobEffect {
  
-     }
-@@ -108,6 +114,12 @@ public class MobEffect {
-             }
-         } else {
+         if (this.isHarm == target.isInvertedHealAndHarm()) {
              j = (int) (proximity * (double) (4 << amplifier) + 0.5D);
-+            // CloudPlane start
-+            // This additional check here prevents healing by -2147483647,
-+            // which happens on amplifiers 29, 61, 93 and 125 because of bit shifting.
-+            if (j > 0)
-+            // CloudPlane end
-+
-             target.heal((float) j, RegainReason.MAGIC); // CraftBukkit
+-            target.heal((float) j, org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.MAGIC); // CraftBukkit
++            target.heal(Math.max((float) j, 0f), org.bukkit.event.entity.EntityRegainHealthEvent.RegainReason.MAGIC); // CraftBukkit // CloudPlane
+         } else {
+             j = (int) (proximity * (double) (6 << amplifier) + 0.5D);
+             if (source == null) {
+-                target.hurt(target.damageSources().magic(), (float) j);
++                target.hurt(target.damageSources().magic(), Math.max((float) j, 0f)); // CloudPlane
+             } else {
+-                target.hurt(target.damageSources().indirectMagic(source, attacker), (float) j);
++                target.hurt(target.damageSources().indirectMagic(source, attacker), Math.max((float) j, 0f)); // CloudPlane
+             }
          }
  

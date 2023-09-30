@@ -119,10 +119,10 @@ index db54a9c32578defa02fa58dc694c96684a4885ac..f2f4575e6ec4f5a90b8f48306b0edfef
              component,
              // play it safe
 diff --git a/src/main/java/net/minecraft/network/FriendlyByteBuf.java b/src/main/java/net/minecraft/network/FriendlyByteBuf.java
-index 9938bb90bef84cf784f9a1ceb02a1a45aa8b48a1..754f60329319896dd591b26aaff87baaf3e3bb20 100644
+index 2e395962b555bef0ce1a98e1d768e7738f011535..7ae71d509657eca5529c9f52ad974eb71f7691e5 100644
 --- a/src/main/java/net/minecraft/network/FriendlyByteBuf.java
 +++ b/src/main/java/net/minecraft/network/FriendlyByteBuf.java
-@@ -691,6 +691,56 @@ public class FriendlyByteBuf extends ByteBuf {
+@@ -644,6 +644,56 @@ public class FriendlyByteBuf extends ByteBuf {
                  // CraftItemStack.setItemMeta(stack, CraftItemStack.getItemMeta(stack)); // Paper - This is no longer with raw NBT being handled in metadata
                  // Spigot end
                  nbttagcompound = stack.getTag();
@@ -179,7 +179,7 @@ index 9938bb90bef84cf784f9a1ceb02a1a45aa8b48a1..754f60329319896dd591b26aaff87baa
              }
  
              this.writeNbt(nbttagcompound);
-@@ -707,7 +757,22 @@ public class FriendlyByteBuf extends ByteBuf {
+@@ -660,7 +710,22 @@ public class FriendlyByteBuf extends ByteBuf {
              byte b0 = this.readByte();
              ItemStack itemstack = new ItemStack(item, b0);
  

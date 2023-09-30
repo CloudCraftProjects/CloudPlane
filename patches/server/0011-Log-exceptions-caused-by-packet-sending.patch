@@ -5,24 +5,24 @@ Subject: [PATCH] Log exceptions caused by packet sending
 
 
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index cf20f0983fc25b26cf92b9d3a28746b1909fc56b..1e4708ee3223de6dbd23f3b7c0861d8f13e1de11 100644
+index c0ea20dcee8bb293df96bc6ee019e50ad6b383fd..7d4b5a460ecf906c894c7682c26a59469a09ca90 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
-@@ -241,7 +241,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -209,7 +209,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
  
                      if (player != null) player.quitReason = org.bukkit.event.player.PlayerQuitEvent.QuitReason.ERRONEOUS_STATE; // Paper
                      if (flag) {
 -                        Connection.LOGGER.debug("Failed to sent packet", throwable);
-+                        Connection.LOGGER.info("Failed to sent packet", throwable); // CloudPlane
-                         ConnectionProtocol enumprotocol = this.getCurrentProtocol();
-                         Packet<?> packet = enumprotocol == ConnectionProtocol.LOGIN ? new ClientboundLoginDisconnectPacket(ichatmutablecomponent) : new ClientboundDisconnectPacket(ichatmutablecomponent);
++                        Connection.LOGGER.error("Failed to sent packet", throwable); // CloudPlane
+                         if (this.getSending() == PacketFlow.CLIENTBOUND) {
+                             ConnectionProtocol enumprotocol = ((ConnectionProtocol.CodecData) this.channel.attr(Connection.ATTRIBUTE_CLIENTBOUND_PROTOCOL).get()).protocol();
+                             Packet<?> packet = enumprotocol == ConnectionProtocol.LOGIN ? new ClientboundLoginDisconnectPacket(ichatmutablecomponent) : new ClientboundDisconnectPacket(ichatmutablecomponent);
+@@ -223,7 +223,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
  
-@@ -250,7 +250,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
-                         }));
                          this.setReadOnly();
                      } else {
 -                        Connection.LOGGER.debug("Double fault", throwable);
-+                        Connection.LOGGER.info("Double fault", throwable); // CloudPlane
++                        Connection.LOGGER.error("Double fault", throwable); // CloudPlane
                          this.disconnect(ichatmutablecomponent);
                      }
                  }

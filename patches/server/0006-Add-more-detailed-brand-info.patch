@@ -24,29 +24,29 @@ index b21f7a41581ddf36d61e206366c6398738a47813..9d3dafc4989b9fbaa32a337df9b3c56e
 +        detailedBrand = getBoolean("settings.detailed-brand-info", detailedBrand);
 +    }
  }
-diff --git a/src/main/java/net/minecraft/server/players/PlayerList.java b/src/main/java/net/minecraft/server/players/PlayerList.java
-index 640e9bd618dc8286933318744c2064ede1fd9b5f..debb5b81412206e943548fe70a7cdccf37c333c4 100644
---- a/src/main/java/net/minecraft/server/players/PlayerList.java
-+++ b/src/main/java/net/minecraft/server/players/PlayerList.java
-@@ -288,7 +288,12 @@ public abstract class PlayerList {
-         playerconnection.send(new ClientboundLoginPacket(player.getId(), worlddata.isHardcore(), player.gameMode.getGameModeForPlayer(), player.gameMode.getPreviousGameModeForPlayer(), this.server.levelKeys(), this.synchronizedRegistries, worldserver1.dimensionTypeId(), worldserver1.dimension(), BiomeManager.obfuscateSeed(worldserver1.getSeed()), this.getMaxPlayers(), worldserver1.getWorld().getSendViewDistance(), worldserver1.getWorld().getSimulationDistance(), flag1, !flag, worldserver1.isDebug(), worldserver1.isFlat(), player.getLastDeathLocation(), player.getPortalCooldown())); // Paper - replace old player chunk management
-         player.getBukkitEntity().sendSupportedChannels(); // CraftBukkit
-         playerconnection.send(new ClientboundUpdateEnabledFeaturesPacket(FeatureFlags.REGISTRY.toNames(worldserver1.enabledFeatures())));
--        playerconnection.send(new ClientboundCustomPayloadPacket(ClientboundCustomPayloadPacket.BRAND, (new FriendlyByteBuf(Unpooled.buffer())).writeUtf(this.getServer().getServerModName())));
-+
+diff --git a/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
+index 8dbcc1b3a70b6bbea3bd2d15b6d66cc4f9cd53f8..95e539e5c69f3d58863847d6ed052712afa9a20c 100644
+--- a/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
++++ b/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
+@@ -67,7 +67,12 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
+     }
+ 
+     public void startConfiguration() {
+-        this.send(new ClientboundCustomPayloadPacket(new BrandPayload(this.server.getServerModName())));
 +        // CloudPlane start
-+        String serverBrand = dev.booky.cloudplane.CloudPlaneConfig.detailedBrand ? this.getServer().server.serverVersion : this.getServer().getServerModName();
-+        playerconnection.send(new ClientboundCustomPayloadPacket(ClientboundCustomPayloadPacket.BRAND, (new FriendlyByteBuf(Unpooled.buffer())).writeUtf(serverBrand)));
++        String serverBrand = dev.booky.cloudplane.CloudPlaneConfig.detailedBrand
++                ? this.server.server.serverVersion : this.server.getServerModName();
++        this.send(new ClientboundCustomPayloadPacket(new BrandPayload(serverBrand)));
 +        // CloudPlane end
 +
-         playerconnection.send(new ClientboundChangeDifficultyPacket(worlddata.getDifficulty(), worlddata.isDifficultyLocked()));
-         playerconnection.send(new ClientboundPlayerAbilitiesPacket(player.getAbilities()));
-         playerconnection.send(new ClientboundSetCarriedItemPacket(player.getInventory().selected));
+         LayeredRegistryAccess<RegistryLayer> layeredregistryaccess = this.server.registries();
+ 
+         this.send(new ClientboundUpdateEnabledFeaturesPacket(FeatureFlags.REGISTRY.toNames(this.server.getWorldData().enabledFeatures())));
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 9777fdcf0b0ed284a3eacb74b5deb1627b53ddd8..2644ba4d5d5af4c6200643de11010ccc0584e7ab 100644
+index f50525b51196e7c6ffa99c69a7eb6dd674a0066b..daae511e38f19dc7ed3fc98d8fe5e5df72079e50 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -266,7 +266,7 @@ import javax.annotation.Nonnull; // Paper
+@@ -268,7 +268,7 @@ import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
      private final String serverName = "CloudPlane"; // Paper // CloudPlane

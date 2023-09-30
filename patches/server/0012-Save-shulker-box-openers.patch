@@ -6,10 +6,10 @@ Subject: [PATCH] Save shulker box openers
 Would bug out when opening a shulker box multiple times in a tick, caused by ping or fast clicking
 
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java
-index b7686fd63b7c5d88c3a12ec4ee9bc01a17f997e0..f0089440711ee5fddadf528c9451a04e794ba474 100644
+index 1fa22445a4ecc8c08dbcf0cc6bd39dc5003604c4..7f5ee798a5ea8c8ac4a9b2dc1d0f81475f9672a0 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/level/block/entity/ShulkerBoxBlockEntity.java
-@@ -47,7 +47,7 @@ public class ShulkerBoxBlockEntity extends RandomizableContainerBlockEntity impl
+@@ -48,7 +48,7 @@ public class ShulkerBoxBlockEntity extends RandomizableContainerBlockEntity impl
      public static final String ITEMS_TAG = "Items";
      private static final int[] SLOTS = IntStream.range(0, 27).toArray();
      private NonNullList<ItemStack> itemStacks;
@@ -18,7 +18,7 @@ index b7686fd63b7c5d88c3a12ec4ee9bc01a17f997e0..f0089440711ee5fddadf528c9451a04e
      private ShulkerBoxBlockEntity.AnimationStatus animationStatus;
      private float progress;
      private float progressOld;
-@@ -168,7 +168,7 @@ public class ShulkerBoxBlockEntity extends RandomizableContainerBlockEntity impl
+@@ -179,7 +179,7 @@ public class ShulkerBoxBlockEntity extends RandomizableContainerBlockEntity impl
      @Override
      public boolean triggerEvent(int type, int data) {
          if (type == 1) {
@@ -26,8 +26,8 @@ index b7686fd63b7c5d88c3a12ec4ee9bc01a17f997e0..f0089440711ee5fddadf528c9451a04e
 +            // this.openCount = data; // CloudPlane
              if (data == 0) {
                  this.animationStatus = ShulkerBoxBlockEntity.AnimationStatus.CLOSING;
-                 ShulkerBoxBlockEntity.doNeighborUpdates(this.getLevel(), this.worldPosition, this.getBlockState());
-@@ -192,14 +192,10 @@ public class ShulkerBoxBlockEntity extends RandomizableContainerBlockEntity impl
+             }
+@@ -202,14 +202,10 @@ public class ShulkerBoxBlockEntity extends RandomizableContainerBlockEntity impl
      @Override
      public void startOpen(Player player) {
          if (!this.remove && !player.isSpectator()) {
@@ -45,7 +45,7 @@ index b7686fd63b7c5d88c3a12ec4ee9bc01a17f997e0..f0089440711ee5fddadf528c9451a04e
                  this.level.gameEvent((Entity) player, GameEvent.CONTAINER_OPEN, this.worldPosition);
                  this.level.playSound((Player) null, this.worldPosition, SoundEvents.SHULKER_BOX_OPEN, SoundSource.BLOCKS, 0.5F, this.level.random.nextFloat() * 0.1F + 0.9F);
              }
-@@ -210,10 +206,10 @@ public class ShulkerBoxBlockEntity extends RandomizableContainerBlockEntity impl
+@@ -220,10 +216,10 @@ public class ShulkerBoxBlockEntity extends RandomizableContainerBlockEntity impl
      @Override
      public void stopOpen(Player player) {
          if (!this.remove && !player.isSpectator()) {

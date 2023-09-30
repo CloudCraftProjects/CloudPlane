@@ -206,7 +206,7 @@ index 0000000000000000000000000000000000000000..0bba071dd01550b504a435b94fa8ed8b
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 28af96ce4f9f1a83316b6fd9e1625c71b5874c3f..da36db4270f9e97534b7221dbc29b3fcaec8396d 100644
+index 66aeb0ea388a8c8a08cf33728921061a0c74552f..d51170a2ec8300bde1d02ebb499fc96e6cee83cd 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -218,6 +218,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -225,11 +225,11 @@ index 28af96ce4f9f1a83316b6fd9e1625c71b5874c3f..da36db4270f9e97534b7221dbc29b3fc
          io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // init PaperBrigadierProvider
          // Paper end
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 4c7dc6eb008fe4a5d521e40e6ff0798b612700fb..ac84f18bf9cf2251366b7e391bafba743fa4d31e 100644
+index f46e481fa46a57ab353fb828a3a2d6371a7ec2dd..401275d72a95e7e393b3d884a9113cd99705393b 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -284,9 +284,12 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
-     @Override public final int getHeight() { return this.height; }
+@@ -218,9 +218,12 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+     private final int maxBuildHeight;
      // Pufferfish end
  
 +    public final dev.booky.cloudplane.CloudPlaneWorldConfig cloudplaneConfig; // CloudPlane
@@ -242,10 +242,10 @@ index 4c7dc6eb008fe4a5d521e40e6ff0798b612700fb..ac84f18bf9cf2251366b7e391bafba74
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index f51abd84df0f1befb4786c3513dfdc12f4ddb82a..9777fdcf0b0ed284a3eacb74b5deb1627b53ddd8 100644
+index 5f416c2205bec32561a4a8487a97045d6367307e..f50525b51196e7c6ffa99c69a7eb6dd674a0066b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1057,6 +1057,7 @@ public final class CraftServer implements Server {
+@@ -1039,6 +1039,7 @@ public final class CraftServer implements Server {
  
          org.spigotmc.SpigotConfig.init((File) console.options.valueOf("spigot-settings")); // Spigot
          this.console.paperConfigurations.reloadConfigs(this.console);
@@ -253,7 +253,7 @@ index f51abd84df0f1befb4786c3513dfdc12f4ddb82a..9777fdcf0b0ed284a3eacb74b5deb162
          for (ServerLevel world : this.console.getAllLevels()) {
              // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
              world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters, config.spawnAnimals); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
-@@ -2907,6 +2908,13 @@ public final class CraftServer implements Server {
+@@ -2919,6 +2920,13 @@ public final class CraftServer implements Server {
              return CraftServer.this.console.paperConfigurations.createLegacyObject(CraftServer.this.console);
          }
  
@@ -268,7 +268,7 @@ index f51abd84df0f1befb4786c3513dfdc12f4ddb82a..9777fdcf0b0ed284a3eacb74b5deb162
          public void restart() {
              org.spigotmc.RestartCommand.restart();
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index c191dffe3de45d66f067220ba7224dab4ed07550..1815345b756813cd19d80c909664199235086ee6 100644
+index 3ac14bdb414cdaff5f41167480d48a4ed6d9a16f..d6118c7e4275f41949371023c5ea6c306ed6488c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
 @@ -173,6 +173,14 @@ public class Main {

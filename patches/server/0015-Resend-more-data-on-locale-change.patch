@@ -6,10 +6,10 @@ Subject: [PATCH] Resend more data on locale change
 Includes advancements, inventories, entity custom names, text display texts and item frame items
 
 diff --git a/src/main/java/net/minecraft/server/PlayerAdvancements.java b/src/main/java/net/minecraft/server/PlayerAdvancements.java
-index acc49f66bf34e2507d0ee6fec0a56b11bfc68f46..6ca487aaede00451628ff136156250544b5f3026 100644
+index e38e2e5a7ddba9c140f362021b6be0b0974f7cd1..fdd399dfcd76315cbcf44fac3001a2f1a4d355bd 100644
 --- a/src/main/java/net/minecraft/server/PlayerAdvancements.java
 +++ b/src/main/java/net/minecraft/server/PlayerAdvancements.java
-@@ -72,6 +72,16 @@ public class PlayerAdvancements {
+@@ -77,6 +77,16 @@ public class PlayerAdvancements {
          this.load(advancementLoader);
      }
  
@@ -27,30 +27,29 @@ index acc49f66bf34e2507d0ee6fec0a56b11bfc68f46..6ca487aaede00451628ff13615625054
          this.player = owner;
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 670033bf5d72a12e44b76d55c4343de1490e873b..83adabab10c71f26d238625f2fa1d61749dbf322 100644
+index 4ddab3a77e7436906dd46c126dd3ce907cecbeb5..5ebc24e5a1abdec79b8abbe59aa23c1ea9ddbca7 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -320,6 +320,10 @@ public class ServerPlayer extends Player {
-         });
-     }
+@@ -321,6 +321,10 @@ public class ServerPlayer extends Player {
+     public double lastEntitySpawnRadiusSquared = -1.0;
+     // Paper end - optimise chunk tick iteration
  
 +    // CloudPlane start
 +    private long lastLocaleChange = 0L;
 +    // CloudPlane end
 +
-     public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile) {
+     public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile, ClientInformation clientOptions) {
          super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);
          this.chatVisibility = ChatVisiblity.FULL;
-@@ -2037,15 +2041,45 @@ public class ServerPlayer extends Player {
+@@ -2045,14 +2049,43 @@ public class ServerPlayer extends Player {
              PlayerChangedMainHandEvent event = new PlayerChangedMainHandEvent(this.getBukkitEntity(), getMainArm() == HumanoidArm.LEFT ? MainHand.LEFT : MainHand.RIGHT);
              this.server.server.getPluginManager().callEvent(event);
          }
-+        java.util.Locale adventure$locale = net.kyori.adventure.translation.Translator.parseLocale(packet.language); // CloudPlane - parsing was was moved up
-+        this.connection.connection.channel.attr(PaperAdventure.LOCALE_ATTRIBUTE).set(adventure$locale); // CloudPlane - was moved up
-         if (this.locale == null || !this.locale.equals(packet.language)) { // Paper - check for null
-             PlayerLocaleChangeEvent event = new PlayerLocaleChangeEvent(this.getBukkitEntity(), packet.language);
++        java.util.Locale adventure$locale = net.kyori.adventure.translation.Translator.parseLocale(this.language); // CloudPlane - parsing was moved up
+         if (this.language == null || !this.language.equals(clientOptions.language())) { // Paper
+             PlayerLocaleChangeEvent event = new PlayerLocaleChangeEvent(this.getBukkitEntity(), clientOptions.language());
              this.server.server.getPluginManager().callEvent(event);
-             this.server.server.getPluginManager().callEvent(new com.destroystokyo.paper.event.player.PlayerLocaleChangeEvent(this.getBukkitEntity(), this.locale, packet.language)); // Paper
+             this.server.server.getPluginManager().callEvent(new com.destroystokyo.paper.event.player.PlayerLocaleChangeEvent(this.getBukkitEntity(), this.language, clientOptions.language())); // Paper
 +
 +            // CloudPlane start - update more data on locale change
 +            // don't allow players to destroy the server by sending not that many packets
@@ -80,20 +79,18 @@ index 670033bf5d72a12e44b76d55c4343de1490e873b..83adabab10c71f26d238625f2fa1d617
 +            }
 +            // CloudPlane end
          }
-         this.locale = packet.language;
-         // Paper start
--        this.adventure$locale = net.kyori.adventure.translation.Translator.parseLocale(this.locale);
--        this.connection.connection.channel.attr(PaperAdventure.LOCALE_ATTRIBUTE).set(this.adventure$locale);
-+        this.adventure$locale = adventure$locale; // CloudPlane - parsing moved up
-+        // this.connection.connection.channel.attr(PaperAdventure.LOCALE_ATTRIBUTE).set(this.adventure$locale); // CloudPlane - moved up
-         // Paper end
-         this.clientViewDistance = packet.viewDistance;
          // CraftBukkit end
+         this.language = clientOptions.language();
+-        this.adventure$locale = net.kyori.adventure.translation.Translator.parseLocale(this.language); // Paper
++        this.adventure$locale = adventure$locale; // Paper // CloudPlane - parsing moved up
+         this.requestedViewDistance = clientOptions.viewDistance();
+         this.chatVisibility = clientOptions.chatVisibility();
+         this.canChatColor = clientOptions.chatColors();
 diff --git a/src/main/java/net/minecraft/world/entity/Display.java b/src/main/java/net/minecraft/world/entity/Display.java
-index 2a5a4027e5d0d9d48a727834f3f5af65ea83aa23..ecef4ec4f67da8fdddd473733000b0002c65ff9f 100644
+index ec4325b90b5707e97927b95064ef4dd840b2a538..c754ed230a5320128839541bf707d0cb23fb5695 100644
 --- a/src/main/java/net/minecraft/world/entity/Display.java
 +++ b/src/main/java/net/minecraft/world/entity/Display.java
-@@ -593,7 +593,7 @@ public abstract class Display extends Entity {
+@@ -766,7 +766,7 @@ public abstract class Display extends Entity {
          public static final byte FLAG_ALIGN_RIGHT = 16;
          private static final byte INITIAL_TEXT_OPACITY = -1;
          public static final int INITIAL_BACKGROUND = 1073741824;
@@ -103,10 +100,10 @@ index 2a5a4027e5d0d9d48a727834f3f5af65ea83aa23..ecef4ec4f67da8fdddd473733000b000
          public static final EntityDataAccessor<Integer> DATA_BACKGROUND_COLOR_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.INT);
          private static final EntityDataAccessor<Byte> DATA_TEXT_OPACITY_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.BYTE);
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index e1aa3b24019eace573603647a5efbf01f316e4ee..e7dbb9f0c44a5b68274aca7210783ae2a39c541e 100644
+index 6aed3d3cda132a33089a9ae0dd44daa41bf7c861..dc999814dc93108b42c33950e8385d7a71bb4331 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -355,7 +355,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -354,7 +354,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      protected static final int FLAG_GLOWING = 6;
      protected static final int FLAG_FALL_FLYING = 7;
      private static final EntityDataAccessor<Integer> DATA_AIR_SUPPLY_ID = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.INT);

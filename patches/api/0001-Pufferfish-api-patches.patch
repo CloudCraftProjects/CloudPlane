@@ -5,12 +5,12 @@ Subject: [PATCH] Pufferfish api patches
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 149f9088fe806467656e8b1c4157df60fda69ba7..a9ef5d7c9e1fd3b8bb33fdb169ea0d69317f9e79 100644
+index 639651972fddce4dff63a0f0a7e566a15b9e2dd6..a3b44568774d16937bf292329bd19ae09367f663 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -71,6 +71,8 @@ dependencies {
-     testImplementation("junit:junit:4.13.2")
-     testImplementation("org.hamcrest:hamcrest-library:1.3")
+     testImplementation("org.hamcrest:hamcrest:2.2")
+     testImplementation("org.mockito:mockito-core:5.5.0")
      testImplementation("org.ow2.asm:asm-tree:9.5")
 +
 +    api("io.sentry:sentry:5.4.0") // Pufferfish
