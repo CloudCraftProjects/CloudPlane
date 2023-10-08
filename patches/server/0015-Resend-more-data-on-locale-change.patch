@@ -27,10 +27,10 @@ index e38e2e5a7ddba9c140f362021b6be0b0974f7cd1..44140141b3e727131cfdc9fae2d84732
          this.player = owner;
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 4ddab3a77e7436906dd46c126dd3ce907cecbeb5..09518ec94c5c8c0ffb7bf7fa71be6dcf91de2cb4 100644
+index ea42ab876921255021430534fd8bf57a0931ba8c..5ff1dfd9e4e7559346da0cf22124778aa67641ee 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -321,6 +321,10 @@ public class ServerPlayer extends Player {
+@@ -322,6 +322,10 @@ public class ServerPlayer extends Player {
      public double lastEntitySpawnRadiusSquared = -1.0;
      // Paper end - optimise chunk tick iteration
  
@@ -41,7 +41,7 @@ index 4ddab3a77e7436906dd46c126dd3ce907cecbeb5..09518ec94c5c8c0ffb7bf7fa71be6dcf
      public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile, ClientInformation clientOptions) {
          super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);
          this.chatVisibility = ChatVisiblity.FULL;
-@@ -2045,14 +2049,43 @@ public class ServerPlayer extends Player {
+@@ -2046,14 +2050,43 @@ public class ServerPlayer extends Player {
              PlayerChangedMainHandEvent event = new PlayerChangedMainHandEvent(this.getBukkitEntity(), getMainArm() == HumanoidArm.LEFT ? MainHand.LEFT : MainHand.RIGHT);
              this.server.server.getPluginManager().callEvent(event);
          }

@@ -5,10 +5,10 @@ Subject: [PATCH] Add allowPvP gamerule
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index f99b770df288880565ccf4d37ecf1e317f147c8e..11335c81eb1dd0b2f3d48a93340d9ade82fd075f 100644
+index f4f8e0c0ffb7c54ccdca06f3a6c2508a094c691f..0b807c4de22bb2320ea9767d2accd7fb0bf80820 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -1513,7 +1513,7 @@ public class ServerPlayer extends Player {
+@@ -1514,7 +1514,7 @@ public class ServerPlayer extends Player {
  
      @Override
      public boolean isInvulnerableTo(DamageSource damageSource) {

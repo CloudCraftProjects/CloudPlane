@@ -5,7 +5,7 @@ Subject: [PATCH] Pufferfish Server Patches
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 683159586641dd9aa42ae96fa51602469755723f..d95a1764475e320c2af7238d50d3b07ecb204f18 100644
+index c187641f0ec6444a10e0e1583e1697d07e8f0267..f0c14c8f2ce32c336672bac9503c479083b36c66 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -52,6 +52,14 @@ dependencies {
@@ -1960,7 +1960,7 @@ index 0000000000000000000000000000000000000000..facd55463d44cb7e3d2ca6892982f549
 +	}
 +}
 diff --git a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
-index 97a9ce438afc9094dca4a44cb25b37d5f88dcf43..c69892a5f31895b85e530beadd8864ac32470ba7 100644
+index a6f58b3457b7477015c5c6d969e7d83017dd3fa1..a27ee205d13dda890646ebf451076f383de0728b 100644
 --- a/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
 +++ b/src/main/java/io/papermc/paper/configuration/GlobalConfiguration.java
 @@ -8,6 +8,7 @@ import net.kyori.adventure.text.Component;
@@ -1969,9 +1969,9 @@ index 97a9ce438afc9094dca4a44cb25b37d5f88dcf43..c69892a5f31895b85e530beadd8864ac
  import net.minecraft.network.protocol.game.ServerboundPlaceRecipePacket;
 +import org.bukkit.Bukkit; // Pufferfish
  import org.checkerframework.checker.nullness.qual.Nullable;
+ import org.slf4j.Logger;
  import org.spongepowered.configurate.objectmapping.ConfigSerializable;
- import org.spongepowered.configurate.objectmapping.meta.Comment;
-@@ -17,6 +18,7 @@ import org.spongepowered.configurate.objectmapping.meta.Setting;
+@@ -19,6 +20,7 @@ import org.spongepowered.configurate.objectmapping.meta.Setting;
  import java.util.List;
  import java.util.Map;
  import java.util.Objects;
@@ -1979,18 +1979,18 @@ index 97a9ce438afc9094dca4a44cb25b37d5f88dcf43..c69892a5f31895b85e530beadd8864ac
  
  @SuppressWarnings({"CanBeFinal", "FieldCanBeLocal", "FieldMayBeFinal", "NotNullFieldNotInitialized", "InnerClassMayBeStatic"})
  public class GlobalConfiguration extends ConfigurationPart {
-@@ -91,6 +93,7 @@ public class GlobalConfiguration extends ConfigurationPart {
- 
-     public class Timings extends ConfigurationPart.Post {
+@@ -96,6 +98,7 @@ public class GlobalConfiguration extends ConfigurationPart {
+     @Deprecated(forRemoval = true)
+     public class Timings extends ConfigurationPart {
          public boolean enabled = true;
 +        public boolean reallyEnabled = false;
          public boolean verbose = true;
          public String url = "https://timings.aikar.co/";
          public boolean serverNamePrivacy = false;
-@@ -104,6 +107,14 @@ public class GlobalConfiguration extends ConfigurationPart {
+@@ -109,6 +112,14 @@ public class GlobalConfiguration extends ConfigurationPart {
  
-         @Override
-         public void postProcess() {
+         @PostProcess
+         private void postProcess() {
 +            // Pufferfish start
 +            if (enabled && !reallyEnabled) {
 +                Bukkit.getLogger().log(Level.WARNING, "[Pufferfish] To improve performance, timings have been disabled by default");
@@ -2237,7 +2237,7 @@ index 35674f92a67f93382103c2766df4b678ba5c862f..c1315a0aeabdd80b1ef5ac54f82bb651
                          this.wasOnGround = this.entity.onGround();
                          this.teleportDelay = 0;
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 868951dc21aff541765b1f58f08cdf3c47446d25..88de17e6000ddd3fea70a2037830ecd78c6e7260 100644
+index 17610196db7a1c6feb2cf74a02479a8691aa323f..4cee5916ffff4add33cfd90c1957b70c9b737e7d 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -878,6 +878,7 @@ public class ServerLevel extends Level implements WorldGenLevel {
@@ -2308,10 +2308,10 @@ index 868951dc21aff541765b1f58f08cdf3c47446d25..88de17e6000ddd3fea70a2037830ecd7
                  this.tickIceAndSnow(flag, blockposition, chunk);
              }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index d4aec99cac3f83d764e21946cc904c00e084704e..f99b770df288880565ccf4d37ecf1e317f147c8e 100644
+index 76157319b79d7fefe38cb2cc10b2d79c12667e3d..f4f8e0c0ffb7c54ccdca06f3a6c2508a094c691f 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -1249,6 +1249,7 @@ public class ServerPlayer extends Player {
+@@ -1250,6 +1250,7 @@ public class ServerPlayer extends Player {
                  this.setServerLevel(worldserver);
                  this.connection.teleport(exit); // CraftBukkit - use internal teleport without event
                  this.connection.resetPosition();
@@ -2319,7 +2319,7 @@ index d4aec99cac3f83d764e21946cc904c00e084704e..f99b770df288880565ccf4d37ecf1e31
                  worldserver.addDuringPortalTeleport(this);
                  worldserver1.getProfiler().pop();
                  this.triggerDimensionChangeTriggers(worldserver1);
-@@ -1916,6 +1917,7 @@ public class ServerPlayer extends Player {
+@@ -1917,6 +1918,7 @@ public class ServerPlayer extends Player {
      public void moveTo(double x, double y, double z) {
          super.moveTo(x, y, z);
          this.connection.resetPosition();
@@ -2327,7 +2327,7 @@ index d4aec99cac3f83d764e21946cc904c00e084704e..f99b770df288880565ccf4d37ecf1e31
      }
  
      @Override
-@@ -2155,6 +2157,7 @@ public class ServerPlayer extends Player {
+@@ -2156,6 +2158,7 @@ public class ServerPlayer extends Player {
  
              this.connection.send(new ClientboundSetCameraPacket(this.camera));
              this.connection.resetPosition();
@@ -2335,7 +2335,7 @@ index d4aec99cac3f83d764e21946cc904c00e084704e..f99b770df288880565ccf4d37ecf1e31
          }
      }
  
-@@ -2593,6 +2596,7 @@ public class ServerPlayer extends Player {
+@@ -2594,6 +2597,7 @@ public class ServerPlayer extends Player {
      public void forceSetPositionRotation(double x, double y, double z, float yaw, float pitch) {
          this.moveTo(x, y, z, yaw, pitch);
          this.connection.resetPosition();
@@ -3933,7 +3933,7 @@ index ebe65474a4a05ff1637d7f37ebcfe690af59def5..42142c512b12e5b269c19f1e821c50e7
  
      @Nullable
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index fcd5096d64edfaf6bce3ecce8c9b9afb84462786..0af1ffbc2f19c9b56dbef6c90c475b661fbca5a2 100644
+index b7e7e6ed60f55d2ab5e4fcefb3638ad1768c3b7f..d315b26b0350076cad1d9265f94d1d4712ac60a2 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -1122,6 +1122,11 @@ public final class CraftServer implements Server {
