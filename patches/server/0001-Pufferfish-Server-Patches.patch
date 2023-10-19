@@ -5,10 +5,10 @@ Subject: [PATCH] Pufferfish Server Patches
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index c187641f0ec6444a10e0e1583e1697d07e8f0267..f0c14c8f2ce32c336672bac9503c479083b36c66 100644
+index a79461457ea19339f47572c70705d655ebc55276..0418b768e1a0012e34573dd0b16b8296d7a84f74 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -52,6 +52,14 @@ dependencies {
+@@ -52,12 +52,28 @@ dependencies {
      runtimeOnly("org.apache.maven.resolver:maven-resolver-connector-basic:1.7.3")
      runtimeOnly("org.apache.maven.resolver:maven-resolver-transport-http:1.7.3")
  
@@ -23,7 +23,6 @@ index c187641f0ec6444a10e0e1583e1697d07e8f0267..f0c14c8f2ce32c336672bac9503c4790
      testImplementation("io.github.classgraph:classgraph:4.8.47") // Paper - mob goal test
      testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
      testImplementation("org.hamcrest:hamcrest:2.2")
-@@ -60,6 +68,14 @@ dependencies {
  }
  
  val craftbukkitPackageVersion = "1_20_R2" // Paper
@@ -2308,7 +2307,7 @@ index 17610196db7a1c6feb2cf74a02479a8691aa323f..4cee5916ffff4add33cfd90c1957b70c
                  this.tickIceAndSnow(flag, blockposition, chunk);
              }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 76157319b79d7fefe38cb2cc10b2d79c12667e3d..f4f8e0c0ffb7c54ccdca06f3a6c2508a094c691f 100644
+index ba972d1661426d7e30f6f61bad3b9608e66ea721..912f5e102e69301135ea4196acdf7f0a3300c9de 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -1250,6 +1250,7 @@ public class ServerPlayer extends Player {
@@ -2327,7 +2326,7 @@ index 76157319b79d7fefe38cb2cc10b2d79c12667e3d..f4f8e0c0ffb7c54ccdca06f3a6c2508a
      }
  
      @Override
-@@ -2156,6 +2158,7 @@ public class ServerPlayer extends Player {
+@@ -2161,6 +2163,7 @@ public class ServerPlayer extends Player {
  
              this.connection.send(new ClientboundSetCameraPacket(this.camera));
              this.connection.resetPosition();
@@ -2335,7 +2334,7 @@ index 76157319b79d7fefe38cb2cc10b2d79c12667e3d..f4f8e0c0ffb7c54ccdca06f3a6c2508a
          }
      }
  
-@@ -2594,6 +2597,7 @@ public class ServerPlayer extends Player {
+@@ -2599,6 +2602,7 @@ public class ServerPlayer extends Player {
      public void forceSetPositionRotation(double x, double y, double z, float yaw, float pitch) {
          this.moveTo(x, y, z, yaw, pitch);
          this.connection.resetPosition();
@@ -2344,7 +2343,7 @@ index 76157319b79d7fefe38cb2cc10b2d79c12667e3d..f4f8e0c0ffb7c54ccdca06f3a6c2508a
  
      @Override
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 8bd243a8d5a4be54f907af2b02e96ea833cee62f..501cb7450cd28ca487c1522ada4a571e74d3258c 100644
+index 34fcdeb0f4039f1fc6c4c8c593cc615560af1ba2..ef6d8f787cba0db53270adedd923f9a47d435852 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -1118,6 +1118,7 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
@@ -2630,7 +2629,7 @@ index 73871f456a85bda1e51f54986d0e61fb629822e8..ce61b4e067c94742043bef71a252a15d
          return (EntityType) Registry.register(BuiltInRegistries.ENTITY_TYPE, id, (EntityType<T>) type.build(id)); // CraftBukkit - decompile error
      }
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 77a1c7dfbaccc2e74da5c78ce4dfcd1717a7ac65..418296b14835cf48137b175790c5e62847364a63 100644
+index b95f88d5e5b4785ee063695fd81935636a0588d1..4535a37661743ede3bdca71fe6e66336028b3342 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -414,7 +414,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
@@ -3676,7 +3675,7 @@ index 081691f9710ff1115e4308f79ed49fbc38941193..6985e2a1ac1c56387c1ea6dfc0d27c08
  
      @Override
 diff --git a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
-index 4abec88caab4116cfa318f7b66c6b1a8346a7401..7edc6f1e642d01299117680edc79c67225c2053c 100644
+index 3e9758fa40bf93fe3d315cc66389193bd57bc393..b78476223637722efe12520d3c2e301603abd8a1 100644
 --- a/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 +++ b/src/main/java/net/minecraft/world/level/chunk/LevelChunk.java
 @@ -86,6 +86,18 @@ public class LevelChunk extends ChunkAccess {
@@ -3698,7 +3697,7 @@ index 4abec88caab4116cfa318f7b66c6b1a8346a7401..7edc6f1e642d01299117680edc79c672
      public LevelChunk(Level world, ChunkPos pos) {
          this(world, pos, UpgradeData.EMPTY, new LevelChunkTicks<>(), new LevelChunkTicks<>(), 0L, (LevelChunkSection[]) null, (LevelChunk.PostLoadProcessor) null, (BlendingData) null);
      }
-@@ -113,6 +125,8 @@ public class LevelChunk extends ChunkAccess {
+@@ -109,6 +121,8 @@ public class LevelChunk extends ChunkAccess {
          this.postLoad = entityLoader;
          this.blockTicks = blockTickScheduler;
          this.fluidTicks = fluidTickScheduler;

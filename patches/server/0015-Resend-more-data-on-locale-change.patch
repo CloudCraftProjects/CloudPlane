@@ -27,7 +27,7 @@ index e38e2e5a7ddba9c140f362021b6be0b0974f7cd1..44140141b3e727131cfdc9fae2d84732
          this.player = owner;
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index ea42ab876921255021430534fd8bf57a0931ba8c..5ff1dfd9e4e7559346da0cf22124778aa67641ee 100644
+index 962e6d780d917b2e78d86f28034b7f348235737c..4671abde1a64b84ff2564f4d6a228dac1de73412 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -322,6 +322,10 @@ public class ServerPlayer extends Player {
@@ -41,7 +41,7 @@ index ea42ab876921255021430534fd8bf57a0931ba8c..5ff1dfd9e4e7559346da0cf22124778a
      public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile, ClientInformation clientOptions) {
          super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);
          this.chatVisibility = ChatVisiblity.FULL;
-@@ -2046,14 +2050,43 @@ public class ServerPlayer extends Player {
+@@ -2046,10 +2050,39 @@ public class ServerPlayer extends Player {
              PlayerChangedMainHandEvent event = new PlayerChangedMainHandEvent(this.getBukkitEntity(), getMainArm() == HumanoidArm.LEFT ? MainHand.LEFT : MainHand.RIGHT);
              this.server.server.getPluginManager().callEvent(event);
          }
@@ -80,6 +80,10 @@ index ea42ab876921255021430534fd8bf57a0931ba8c..5ff1dfd9e4e7559346da0cf22124778a
 +            // CloudPlane end
          }
          // CraftBukkit end
+         // Paper start - don't call options events on login
+@@ -2058,7 +2091,7 @@ public class ServerPlayer extends Player {
+     public void updateOptionsNoEvents(ClientInformation clientOptions) {
+         // Paper end
          this.language = clientOptions.language();
 -        this.adventure$locale = net.kyori.adventure.translation.Translator.parseLocale(this.language); // Paper
 +        this.adventure$locale = adventure$locale; // Paper // CloudPlane - parsing moved up
