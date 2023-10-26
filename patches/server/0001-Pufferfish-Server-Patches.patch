@@ -5,10 +5,10 @@ Subject: [PATCH] Pufferfish Server Patches
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index a79461457ea19339f47572c70705d655ebc55276..0418b768e1a0012e34573dd0b16b8296d7a84f74 100644
+index 79beac737c17412913983614bd478d33e3c6ed58..74a1ed04ee61a8bc9d1cc34d54d8cd7797a9eba1 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -52,12 +52,28 @@ dependencies {
+@@ -51,6 +51,14 @@ dependencies {
      runtimeOnly("org.apache.maven.resolver:maven-resolver-connector-basic:1.7.3")
      runtimeOnly("org.apache.maven.resolver:maven-resolver-transport-http:1.7.3")
  
@@ -23,6 +23,7 @@ index a79461457ea19339f47572c70705d655ebc55276..0418b768e1a0012e34573dd0b16b8296
      testImplementation("io.github.classgraph:classgraph:4.8.47") // Paper - mob goal test
      testImplementation("org.junit.jupiter:junit-jupiter:5.10.0")
      testImplementation("org.hamcrest:hamcrest:2.2")
+@@ -58,6 +66,14 @@ dependencies {
  }
  
  val craftbukkitPackageVersion = "1_20_R2" // Paper
@@ -2057,7 +2058,7 @@ index dbccbcb9b44e4efacdf53c2d161115cc20b36cff..66aeb0ea388a8c8a08cf33728921061a
          }
      }
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 0c2617574e21037d94ac56ad08b490f9bca5c5af..7eaee0d0dcbb420abb5c49ba0a465d90fe513551 100644
+index 28c6ec04750daca3d77a0cee2b9f17f2508662cc..261145fced66b677e8f4159b71b4a16638c57da2 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
 @@ -206,7 +206,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider

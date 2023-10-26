@@ -5,7 +5,7 @@ Subject: [PATCH] Fire PlayerPickupArrowEvent for creative players
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
-index 7226be19248a1ffb8ff2c89b55882529d33a6c0c..826314da2f75168d73d8f03897a86a7fe9238b6a 100644
+index 6c176933967f6ee98da3026f16a10efe4c3842fe..175c85e400f8407b371fea7881d9d698f3f24662 100644
 --- a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
 +++ b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
 @@ -561,7 +561,7 @@ public abstract class AbstractArrow extends Projectile {
@@ -15,5 +15,5 @@ index 7226be19248a1ffb8ff2c89b55882529d33a6c0c..826314da2f75168d73d8f03897a86a7f
 -            if (this.pickup == Pickup.ALLOWED && !itemstack.isEmpty() && player.getInventory().canHold(itemstack) > 0) {
 +            if (!itemstack.isEmpty() && ((this.pickup == Pickup.ALLOWED && player.getInventory().canHold(itemstack) > 0) || (this.pickup == AbstractArrow.Pickup.CREATIVE_ONLY && player.getAbilities().instabuild))) { // CloudPlane - fire arrow pickup for creative players
                  ItemEntity item = new ItemEntity(this.level(), this.getX(), this.getY(), this.getZ(), itemstack);
-                 PlayerPickupArrowEvent event = new PlayerPickupArrowEvent((org.bukkit.entity.Player) player.getBukkitEntity(), new org.bukkit.craftbukkit.entity.CraftItem(this.level().getCraftServer(), this, item), (org.bukkit.entity.AbstractArrow) this.getBukkitEntity());
+                 PlayerPickupArrowEvent event = new PlayerPickupArrowEvent((org.bukkit.entity.Player) player.getBukkitEntity(), new org.bukkit.craftbukkit.entity.CraftItem(this.level().getCraftServer(), item), (org.bukkit.entity.AbstractArrow) this.getBukkitEntity());
                  // event.setCancelled(!entityhuman.canPickUpLoot); TODO
