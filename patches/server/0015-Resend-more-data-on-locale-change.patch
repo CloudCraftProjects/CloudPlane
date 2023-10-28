@@ -27,7 +27,7 @@ index e38e2e5a7ddba9c140f362021b6be0b0974f7cd1..44140141b3e727131cfdc9fae2d84732
          this.player = owner;
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 962e6d780d917b2e78d86f28034b7f348235737c..4671abde1a64b84ff2564f4d6a228dac1de73412 100644
+index db4b8887bef82fde3225769d415e9ee50079a29c..b581aa8ab59de2f85571d22aa1b09f7e1f9e9e4b 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -322,6 +322,10 @@ public class ServerPlayer extends Player {
@@ -42,7 +42,7 @@ index 962e6d780d917b2e78d86f28034b7f348235737c..4671abde1a64b84ff2564f4d6a228dac
          super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);
          this.chatVisibility = ChatVisiblity.FULL;
 @@ -2046,10 +2050,39 @@ public class ServerPlayer extends Player {
-             PlayerChangedMainHandEvent event = new PlayerChangedMainHandEvent(this.getBukkitEntity(), getMainArm() == HumanoidArm.LEFT ? MainHand.LEFT : MainHand.RIGHT);
+             PlayerChangedMainHandEvent event = new PlayerChangedMainHandEvent(this.getBukkitEntity(), this.getMainArm() == HumanoidArm.LEFT ? MainHand.LEFT : MainHand.RIGHT);
              this.server.server.getPluginManager().callEvent(event);
          }
 +        java.util.Locale adventure$locale = net.kyori.adventure.translation.Translator.parseLocale(clientOptions.language()); // CloudPlane - parsing was moved up
@@ -104,7 +104,7 @@ index ec4325b90b5707e97927b95064ef4dd840b2a538..c754ed230a5320128839541bf707d0cb
          public static final EntityDataAccessor<Integer> DATA_BACKGROUND_COLOR_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.INT);
          private static final EntityDataAccessor<Byte> DATA_TEXT_OPACITY_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.BYTE);
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 6aed3d3cda132a33089a9ae0dd44daa41bf7c861..dc999814dc93108b42c33950e8385d7a71bb4331 100644
+index ff6e897f69e367a1790e22d820472093e0051888..3254f8584ab32ea9bebd07277a4f3c6d7cebe303 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -354,7 +354,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
