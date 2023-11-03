@@ -27,7 +27,7 @@ index e38e2e5a7ddba9c140f362021b6be0b0974f7cd1..44140141b3e727131cfdc9fae2d84732
          this.player = owner;
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index db4b8887bef82fde3225769d415e9ee50079a29c..b581aa8ab59de2f85571d22aa1b09f7e1f9e9e4b 100644
+index 20f39f27fc3e7a4bee861b147da66f7726dc2338..f734765ba2c3f152a414f0115df37ec307e354c3 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -322,6 +322,10 @@ public class ServerPlayer extends Player {
@@ -104,10 +104,10 @@ index ec4325b90b5707e97927b95064ef4dd840b2a538..c754ed230a5320128839541bf707d0cb
          public static final EntityDataAccessor<Integer> DATA_BACKGROUND_COLOR_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.INT);
          private static final EntityDataAccessor<Byte> DATA_TEXT_OPACITY_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.BYTE);
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index ff6e897f69e367a1790e22d820472093e0051888..3254f8584ab32ea9bebd07277a4f3c6d7cebe303 100644
+index d338b25899675544bc60831f723ebe77aa766110..7140633f8ca81392d8d54e1a2939d37c65583413 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -354,7 +354,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -355,7 +355,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      protected static final int FLAG_GLOWING = 6;
      protected static final int FLAG_FALL_FLYING = 7;
      private static final EntityDataAccessor<Integer> DATA_AIR_SUPPLY_ID = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.INT);

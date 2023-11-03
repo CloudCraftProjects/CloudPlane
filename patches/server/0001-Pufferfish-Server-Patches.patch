@@ -2058,10 +2058,10 @@ index 2b5d82fbf4e7ec32d0c53dd3e8207b1dba708bbd..462c4eb3c06779f86f66778e9578d3d8
          }
      }
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 6a49a36f64521f0bddcf21585ee507040119fd6d..dba021ae5d71bc44e4aee83d6c3910a81cc8ad83 100644
+index caa73632aee15583c6b6ed12a668c8f49b794708..3abec84383a445d3ad0d3b5f613246b6ac7ee741 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
-@@ -206,7 +206,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -244,7 +244,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
      // Paper end
      // Paper start - optimise chunk tick iteration
      public final it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<ChunkHolder> needsChangeBroadcasting = new it.unimi.dsi.fastutil.objects.ReferenceOpenHashSet<>();
@@ -2070,7 +2070,7 @@ index 6a49a36f64521f0bddcf21585ee507040119fd6d..dba021ae5d71bc44e4aee83d6c3910a8
      // Paper end - optimise chunk tick iteration
  
      public ChunkMap(ServerLevel world, LevelStorageSource.LevelStorageAccess session, DataFixer dataFixer, StructureTemplateManager structureTemplateManager, Executor executor, BlockableEventLoop<Runnable> mainThreadExecutor, LightChunkGetter chunkProvider, ChunkGenerator chunkGenerator, ChunkProgressListener worldGenerationProgressListener, ChunkStatusUpdateListener chunkStatusChangeListener, Supplier<DimensionDataStorage> persistentStateManagerFactory, int viewDistance, boolean dsync) {
-@@ -1330,8 +1330,28 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1464,8 +1464,28 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
              return ChunkMap.this.level.getServer().getScaledTrackingDistance(initialDistance);
          }
  
@@ -2099,7 +2099,7 @@ index 6a49a36f64521f0bddcf21585ee507040119fd6d..dba021ae5d71bc44e4aee83d6c3910a8
              Iterator iterator = this.entity.getIndirectPassengers().iterator();
  
              while (iterator.hasNext()) {
-@@ -1343,6 +1363,9 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1477,6 +1497,9 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
                      i = j;
                  }
              }
@@ -2308,7 +2308,7 @@ index 584a768f2ce1c98a1de7749060c47f21721f9055..411bde0231bc76c1689327d54f23311b
                  this.tickIceAndSnow(flag, blockposition, chunk);
              }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index c7d26a119415ced56ccad04f8a1b180d9f714586..042602fef0fd30b269be226241b1735f14f5222d 100644
+index f71a4a8307fb092d33545e12d253e0b80c884168..aea0b628a1510b1dad1e7bf022c251efc05c27f4 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -1250,6 +1250,7 @@ public class ServerPlayer extends Player {
@@ -2327,15 +2327,15 @@ index c7d26a119415ced56ccad04f8a1b180d9f714586..042602fef0fd30b269be226241b1735f
      }
  
      @Override
-@@ -2161,6 +2163,7 @@ public class ServerPlayer extends Player {
+@@ -2163,6 +2165,7 @@ public class ServerPlayer extends Player {
  
              this.connection.send(new ClientboundSetCameraPacket(this.camera));
              this.connection.resetPosition();
 +            this.mainSupportingBlockPos = Optional.empty(); // Pufferfish - Fix paper 9372
          }
-     }
  
-@@ -2599,6 +2602,7 @@ public class ServerPlayer extends Player {
+     }
+@@ -2602,6 +2605,7 @@ public class ServerPlayer extends Player {
      public void forceSetPositionRotation(double x, double y, double z, float yaw, float pitch) {
          this.moveTo(x, y, z, yaw, pitch);
          this.connection.resetPosition();
@@ -2468,10 +2468,10 @@ index d6cbe98e67fdbf8db46338a88ab1356dd63b50a3..49c1d677db8fcf53b39bd9673259b88d
      int DEFAULT_DISTANCE_LIMIT = 8;
  
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 2eaa35f5679053b6864fcc4eeb49f360a828bb34..ed068acdf22bff2a2ddd1249142fdc05d7d82edb 100644
+index d435d04ab50b2f64e6438c6c26639b6048322013..b8d3239e62f234c5ed04fb4ece8a16262c93b898 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -305,7 +305,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -306,7 +306,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      public double yo;
      public double zo;
      private Vec3 position;
@@ -2480,7 +2480,7 @@ index 2eaa35f5679053b6864fcc4eeb49f360a828bb34..ed068acdf22bff2a2ddd1249142fdc05
      private ChunkPos chunkPosition;
      private Vec3 deltaMovement;
      private float yRot;
-@@ -433,6 +433,13 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -434,6 +434,13 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
          return this.originWorld;
      }
      // Paper end
@@ -2494,7 +2494,7 @@ index 2eaa35f5679053b6864fcc4eeb49f360a828bb34..ed068acdf22bff2a2ddd1249142fdc05
      public float getBukkitYaw() {
          return this.yRot;
      }
-@@ -765,6 +772,13 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -798,6 +805,13 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      }
  
      public void tick() {
@@ -2508,7 +2508,7 @@ index 2eaa35f5679053b6864fcc4eeb49f360a828bb34..ed068acdf22bff2a2ddd1249142fdc05
          this.baseTick();
      }
  
-@@ -4324,16 +4338,18 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -4357,16 +4371,18 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      }
  
      public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> tag, double speed) {
@@ -2534,7 +2534,7 @@ index 2eaa35f5679053b6864fcc4eeb49f360a828bb34..ed068acdf22bff2a2ddd1249142fdc05
              double d1 = 0.0D;
              boolean flag = this.isPushedByFluid();
              boolean flag1 = false;
-@@ -4341,14 +4357,61 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -4374,14 +4390,61 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
              int k1 = 0;
              BlockPos.MutableBlockPos blockposition_mutableblockposition = new BlockPos.MutableBlockPos();
  
@@ -2602,7 +2602,7 @@ index 2eaa35f5679053b6864fcc4eeb49f360a828bb34..ed068acdf22bff2a2ddd1249142fdc05
  
                              if (d2 >= axisalignedbb.minY) {
                                  flag1 = true;
-@@ -4370,9 +4433,12 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -4403,9 +4466,12 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
                                  // CraftBukkit end
                              }
                          }
@@ -2630,7 +2630,7 @@ index 73871f456a85bda1e51f54986d0e61fb629822e8..ce61b4e067c94742043bef71a252a15d
          return (EntityType) Registry.register(BuiltInRegistries.ENTITY_TYPE, id, (EntityType<T>) type.build(id)); // CraftBukkit - decompile error
      }
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 776e9adc07e9ddd142c9fc7df56b5795ff8b2249..cb4ac1939448a0eb297fee5215020396358800f5 100644
+index 675d695989cef5d8fc2e85673efbb57ec1bb38bd..cd33ce44c72aa7d37402e17807eb6a3079860820 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -414,7 +414,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
@@ -2659,7 +2659,7 @@ index 776e9adc07e9ddd142c9fc7df56b5795ff8b2249..cb4ac1939448a0eb297fee5215020396
      @Override
      public boolean hurt(DamageSource source, float amount) {
          if (this.isInvulnerableTo(source)) {
-@@ -1999,6 +2009,20 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -1996,6 +2006,20 @@ public abstract class LivingEntity extends Entity implements Attackable {
          return this.lastClimbablePos;
      }
  

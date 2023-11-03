@@ -6,10 +6,10 @@ Subject: [PATCH] Only broadcast item pickup to picker viewers
 Stops people with modified clients from detecting vanished players based on invalid entities in this packet
 
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index 7eaee0d0dcbb420abb5c49ba0a465d90fe513551..641d652527025a4705c27300fc4e99604f78a8c6 100644
+index 3abec84383a445d3ad0d3b5f613246b6ac7ee741..4124a2e1855f815553e52cbf49f2a65b89e77b48 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
-@@ -1139,7 +1139,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1237,7 +1237,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
  
      }
  
@@ -19,10 +19,10 @@ index 7eaee0d0dcbb420abb5c49ba0a465d90fe513551..641d652527025a4705c27300fc4e9960
  
          if (playerchunkmap_entitytracker != null) {
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 4535a37661743ede3bdca71fe6e66336028b3342..58a5f3f249836e4dab4de7ae1f4a16d173f28f46 100644
+index cd33ce44c72aa7d37402e17807eb6a3079860820..5e60a5fd108dca46b0b608245eaa844a407927f1 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-@@ -3728,7 +3728,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -3725,7 +3725,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
  
      public void take(Entity item, int count) {
          if (!item.isRemoved() && !this.level().isClientSide && (item instanceof ItemEntity || item instanceof AbstractArrow || item instanceof ExperienceOrb)) {
