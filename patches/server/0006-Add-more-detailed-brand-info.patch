@@ -43,10 +43,10 @@ index 8dbcc1b3a70b6bbea3bd2d15b6d66cc4f9cd53f8..b111f06b4da7f0b57ef9cd878fcf967d
  
          this.send(new ClientboundUpdateEnabledFeaturesPacket(FeatureFlags.REGISTRY.toNames(this.server.getWorldData().enabledFeatures())));
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index f50525b51196e7c6ffa99c69a7eb6dd674a0066b..daae511e38f19dc7ed3fc98d8fe5e5df72079e50 100644
+index 35e07766a93c480090212d655e7105a267cec8ea..2f5127e0510359f38b3ed8d2d71b637e7e1e68a2 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -268,7 +268,7 @@ import javax.annotation.Nonnull; // Paper
+@@ -270,7 +270,7 @@ import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
      private final String serverName = "CloudPlane"; // Paper // CloudPlane

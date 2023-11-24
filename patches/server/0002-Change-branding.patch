@@ -5,7 +5,7 @@ Subject: [PATCH] Change branding
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 0418b768e1a0012e34573dd0b16b8296d7a84f74..52e19808c3ec89bb8305409daf8f2d3f091e14e0 100644
+index 74a1ed04ee61a8bc9d1cc34d54d8cd7797a9eba1..ca4de37f242bc1ff61071a894d40381d869520c2 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -13,8 +13,10 @@ configurations.named(log4jPlugins.compileClasspathConfigurationName) {
@@ -105,7 +105,7 @@ index 9d687da5bdf398bb3f6c84cdf1249a7213d09f2e..b650f1f7390374dd50b0a281441d0ddb
                  org.bukkit.Bukkit.getLogger().warning("Version: " + org.bukkit.Bukkit.getBukkitVersion());
              }
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 0c6785debb6da2d3bbc52780e835d79b3a98cccc..8a78276d990d78c9c4915fe21ea71b7ad1e357b9 100644
+index 8d1a845d0cca6c37f331bb8a007623d67808b304..41e41e4df05d45c49bc929bcbccf83ea65522a59 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -1699,7 +1699,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -118,10 +118,10 @@ index 0c6785debb6da2d3bbc52780e835d79b3a98cccc..8a78276d990d78c9c4915fe21ea71b7a
  
      public SystemReport fillSystemReport(SystemReport details) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index d315b26b0350076cad1d9265f94d1d4712ac60a2..9bf15693c7e697913a3f0898d1332158dc552707 100644
+index 84fc6392dae77084718dc15fc58213c723d65a70..eec926d9ba690931f2e478cdec43eaaec71ee40a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -267,7 +267,7 @@ import javax.annotation.Nullable; // Paper
+@@ -269,7 +269,7 @@ import javax.annotation.Nullable; // Paper
  import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
@@ -131,7 +131,7 @@ index d315b26b0350076cad1d9265f94d1d4712ac60a2..9bf15693c7e697913a3f0898d1332158
      private final String bukkitVersion = Versioning.getBukkitVersion();
      private final Logger logger = Logger.getLogger("Minecraft");
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index e4cacb17f56c618bef19e1165c07aac86af61150..3ac14bdb414cdaff5f41167480d48a4ed6d9a16f 100644
+index 2af0068ef338634d1f44532af5db66c2d0b3dd10..cfcf23851909a7902cad16dcebf5bd414d79b4af 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
 @@ -300,7 +300,7 @@ public class Main {

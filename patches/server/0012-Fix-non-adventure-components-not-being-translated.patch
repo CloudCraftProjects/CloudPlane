@@ -36,7 +36,7 @@ index f2f4575e6ec4f5a90b8f48306b0edfef2e5527f5..5ec4339fde101cbf1380dc7104f6d789
              return asJsonString(((AdventureComponent) component).adventure, locale);
          }
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index b8d3239e62f234c5ed04fb4ece8a16262c93b898..d338b25899675544bc60831f723ebe77aa766110 100644
+index 3a5f93bfeb4f9cd878e08e7a2ee8d118a2f6be83..1add748c0401c78e06d9a3296716fb7a7ea97f9f 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -2519,7 +2519,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
