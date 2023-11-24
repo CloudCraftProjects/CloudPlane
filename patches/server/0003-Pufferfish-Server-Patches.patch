@@ -2058,7 +2058,7 @@ index 1c9742ad81f04052d2c3bc18c7636f45b2fc5160..e5c955e7e99bc07199feabfe9f030101
          }
      }
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index caa73632aee15583c6b6ed12a668c8f49b794708..3abec84383a445d3ad0d3b5f613246b6ac7ee741 100644
+index 73d50715d34fdf67f346672901dd1d24bb2ac7fb..74dd70ad98c6877ace93dbcdeb3e89ba1e2d0d5e 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
 @@ -244,7 +244,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
@@ -2070,7 +2070,7 @@ index caa73632aee15583c6b6ed12a668c8f49b794708..3abec84383a445d3ad0d3b5f613246b6
      // Paper end - optimise chunk tick iteration
  
      public ChunkMap(ServerLevel world, LevelStorageSource.LevelStorageAccess session, DataFixer dataFixer, StructureTemplateManager structureTemplateManager, Executor executor, BlockableEventLoop<Runnable> mainThreadExecutor, LightChunkGetter chunkProvider, ChunkGenerator chunkGenerator, ChunkProgressListener worldGenerationProgressListener, ChunkStatusUpdateListener chunkStatusChangeListener, Supplier<DimensionDataStorage> persistentStateManagerFactory, int viewDistance, boolean dsync) {
-@@ -1464,8 +1464,28 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1468,8 +1468,28 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
              return ChunkMap.this.level.getServer().getScaledTrackingDistance(initialDistance);
          }
  
@@ -2099,7 +2099,7 @@ index caa73632aee15583c6b6ed12a668c8f49b794708..3abec84383a445d3ad0d3b5f613246b6
              Iterator iterator = this.entity.getIndirectPassengers().iterator();
  
              while (iterator.hasNext()) {
-@@ -1477,6 +1497,9 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1481,6 +1501,9 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
                      i = j;
                  }
              }
@@ -2217,10 +2217,10 @@ index 8c33a12ca879c46893150d6adfb8aa4d397c6b4c..8afda01ebaf2b3b0cce40939ba9e8c2e
  
      private void getFullChunk(long pos, Consumer<LevelChunk> chunkConsumer) {
 diff --git a/src/main/java/net/minecraft/server/level/ServerEntity.java b/src/main/java/net/minecraft/server/level/ServerEntity.java
-index 35674f92a67f93382103c2766df4b678ba5c862f..c1315a0aeabdd80b1ef5ac54f82bb651854e0fae 100644
+index fd75d4b04ca560a3c1c0035052ff0073b7081d71..0b8cdf9d8012e40872bc6b5cf55c5a0a54cb1248 100644
 --- a/src/main/java/net/minecraft/server/level/ServerEntity.java
 +++ b/src/main/java/net/minecraft/server/level/ServerEntity.java
-@@ -178,6 +178,7 @@ public class ServerEntity {
+@@ -184,6 +184,7 @@ public class ServerEntity {
                      boolean flag6 = k < -32768L || k > 32767L || l < -32768L || l > 32767L || i1 < -32768L || i1 > 32767L;
  
                      if (!flag6 && this.teleportDelay <= 400 && !this.wasRiding && this.wasOnGround == this.entity.onGround()&& !(io.papermc.paper.configuration.GlobalConfiguration.get().collisions.sendFullPosForHardCollidingEntities && this.entity.hardCollides())) { // Paper - send full pos for hard colliding entities to prevent collision problems due to desync
@@ -2228,7 +2228,7 @@ index 35674f92a67f93382103c2766df4b678ba5c862f..c1315a0aeabdd80b1ef5ac54f82bb651
                          if ((!flag2 || !flag3) && !(this.entity instanceof AbstractArrow)) {
                              if (flag2) {
                                  packet1 = new ClientboundMoveEntityPacket.Pos(this.entity.getId(), (short) ((int) k), (short) ((int) l), (short) ((int) i1), this.entity.onGround());
-@@ -191,6 +192,7 @@ public class ServerEntity {
+@@ -197,6 +198,7 @@ public class ServerEntity {
                              flag4 = true;
                              flag5 = true;
                          }

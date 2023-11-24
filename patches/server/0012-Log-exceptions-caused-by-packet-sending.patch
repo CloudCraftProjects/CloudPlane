@@ -5,10 +5,10 @@ Subject: [PATCH] Log exceptions caused by packet sending
 
 
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index c0ea20dcee8bb293df96bc6ee019e50ad6b383fd..7d4b5a460ecf906c894c7682c26a59469a09ca90 100644
+index 11805569eefe100c2f469431d77a0d5a80c53244..7b13453068100a62ee9650686cf81a8eefb041ec 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
-@@ -209,7 +209,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -224,7 +224,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
  
                      if (player != null) player.quitReason = org.bukkit.event.player.PlayerQuitEvent.QuitReason.ERRONEOUS_STATE; // Paper
                      if (flag) {
@@ -17,7 +17,7 @@ index c0ea20dcee8bb293df96bc6ee019e50ad6b383fd..7d4b5a460ecf906c894c7682c26a5946
                          if (this.getSending() == PacketFlow.CLIENTBOUND) {
                              ConnectionProtocol enumprotocol = ((ConnectionProtocol.CodecData) this.channel.attr(Connection.ATTRIBUTE_CLIENTBOUND_PROTOCOL).get()).protocol();
                              Packet<?> packet = enumprotocol == ConnectionProtocol.LOGIN ? new ClientboundLoginDisconnectPacket(ichatmutablecomponent) : new ClientboundDisconnectPacket(ichatmutablecomponent);
-@@ -223,7 +223,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -238,7 +238,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
  
                          this.setReadOnly();
                      } else {

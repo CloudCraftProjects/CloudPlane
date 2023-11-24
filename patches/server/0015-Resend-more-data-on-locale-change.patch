@@ -104,7 +104,7 @@ index ec4325b90b5707e97927b95064ef4dd840b2a538..c754ed230a5320128839541bf707d0cb
          public static final EntityDataAccessor<Integer> DATA_BACKGROUND_COLOR_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.INT);
          private static final EntityDataAccessor<Byte> DATA_TEXT_OPACITY_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.BYTE);
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 1add748c0401c78e06d9a3296716fb7a7ea97f9f..868a3cb583fe2c13ffa6eca0b0cf84e6262bbca8 100644
+index 7ed95c2a77fb73aff06051438c69f209ca580049..ab3f983bd028987835f11f327f4b8a3cd4c90442 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -355,7 +355,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {

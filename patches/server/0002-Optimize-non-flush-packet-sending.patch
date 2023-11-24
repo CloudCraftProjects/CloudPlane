@@ -1,0 +1,81 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Spottedleaf <Spottedleaf@users.noreply.github.com>
+Date: Tue, 22 Sep 2020 01:49:19 -0700
+Subject: [PATCH] Optimize non-flush packet sending
+
+Places like entity tracking make heavy use of packet sending,
+and internally netty will use some very expensive thread wakeup
+calls when scheduling.
+
+Thanks to various hacks in ProtocolLib as well as other
+plugins, we cannot simply use a queue of packets to group
+send on execute. We have to call execute for each packet.
+
+Tux's suggestion here is exactly what was needed - tag
+the Runnable indicating it should not make a wakeup call.
+
+Big thanks to Tux for making this possible as I had given
+up on this optimisation before he came along.
+
+Locally this patch drops the entity tracker tick by a full 1.5x.
+
+(1.20.2 update)
+Netty broke this LazyRunnable system in some version - this now uses
+the internal safeExecute method for lazy-scheduling the packet-sending
+runnables on the event loop.
+
+Co-authored-by: booky10 <boooky10@gmail.com>
+
+diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
+index c0ea20dcee8bb293df96bc6ee019e50ad6b383fd..11805569eefe100c2f469431d77a0d5a80c53244 100644
+--- a/src/main/java/net/minecraft/network/Connection.java
++++ b/src/main/java/net/minecraft/network/Connection.java
+@@ -60,6 +60,21 @@ import org.slf4j.MarkerFactory;
+ 
+ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+ 
++    // Paper start
++    private static final java.lang.invoke.MethodHandle SAFE_EXECUTE;
++
++    static {
++        try {
++            Class<?> abstractChannelHandlerContext = Class.forName("io.netty.channel.AbstractChannelHandlerContext");
++            SAFE_EXECUTE = java.lang.invoke.MethodHandles.privateLookupIn(abstractChannelHandlerContext, java.lang.invoke.MethodHandles.lookup())
++                    .findStatic(abstractChannelHandlerContext, "safeExecute",
++                            java.lang.invoke.MethodType.methodType(boolean.class, io.netty.util.concurrent.EventExecutor.class, Runnable.class, io.netty.channel.ChannelPromise.class, Object.class, boolean.class));
++        } catch (ReflectiveOperationException exception) {
++            throw new RuntimeException(exception);
++        }
++    }
++    // Paper end
++
+     private static final float AVERAGE_PACKETS_SMOOTHING = 0.75F;
+     private static final Logger LOGGER = LogUtils.getLogger();
+     public static final Marker ROOT_MARKER = MarkerFactory.getMarker("NETWORK");
+@@ -429,9 +444,24 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+         if (this.channel.eventLoop().inEventLoop()) {
+             this.doSendPacket(packet, callbacks, flush);
+         } else {
+-            this.channel.eventLoop().execute(() -> {
++            // Paper start - optimise packets that are not flushed
++            Runnable run = () -> {
+                 this.doSendPacket(packet, callbacks, flush);
+-            });
++            };
++
++            if (flush) {
++                this.channel.eventLoop().execute(run);
++            } else {
++                // netty dropped support for LazyRunnable in some version, so
++                // this now needs to use method handles for calling lazy execute
++                try {
++                    SAFE_EXECUTE.invoke(this.channel.eventLoop(), run,
++                            this.channel.voidPromise(), null, true);
++                } catch (Throwable throwable) {
++                    throw new RuntimeException(throwable);
++                }
++            }
++            // Paper end
+         }
+ 
+     }
