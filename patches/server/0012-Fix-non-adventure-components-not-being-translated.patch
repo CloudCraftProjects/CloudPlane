@@ -36,10 +36,10 @@ index f2f4575e6ec4f5a90b8f48306b0edfef2e5527f5..5ec4339fde101cbf1380dc7104f6d789
              return asJsonString(((AdventureComponent) component).adventure, locale);
          }
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 3a5f93bfeb4f9cd878e08e7a2ee8d118a2f6be83..1add748c0401c78e06d9a3296716fb7a7ea97f9f 100644
+index 5c7a633070016d7b1536b007558cc7288b2d2557..7ed95c2a77fb73aff06051438c69f209ca580049 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -2519,7 +2519,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -2539,7 +2539,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
                          String s = nbt.getString("CustomName");
  
                          try {

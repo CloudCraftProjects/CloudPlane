@@ -2468,7 +2468,7 @@ index d6cbe98e67fdbf8db46338a88ab1356dd63b50a3..49c1d677db8fcf53b39bd9673259b88d
      int DEFAULT_DISTANCE_LIMIT = 8;
  
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index c655c6fee393c62ba79301f76baa72f9b1154a9a..3a5f93bfeb4f9cd878e08e7a2ee8d118a2f6be83 100644
+index c655c6fee393c62ba79301f76baa72f9b1154a9a..5c7a633070016d7b1536b007558cc7288b2d2557 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -306,7 +306,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
@@ -2494,7 +2494,62 @@ index c655c6fee393c62ba79301f76baa72f9b1154a9a..3a5f93bfeb4f9cd878e08e7a2ee8d118
      public float getBukkitYaw() {
          return this.yRot;
      }
-@@ -798,6 +805,13 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -538,25 +545,45 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+         this.isLegacyTrackingEntity = isLegacyTrackingEntity;
+     }
+ 
++    // Pufferfish start
++    private org.spigotmc.TrackingRange.TrackingRangeType getFurthestEntity(Entity entity, net.minecraft.server.level.ChunkMap chunkMap, org.spigotmc.TrackingRange.TrackingRangeType type, int range) {
++        List<Entity> passengers = entity.getPassengers();
++        for (int i = 0, size = passengers.size(); i < size; i++) {
++            Entity passenger = passengers.get(i);
++            org.spigotmc.TrackingRange.TrackingRangeType passengerType = passenger.trackingRangeType;
++            int passengerRange = chunkMap.getEntityTrackerRange(passengerType.ordinal());
++            if (passengerRange > range) {
++                type = passengerType;
++                range = passengerRange;
++            }
++            type = this.getFurthestEntity(passenger, chunkMap, type, range);
++        }
++        return type;
++    }
++    // Pufferfish end
++
+     public final com.destroystokyo.paper.util.misc.PooledLinkedHashSets.PooledObjectLinkedOpenHashSet<ServerPlayer> getPlayersInTrackRange() {
+         // determine highest range of passengers
+         if (this.passengers.isEmpty()) {
+             return ((ServerLevel)this.level).getChunkSource().chunkMap.playerEntityTrackerTrackMaps[this.trackingRangeType.ordinal()]
+                 .getObjectsInRange(MCUtil.getCoordinateKey(this));
+         }
+-        Iterable<Entity> passengers = this.getIndirectPassengers();
++        // Iterable<Entity> passengers = this.getIndirectPassengers(); // Pufferfish
+         net.minecraft.server.level.ChunkMap chunkMap = ((ServerLevel)this.level).getChunkSource().chunkMap;
+         org.spigotmc.TrackingRange.TrackingRangeType type = this.trackingRangeType;
+         int range = chunkMap.getEntityTrackerRange(type.ordinal());
+ 
+-        for (Entity passenger : passengers) {
+-            org.spigotmc.TrackingRange.TrackingRangeType passengerType = passenger.trackingRangeType;
+-            int passengerRange = chunkMap.getEntityTrackerRange(passengerType.ordinal());
+-            if (passengerRange > range) {
+-                type = passengerType;
+-                range = passengerRange;
+-            }
+-        }
++        // Pufferfish start - use getFurthestEntity to skip getIndirecetPassengers
++        // for (Entity passenger : passengers) {
++        //     org.spigotmc.TrackingRange.TrackingRangeType passengerType = passenger.trackingRangeType;
++        //     int passengerRange = chunkMap.getEntityTrackerRange(passengerType.ordinal());
++        //     if (passengerRange > range) {
++        //         type = passengerType;
++        //         range = passengerRange;
++        //     }
++        // }
++        type = this.getFurthestEntity(this, chunkMap, type, range);
++        // Pufferfish end
+ 
+         return chunkMap.playerEntityTrackerTrackMaps[type.ordinal()].getObjectsInRange(MCUtil.getCoordinateKey(this));
+     }
+@@ -798,6 +825,13 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      }
  
      public void tick() {
@@ -2508,7 +2563,7 @@ index c655c6fee393c62ba79301f76baa72f9b1154a9a..3a5f93bfeb4f9cd878e08e7a2ee8d118
          this.baseTick();
      }
  
-@@ -4336,16 +4350,18 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -4336,16 +4370,18 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      }
  
      public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> tag, double speed) {
@@ -2534,7 +2589,7 @@ index c655c6fee393c62ba79301f76baa72f9b1154a9a..3a5f93bfeb4f9cd878e08e7a2ee8d118
              double d1 = 0.0D;
              boolean flag = this.isPushedByFluid();
              boolean flag1 = false;
-@@ -4353,14 +4369,61 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -4353,14 +4389,61 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
              int k1 = 0;
              BlockPos.MutableBlockPos blockposition_mutableblockposition = new BlockPos.MutableBlockPos();
  
@@ -2602,7 +2657,7 @@ index c655c6fee393c62ba79301f76baa72f9b1154a9a..3a5f93bfeb4f9cd878e08e7a2ee8d118
  
                              if (d2 >= axisalignedbb.minY) {
                                  flag1 = true;
-@@ -4382,9 +4445,12 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -4382,9 +4465,12 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
                                  // CraftBukkit end
                              }
                          }
