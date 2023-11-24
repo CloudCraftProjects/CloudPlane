@@ -551,7 +551,7 @@ index 0000000000000000000000000000000000000000..020368da69b9a492155f6de6297f7473
 +}
 diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..7939ad8e61f06288f5bb1fde827e938a636e63c0
+index 0000000000000000000000000000000000000000..13e6a1539360f48f8c8f63a9150a427de6027948
 --- /dev/null
 +++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
 @@ -0,0 +1,315 @@
@@ -827,9 +827,9 @@ index 0000000000000000000000000000000000000000..7939ad8e61f06288f5bb1fde827e938a
 +				"This can improve performance by a few percent, but has minor gameplay implications.");
 +	}
 +
-+	public static boolean allowEndCrystalRespawn;
++	public static boolean allowEndCrystalRespawn = true;
 +	private static void allowEndCrystalRespawn() {
-+		getBoolean("allow-end-crystal-respawn", true,
++		allowEndCrystalRespawn = getBoolean("allow-end-crystal-respawn", allowEndCrystalRespawn,
 +				"Allows end crystals to respawn the ender dragon.",
 +				"On servers that expect end crystal fights in the end dimension, disabling this",
 +				"will prevent the server from performing an expensive search to attempt respawning",
