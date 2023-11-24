@@ -122,10 +122,10 @@ index 0000000000000000000000000000000000000000..26e393051d2c5fe84b8ae6a33b376efa
 +}
 diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneWorldConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneWorldConfig.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..0bba071dd01550b504a435b94fa8ed8b888636bd
+index 0000000000000000000000000000000000000000..3d12a4fb9e6acb412d80bff777d08771de3b5bfa
 --- /dev/null
 +++ b/src/main/java/dev/booky/cloudplane/CloudPlaneWorldConfig.java
-@@ -0,0 +1,79 @@
+@@ -0,0 +1,86 @@
 +package dev.booky.cloudplane;
 +
 +import net.kyori.adventure.text.Component;
@@ -147,7 +147,7 @@ index 0000000000000000000000000000000000000000..0bba071dd01550b504a435b94fa8ed8b
 +    public CloudPlaneWorldConfig(String worldName, World.Environment environment) {
 +        this.worldName = worldName;
 +        this.environment = environment;
-+        init();
++        this.init();
 +    }
 +
 +    public void init() {
@@ -158,20 +158,27 @@ index 0000000000000000000000000000000000000000..0bba071dd01550b504a435b94fa8ed8b
 +    private void set(String path, Object val) {
 +        CloudPlaneConfig.config.addDefault("world-settings.default." + path, val);
 +        CloudPlaneConfig.config.set("world-settings.default." + path, val);
-+        if (CloudPlaneConfig.config.get("world-settings." + worldName + "." + path) != null) {
-+            CloudPlaneConfig.config.addDefault("world-settings." + worldName + "." + path, val);
-+            CloudPlaneConfig.config.set("world-settings." + worldName + "." + path, val);
++        if (CloudPlaneConfig.config.get("world-settings." + this.worldName + "." + path) != null) {
++            CloudPlaneConfig.config.addDefault("world-settings." + this.worldName + "." + path, val);
++            CloudPlaneConfig.config.set("world-settings." + this.worldName + "." + path, val);
++        }
++    }
++
++    private void setComment(String path, String... comment) {
++        CloudPlaneConfig.config.setComments("world-settings.default." + path, List.of(comment));
++        if (CloudPlaneConfig.config.get("world-settings." + this.worldName + "." + path) != null) {
++            CloudPlaneConfig.config.setComments("world-settings.default." + path, List.of(comment));
 +        }
 +    }
 +
 +    private ConfigurationSection getConfigurationSection(String path) {
-+        ConfigurationSection section = CloudPlaneConfig.config.getConfigurationSection("world-settings." + worldName + "." + path);
++        ConfigurationSection section = CloudPlaneConfig.config.getConfigurationSection("world-settings." + this.worldName + "." + path);
 +        return section != null ? section : CloudPlaneConfig.config.getConfigurationSection("world-settings.default." + path);
 +    }
 +
 +    private boolean getBoolean(String path, boolean def) {
 +        CloudPlaneConfig.config.addDefault("world-settings.default." + path, def);
-+        return CloudPlaneConfig.config.getBoolean("world-settings." + worldName + "." + path, CloudPlaneConfig.config.getBoolean("world-settings.default." + path));
++        return CloudPlaneConfig.config.getBoolean("world-settings." + this.worldName + "." + path, CloudPlaneConfig.config.getBoolean("world-settings.default." + path));
 +    }
 +
 +    private boolean getBoolean(String path, Predicate<Boolean> predicate) {
@@ -182,23 +189,23 @@ index 0000000000000000000000000000000000000000..0bba071dd01550b504a435b94fa8ed8b
 +
 +    private double getDouble(String path, double def) {
 +        CloudPlaneConfig.config.addDefault("world-settings.default." + path, def);
-+        return CloudPlaneConfig.config.getDouble("world-settings." + worldName + "." + path, CloudPlaneConfig.config.getDouble("world-settings.default." + path));
++        return CloudPlaneConfig.config.getDouble("world-settings." + this.worldName + "." + path, CloudPlaneConfig.config.getDouble("world-settings.default." + path));
 +    }
 +
 +    private int getInt(String path, int def) {
 +        CloudPlaneConfig.config.addDefault("world-settings.default." + path, def);
-+        return CloudPlaneConfig.config.getInt("world-settings." + worldName + "." + path, CloudPlaneConfig.config.getInt("world-settings.default." + path));
++        return CloudPlaneConfig.config.getInt("world-settings." + this.worldName + "." + path, CloudPlaneConfig.config.getInt("world-settings.default." + path));
 +    }
 +
 +    @SuppressWarnings("unchecked")
 +    private <T> List<T> getList(String path, List<T> def) {
 +        CloudPlaneConfig.config.addDefault("world-settings.default." + path, def);
-+        return (List<T>) CloudPlaneConfig.config.getList("world-settings." + worldName + "." + path, CloudPlaneConfig.config.getList("world-settings.default." + path));
++        return (List<T>) CloudPlaneConfig.config.getList("world-settings." + this.worldName + "." + path, CloudPlaneConfig.config.getList("world-settings.default." + path));
 +    }
 +
 +    private String getString(String path, String def) {
 +        CloudPlaneConfig.config.addDefault("world-settings.default." + path, def);
-+        return CloudPlaneConfig.config.getString("world-settings." + worldName + "." + path, CloudPlaneConfig.config.getString("world-settings.default." + path));
++        return CloudPlaneConfig.config.getString("world-settings." + this.worldName + "." + path, CloudPlaneConfig.config.getString("world-settings.default." + path));
 +    }
 +
 +    private Component getComponent(String path, Component def) {
