@@ -2308,7 +2308,7 @@ index c88d5b9125f6ee43bf2be60fd1745d836f271b78..74280d3e1cb7d485ed4e87e546afc8a4
                  this.tickIceAndSnow(flag, blockposition, chunk);
              }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index f71a4a8307fb092d33545e12d253e0b80c884168..aea0b628a1510b1dad1e7bf022c251efc05c27f4 100644
+index 08980763020a13ab49dc7d637625a4fba56da8c9..8a73ceb28981ecd5011a36e0f34d2de399bf3e52 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -1250,6 +1250,7 @@ public class ServerPlayer extends Player {
@@ -2685,7 +2685,7 @@ index 73871f456a85bda1e51f54986d0e61fb629822e8..ce61b4e067c94742043bef71a252a15d
          return (EntityType) Registry.register(BuiltInRegistries.ENTITY_TYPE, id, (EntityType<T>) type.build(id)); // CraftBukkit - decompile error
      }
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index a76eb3d051db0229ed088b71c92ff3f131449007..919b5e1edf0a9137e7268e46272d1957fd410ebe 100644
+index 87134e57a57df0fceda903e35d22f3f2de31adf3..28cdcf38c0534ad75a85568d6613e4ba63ff3210 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -414,7 +414,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
@@ -2697,7 +2697,7 @@ index a76eb3d051db0229ed088b71c92ff3f131449007..919b5e1edf0a9137e7268e46272d1957
                      this.hurt(this.damageSources().inWall(), 1.0F);
                  } else if (flag && !this.level().getWorldBorder().isWithinBounds(this.getBoundingBox())) {
                      double d0 = this.level().getWorldBorder().getDistanceToBorder(this) + this.level().getWorldBorder().getDamageSafeZone();
-@@ -1401,6 +1401,16 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -1409,6 +1409,16 @@ public abstract class LivingEntity extends Entity implements Attackable {
          return this.getHealth() <= 0.0F;
      }
  
@@ -2714,7 +2714,7 @@ index a76eb3d051db0229ed088b71c92ff3f131449007..919b5e1edf0a9137e7268e46272d1957
      @Override
      public boolean hurt(DamageSource source, float amount) {
          if (this.isInvulnerableTo(source)) {
-@@ -1996,6 +2006,20 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -2004,6 +2014,20 @@ public abstract class LivingEntity extends Entity implements Attackable {
          return this.lastClimbablePos;
      }
  
@@ -3988,7 +3988,7 @@ index ebe65474a4a05ff1637d7f37ebcfe690af59def5..42142c512b12e5b269c19f1e821c50e7
  
      @Nullable
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 9c08303de2891de92e06de8a939a618b7a6f7321..84fc6392dae77084718dc15fc58213c723d65a70 100644
+index 356107688a5d40d1c462b164f61af82f4dfd3926..a1c1ae5e2560bc462bf1786c06ab55053e118abc 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -1124,6 +1124,11 @@ public final class CraftServer implements Server {

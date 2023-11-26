@@ -46,10 +46,10 @@ index 219f91409f7e4624abcba6c9c70ee8c0fa9fc89c..720db1c8e1fb66ceb157a3a29c932d8e
  
          this.setPvpAllowed(dedicatedserverproperties.pvp);
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index 4eb45de81fdfe765d8e6a8c2c9846d4685b29baa..58e2aa17fbd6752eef47fd0c9b6160e7bc43db67 100644
+index eb8f24293bbdec7c0ccb479cae7b41e4ac12302f..2b8bad2139b0d10cfdc6fcf931dd504608858010 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
-@@ -179,6 +179,12 @@ public class Main {
+@@ -180,6 +180,12 @@ public class Main {
                          .ofType(File.class)
                          .defaultsTo(new File("cloudplane.yml"))
                          .describedAs("Yml file");
