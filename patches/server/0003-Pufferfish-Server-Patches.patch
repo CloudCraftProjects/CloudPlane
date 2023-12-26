@@ -5,7 +5,7 @@ Subject: [PATCH] Pufferfish Server Patches
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 79beac737c17412913983614bd478d33e3c6ed58..74a1ed04ee61a8bc9d1cc34d54d8cd7797a9eba1 100644
+index 64479f0a892d6847f987d844efe282a6080d607b..a15911e3e970da12d0c4d6828cb251aa29e851f6 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -51,6 +51,14 @@ dependencies {
@@ -2308,10 +2308,10 @@ index c88d5b9125f6ee43bf2be60fd1745d836f271b78..74280d3e1cb7d485ed4e87e546afc8a4
                  this.tickIceAndSnow(flag, blockposition, chunk);
              }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 08980763020a13ab49dc7d637625a4fba56da8c9..8a73ceb28981ecd5011a36e0f34d2de399bf3e52 100644
+index 907c8f15f5247f9972c6677ff0f9e1aa22764a04..8bcb371635f6886df95b3267f304b8075cca14a6 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -1250,6 +1250,7 @@ public class ServerPlayer extends Player {
+@@ -1248,6 +1248,7 @@ public class ServerPlayer extends Player {
                  this.setServerLevel(worldserver);
                  this.connection.teleport(exit); // CraftBukkit - use internal teleport without event
                  this.connection.resetPosition();
@@ -2319,7 +2319,7 @@ index 08980763020a13ab49dc7d637625a4fba56da8c9..8a73ceb28981ecd5011a36e0f34d2de3
                  worldserver.addDuringPortalTeleport(this);
                  worldserver1.getProfiler().pop();
                  this.triggerDimensionChangeTriggers(worldserver1);
-@@ -1917,6 +1918,7 @@ public class ServerPlayer extends Player {
+@@ -1915,6 +1916,7 @@ public class ServerPlayer extends Player {
      public void moveTo(double x, double y, double z) {
          super.moveTo(x, y, z);
          this.connection.resetPosition();
@@ -2327,7 +2327,7 @@ index 08980763020a13ab49dc7d637625a4fba56da8c9..8a73ceb28981ecd5011a36e0f34d2de3
      }
  
      @Override
-@@ -2163,6 +2165,7 @@ public class ServerPlayer extends Player {
+@@ -2161,6 +2163,7 @@ public class ServerPlayer extends Player {
  
              this.connection.send(new ClientboundSetCameraPacket(this.camera));
              this.connection.resetPosition();
@@ -2335,7 +2335,7 @@ index 08980763020a13ab49dc7d637625a4fba56da8c9..8a73ceb28981ecd5011a36e0f34d2de3
          }
  
      }
-@@ -2602,6 +2605,7 @@ public class ServerPlayer extends Player {
+@@ -2600,6 +2603,7 @@ public class ServerPlayer extends Player {
      public void forceSetPositionRotation(double x, double y, double z, float yaw, float pitch) {
          this.moveTo(x, y, z, yaw, pitch);
          this.connection.resetPosition();
@@ -2468,7 +2468,7 @@ index d6cbe98e67fdbf8db46338a88ab1356dd63b50a3..49c1d677db8fcf53b39bd9673259b88d
      int DEFAULT_DISTANCE_LIMIT = 8;
  
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index c655c6fee393c62ba79301f76baa72f9b1154a9a..5c7a633070016d7b1536b007558cc7288b2d2557 100644
+index fece91254b10b59474056aa730fd420f90cd7bec..c437ddebc993ff844091dc10e32bbae11e706195 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -306,7 +306,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
@@ -2563,7 +2563,7 @@ index c655c6fee393c62ba79301f76baa72f9b1154a9a..5c7a633070016d7b1536b007558cc728
          this.baseTick();
      }
  
-@@ -4336,16 +4370,18 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -4362,16 +4396,18 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
      }
  
      public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> tag, double speed) {
@@ -2589,7 +2589,7 @@ index c655c6fee393c62ba79301f76baa72f9b1154a9a..5c7a633070016d7b1536b007558cc728
              double d1 = 0.0D;
              boolean flag = this.isPushedByFluid();
              boolean flag1 = false;
-@@ -4353,14 +4389,61 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -4379,14 +4415,61 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
              int k1 = 0;
              BlockPos.MutableBlockPos blockposition_mutableblockposition = new BlockPos.MutableBlockPos();
  
@@ -2657,7 +2657,7 @@ index c655c6fee393c62ba79301f76baa72f9b1154a9a..5c7a633070016d7b1536b007558cc728
  
                              if (d2 >= axisalignedbb.minY) {
                                  flag1 = true;
-@@ -4382,9 +4465,12 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
+@@ -4408,9 +4491,12 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
                                  // CraftBukkit end
                              }
                          }
@@ -2685,7 +2685,7 @@ index 73871f456a85bda1e51f54986d0e61fb629822e8..ce61b4e067c94742043bef71a252a15d
          return (EntityType) Registry.register(BuiltInRegistries.ENTITY_TYPE, id, (EntityType<T>) type.build(id)); // CraftBukkit - decompile error
      }
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 87134e57a57df0fceda903e35d22f3f2de31adf3..28cdcf38c0534ad75a85568d6613e4ba63ff3210 100644
+index 15e1d8c09fad181406a6acb8b3f177cd5e6c0f52..45fd2482bade34af962bf389099660e08750c923 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -414,7 +414,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
@@ -3046,7 +3046,7 @@ index 47a5125e44cea1ece84657cdb874807f13ee824f..584465b684ef6291bf5eec604b132fc8
          this.level().getProfiler().popPush("snifferActivityUpdate");
          SnifferAi.updateActivity(this);
 diff --git a/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java b/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
-index 1e07febcf7a3dfb281728cc5e3e4f15dd776d7e0..c65ab566c6241dd6a44bd11a449ef0c4b2f6dc65 100644
+index c9a4feb4a52c0eb621b120e5b8c18d0a74dae0cd..256598e058db1fd34d36390e45ab9903768343cb 100644
 --- a/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
 +++ b/src/main/java/net/minecraft/world/entity/boss/wither/WitherBoss.java
 @@ -150,6 +150,13 @@ public class WitherBoss extends Monster implements PowerableMob, RangedAttackMob

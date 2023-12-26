@@ -27,7 +27,7 @@ index e38e2e5a7ddba9c140f362021b6be0b0974f7cd1..44140141b3e727131cfdc9fae2d84732
          this.player = owner;
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 20f39f27fc3e7a4bee861b147da66f7726dc2338..f734765ba2c3f152a414f0115df37ec307e354c3 100644
+index a38e5bbb1f08e1b688d94becf1085501fc3fb111..7bab182d781cfff84f21c9563366e8148774951e 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -322,6 +322,10 @@ public class ServerPlayer extends Player {
@@ -41,7 +41,7 @@ index 20f39f27fc3e7a4bee861b147da66f7726dc2338..f734765ba2c3f152a414f0115df37ec3
      public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile, ClientInformation clientOptions) {
          super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);
          this.chatVisibility = ChatVisiblity.FULL;
-@@ -2046,10 +2050,39 @@ public class ServerPlayer extends Player {
+@@ -2044,10 +2048,39 @@ public class ServerPlayer extends Player {
              PlayerChangedMainHandEvent event = new PlayerChangedMainHandEvent(this.getBukkitEntity(), this.getMainArm() == HumanoidArm.LEFT ? MainHand.LEFT : MainHand.RIGHT);
              this.server.server.getPluginManager().callEvent(event);
          }
@@ -81,7 +81,7 @@ index 20f39f27fc3e7a4bee861b147da66f7726dc2338..f734765ba2c3f152a414f0115df37ec3
          }
          // CraftBukkit end
          // Paper start - don't call options events on login
-@@ -2058,7 +2091,7 @@ public class ServerPlayer extends Player {
+@@ -2056,7 +2089,7 @@ public class ServerPlayer extends Player {
      public void updateOptionsNoEvents(ClientInformation clientOptions) {
          // Paper end
          this.language = clientOptions.language();
@@ -104,7 +104,7 @@ index ec4325b90b5707e97927b95064ef4dd840b2a538..c754ed230a5320128839541bf707d0cb
          public static final EntityDataAccessor<Integer> DATA_BACKGROUND_COLOR_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.INT);
          private static final EntityDataAccessor<Byte> DATA_TEXT_OPACITY_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.BYTE);
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 7ed95c2a77fb73aff06051438c69f209ca580049..ab3f983bd028987835f11f327f4b8a3cd4c90442 100644
+index e3e8c8a078dcf9b8b34c1d2ad9e543a20f956b48..044afc83573c39a204ba6526c95906d9aa3db27d 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -355,7 +355,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource {
