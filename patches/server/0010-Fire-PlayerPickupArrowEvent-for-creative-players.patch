@@ -5,10 +5,10 @@ Subject: [PATCH] Fire PlayerPickupArrowEvent for creative players
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
-index 6c176933967f6ee98da3026f16a10efe4c3842fe..175c85e400f8407b371fea7881d9d698f3f24662 100644
+index 42ebd91196ae420eee57f4380abc558555457163..b7f087ae17aa8330c0a23556a7d03a9ad435ed13 100644
 --- a/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
 +++ b/src/main/java/net/minecraft/world/entity/projectile/AbstractArrow.java
-@@ -561,7 +561,7 @@ public abstract class AbstractArrow extends Projectile {
+@@ -584,7 +584,7 @@ public abstract class AbstractArrow extends Projectile {
          if (!this.level().isClientSide && (this.inGround || this.isNoPhysics()) && this.shakeTime <= 0) {
              // CraftBukkit start
              ItemStack itemstack = this.getPickupItem();

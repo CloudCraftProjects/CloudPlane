@@ -5,10 +5,10 @@ Subject: [PATCH] Add allowPvP gamerule
 
 
 diff --git a/src/main/java/org/bukkit/GameRule.java b/src/main/java/org/bukkit/GameRule.java
-index 695a299a3544547bbc24095980221205ce5469ba..786741ef8ee75d57ac0f9536c7e743c00d8cdf1e 100644
+index be827e7fef0acb17bd41aeff9dc3dc4da3718e5e..2ce2d4845acc2d52dad27abf858621f26bebc2f7 100644
 --- a/src/main/java/org/bukkit/GameRule.java
 +++ b/src/main/java/org/bukkit/GameRule.java
-@@ -211,6 +211,13 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
+@@ -216,6 +216,13 @@ public final class GameRule<T> implements net.kyori.adventure.translation.Transl
       */
      public static final GameRule<Boolean> ENDER_PEARLS_VANISH_ON_DEATH = new GameRule<>("enderPearlsVanishOnDeath", Boolean.class);
  

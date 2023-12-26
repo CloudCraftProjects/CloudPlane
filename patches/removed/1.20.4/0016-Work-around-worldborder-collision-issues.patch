@@ -3,6 +3,7 @@ From: booky10 <boooky10@gmail.com>
 Date: Thu, 26 Oct 2023 21:15:06 +0200
 Subject: [PATCH] Work around worldborder collision issues
 
+Fixed by paper in https://github.com/PaperMC/Paper/commit/086ca616d8bd98dde4e4859d29ce89314494d90c 
 
 diff --git a/src/main/java/net/minecraft/world/level/border/WorldBorder.java b/src/main/java/net/minecraft/world/level/border/WorldBorder.java
 index 204f008dc36212e696fba781fede88044b2f735a..05af61f8e6987f714b349282c1887414caeb987c 100644

@@ -5,6 +5,8 @@ Subject: [PATCH] Fix non-adventure components not being translated
 
 If an entity ever gets unloaded, this destroys every translation system
 
+Fixed by paper in https://github.com/PaperMC/Paper/commit/dc3ef2ae0f54ca6b67f651740df5bcda1a2bbe4f 
+
 diff --git a/src/main/java/io/papermc/paper/adventure/PaperAdventure.java b/src/main/java/io/papermc/paper/adventure/PaperAdventure.java
 index f2f4575e6ec4f5a90b8f48306b0edfef2e5527f5..5ec4339fde101cbf1380dc7104f6d7894e8b9031 100644
 --- a/src/main/java/io/papermc/paper/adventure/PaperAdventure.java

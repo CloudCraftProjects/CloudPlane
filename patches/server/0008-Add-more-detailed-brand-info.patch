@@ -25,7 +25,7 @@ index b21f7a41581ddf36d61e206366c6398738a47813..9d3dafc4989b9fbaa32a337df9b3c56e
 +    }
  }
 diff --git a/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-index 8dbcc1b3a70b6bbea3bd2d15b6d66cc4f9cd53f8..b111f06b4da7f0b57ef9cd878fcf967daa2d48fc 100644
+index cae10b963d153fb1777b18054796a45b2809342b..b9f10d60713cc7f16bee32fa545022c7f6d185b9 100644
 --- a/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 @@ -67,7 +67,12 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
@@ -43,10 +43,10 @@ index 8dbcc1b3a70b6bbea3bd2d15b6d66cc4f9cd53f8..b111f06b4da7f0b57ef9cd878fcf967d
  
          this.send(new ClientboundUpdateEnabledFeaturesPacket(FeatureFlags.REGISTRY.toNames(this.server.getWorldData().enabledFeatures())));
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 35e07766a93c480090212d655e7105a267cec8ea..2f5127e0510359f38b3ed8d2d71b637e7e1e68a2 100644
+index 58b1b8849e9806832b15f2f4ed065d54f102afb0..871d5a32a1952f892cc2ef2477431e644d030b8c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -270,7 +270,7 @@ import javax.annotation.Nonnull; // Paper
+@@ -265,7 +265,7 @@ import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
      private final String serverName = "CloudPlane"; // Paper // CloudPlane

@@ -18,10 +18,10 @@ index 33d9131e9c75ef23cd637f5d6c39a2704a0c92a5..4b6e0fe2fabcc55007fd8979e81f66df
      @VisibleForTesting
      static long encode(double value) {
 diff --git a/src/main/java/net/minecraft/server/level/ChunkMap.java b/src/main/java/net/minecraft/server/level/ChunkMap.java
-index caa73632aee15583c6b6ed12a668c8f49b794708..73d50715d34fdf67f346672901dd1d24bb2ac7fb 100644
+index d9cd497bc1b654030ff1a597f038b6a881df9f6b..67d9be1e73ab877c8f04a13b8220cfafaf8d18f7 100644
 --- a/src/main/java/net/minecraft/server/level/ChunkMap.java
 +++ b/src/main/java/net/minecraft/server/level/ChunkMap.java
-@@ -1419,10 +1419,14 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1418,10 +1418,14 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
          public void updatePlayer(ServerPlayer player) {
              org.spigotmc.AsyncCatcher.catchOp("player tracker update"); // Spigot
              if (player != this.entity) {
