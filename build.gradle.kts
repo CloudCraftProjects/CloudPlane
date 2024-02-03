@@ -28,14 +28,14 @@ subprojects {
         targetCompatibility = JavaVersion.VERSION_17
 
         toolchain {
-            languageVersion.set(JavaLanguageVersion.of(17))
-            vendor.set(JvmVendorSpec.ADOPTIUM)
+            languageVersion = JavaLanguageVersion.of(17)
+            vendor = JvmVendorSpec.ADOPTIUM
         }
     }
 
     tasks.withType<JavaCompile> {
         options.encoding = Charsets.UTF_8.name()
-        options.release.set(17)
+        options.release = 17
     }
 
     repositories {
