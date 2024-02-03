@@ -65,5 +65,11 @@ paperweight {
             apiOutputDir.set(layout.projectDirectory.dir("CloudPlane-API"))
             serverOutputDir.set(layout.projectDirectory.dir("CloudPlane-Server"))
         }
+        patchTasks.register("generatedApi") {
+            isBareDirectory = true
+            upstreamDirPath = "paper-api-generator/generated"
+            patchDir = layout.projectDirectory.dir("patches/generatedApi")
+            outputDir = layout.projectDirectory.dir("paper-api-generator/generated")
+        }
     }
 }
