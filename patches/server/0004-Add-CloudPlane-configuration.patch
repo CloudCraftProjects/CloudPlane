@@ -213,43 +213,36 @@ index 0000000000000000000000000000000000000000..3d12a4fb9e6acb412d80bff777d08771
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 3b8c810a228a59bf02a8557b229e5eca56c16562..b83a07e263fdef784d5990fcc670165e70d5ee81 100644
+index 85f1811c572b86ac43cc90db8f4d93bbd7efde51..701bfdeae23715d6891772062263b8dd137bfd2c 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -218,6 +218,14 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
-         thread.start(); // Paper - start console thread after MinecraftServer.console & PaperConfig are initialized
-         io.papermc.paper.command.PaperCommands.registerCommands(this);
-         com.destroystokyo.paper.Metrics.PaperMetrics.startMetrics();
-+        // CloudPlane start
-+        try {
-+            dev.booky.cloudplane.CloudPlaneConfig.init((java.io.File) options.valueOf("cloudplane-settings"));
-+        } catch (Exception e) {
-+            DedicatedServer.LOGGER.error("Unable to load server configuration", e);
-+            return false;
-+        }
-+        // CloudPlane end
-         com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // load version history now
-         io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // init PaperBrigadierProvider
-         // Paper end
+@@ -223,6 +223,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // Paper - init PaperBrigadierProvider
+         gg.pufferfish.pufferfish.PufferfishConfig.load(); // Pufferfish
+         gg.pufferfish.pufferfish.PufferfishCommand.init(); // Pufferfish
++        dev.booky.cloudplane.CloudPlaneConfig.init((java.io.File) this.options.valueOf("cloudplane-settings")); // CloudPlane - load configuration
+ 
+         this.setPvpAllowed(dedicatedserverproperties.pvp);
+         this.setFlightAllowed(dedicatedserverproperties.allowFlight);
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index 868132f2c3f5afe704b762cd173334e98911ba71..8b9858d674d3fd7e7819e0373b3ff03631d19547 100644
+index fa3ca8d83c247d6023736721e2632cca2702b99f..d31e41127959e448f2f3c735673f02863d7b9cab 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -221,9 +221,12 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -220,10 +220,12 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+     private final int height;
      private final int maxBuildHeight;
      // Pufferfish end
++    public final dev.booky.cloudplane.CloudPlaneWorldConfig cloudplaneConfig; // CloudPlane - world configuration
  
-+    public final dev.booky.cloudplane.CloudPlaneWorldConfig cloudplaneConfig; // CloudPlane
-+
-     protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.concurrent.Executor executor) { // Paper - Async-Anti-Xray - Pass executor
+     protected Level(WritableLevelData worlddatamutable, ResourceKey<Level> resourcekey, RegistryAccess iregistrycustom, Holder<DimensionType> holder, Supplier<ProfilerFiller> supplier, boolean flag, boolean flag1, long i, int j, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider, org.bukkit.World.Environment env, java.util.function.Function<org.spigotmc.SpigotWorldConfig, io.papermc.paper.configuration.WorldConfiguration> paperWorldConfigCreator, java.util.concurrent.Executor executor) { // Paper - create paper world config; Async-Anti-Xray: Pass executor
          this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()); // Spigot
-         this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper
-+        this.cloudplaneConfig = new dev.booky.cloudplane.CloudPlaneWorldConfig((((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()), env); // CloudPlane
+         this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper - create paper world config
++        this.cloudplaneConfig = new dev.booky.cloudplane.CloudPlaneWorldConfig((((net.minecraft.world.level.storage.PrimaryLevelData) worlddatamutable).getLevelName()), env); // CloudPlane - load world configuration
          this.generator = gen;
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index d7ae9ffdd6f744f72deedea9e060ddeed1e3f4d3..58b1b8849e9806832b15f2f4ed065d54f102afb0 100644
+index d003ce61fdf7750ae1597699bea74dc0ffb0fdb8..651b5d45aa84f854edd6767dd3a4e4bd6510b149 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -1037,6 +1037,7 @@ public final class CraftServer implements Server {
@@ -260,7 +253,7 @@ index d7ae9ffdd6f744f72deedea9e060ddeed1e3f4d3..58b1b8849e9806832b15f2f4ed065d54
          for (ServerLevel world : this.console.getAllLevels()) {
              // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
              world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters, config.spawnAnimals); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
-@@ -3016,6 +3017,13 @@ public final class CraftServer implements Server {
+@@ -3001,6 +3002,13 @@ public final class CraftServer implements Server {
              return CraftServer.this.console.paperConfigurations.createLegacyObject(CraftServer.this.console);
          }
  
@@ -275,7 +268,7 @@ index d7ae9ffdd6f744f72deedea9e060ddeed1e3f4d3..58b1b8849e9806832b15f2f4ed065d54
          public void restart() {
              org.spigotmc.RestartCommand.restart();
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index 26474176e590b0a7d2f32088835534a64686a2f4..945f72953f068a172bb4281f1ac72a1596545266 100644
+index 2440847cc6e7a05d2438f51557a71a2fcd4b24e2..0130571c45f072dcb3100ae6992e3ed0ed754cf3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
 @@ -174,6 +174,14 @@ public class Main {

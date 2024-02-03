@@ -5,12 +5,12 @@ Subject: [PATCH] Log exceptions caused by packet sending
 
 
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index 11805569eefe100c2f469431d77a0d5a80c53244..7b13453068100a62ee9650686cf81a8eefb041ec 100644
+index 8695b0f7b02c3001947c81b6f57680a3f7325787..7fcf8158125207b178f71cd3a0c67916f4a66f65 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
 @@ -224,7 +224,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
  
-                     if (player != null) player.quitReason = org.bukkit.event.player.PlayerQuitEvent.QuitReason.ERRONEOUS_STATE; // Paper
+                     if (player != null) player.quitReason = org.bukkit.event.player.PlayerQuitEvent.QuitReason.ERRONEOUS_STATE; // Paper - Add API for quit reason
                      if (flag) {
 -                        Connection.LOGGER.debug("Failed to sent packet", throwable);
 +                        Connection.LOGGER.error("Failed to sent packet", throwable); // CloudPlane

@@ -6,7 +6,7 @@ Subject: [PATCH] Resend more data on locale change
 Includes advancements, inventories, entity custom names, text display texts and item frame items
 
 diff --git a/src/main/java/net/minecraft/server/PlayerAdvancements.java b/src/main/java/net/minecraft/server/PlayerAdvancements.java
-index f655e0ae4a287886d0291cd0089bad2000249d0f..f7bdbd0c9c3008b58235df018d34ae4c8c2a2b43 100644
+index 24e5993b281448734eb67c7a8439a349bbf9fd72..1e3864d864dc2e10e3c19ea1aae6d0e32fdaab25 100644
 --- a/src/main/java/net/minecraft/server/PlayerAdvancements.java
 +++ b/src/main/java/net/minecraft/server/PlayerAdvancements.java
 @@ -76,6 +76,16 @@ public class PlayerAdvancements {
@@ -27,7 +27,7 @@ index f655e0ae4a287886d0291cd0089bad2000249d0f..f7bdbd0c9c3008b58235df018d34ae4c
          this.player = owner;
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index fa40d709c43bb5a17960f8812419e17e2efa64f0..2b33942867666ed463e71cdc50e39131a5b56bc7 100644
+index 9f9624e2cb98ae72bbb81377617cdc775ff88363..64cf742dcb5139f07ec0b0cc1bd31cccbc076c8a 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -329,6 +329,10 @@ public class ServerPlayer extends Player {
@@ -41,7 +41,7 @@ index fa40d709c43bb5a17960f8812419e17e2efa64f0..2b33942867666ed463e71cdc50e39131
      public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile, ClientInformation clientOptions) {
          super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);
          this.chatVisibility = ChatVisiblity.FULL;
-@@ -2145,10 +2149,39 @@ public class ServerPlayer extends Player {
+@@ -2146,10 +2150,39 @@ public class ServerPlayer extends Player {
              PlayerChangedMainHandEvent event = new PlayerChangedMainHandEvent(this.getBukkitEntity(), this.getMainArm() == HumanoidArm.LEFT ? MainHand.LEFT : MainHand.RIGHT);
              this.server.server.getPluginManager().callEvent(event);
          }
@@ -81,7 +81,7 @@ index fa40d709c43bb5a17960f8812419e17e2efa64f0..2b33942867666ed463e71cdc50e39131
          }
          // CraftBukkit end
          // Paper start - don't call options events on login
-@@ -2157,7 +2190,7 @@ public class ServerPlayer extends Player {
+@@ -2158,7 +2191,7 @@ public class ServerPlayer extends Player {
      public void updateOptionsNoEvents(ClientInformation clientOptions) {
          // Paper end
          this.language = clientOptions.language();
@@ -91,7 +91,7 @@ index fa40d709c43bb5a17960f8812419e17e2efa64f0..2b33942867666ed463e71cdc50e39131
          this.chatVisibility = clientOptions.chatVisibility();
          this.canChatColor = clientOptions.chatColors();
 diff --git a/src/main/java/net/minecraft/world/entity/Display.java b/src/main/java/net/minecraft/world/entity/Display.java
-index 58de4a3ff0b5494fa576a902f33de4cd38b9c7be..a17b24fdb21672c2d47309018cec73ed0021f90f 100644
+index 2ecd3ed5b36475125c6f63af2612011fc8fba8a5..1cb2532bad5b30366a743000318bcbafb23e9e87 100644
 --- a/src/main/java/net/minecraft/world/entity/Display.java
 +++ b/src/main/java/net/minecraft/world/entity/Display.java
 @@ -768,7 +768,7 @@ public abstract class Display extends Entity {
@@ -104,10 +104,10 @@ index 58de4a3ff0b5494fa576a902f33de4cd38b9c7be..a17b24fdb21672c2d47309018cec73ed
          public static final EntityDataAccessor<Integer> DATA_BACKGROUND_COLOR_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.INT);
          private static final EntityDataAccessor<Byte> DATA_TEXT_OPACITY_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.BYTE);
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index a186be351ba73a74a9aef887d3a69b5e0846713a..fa20553a80cce087c07ddb3bd8cb8cb76bd16e82 100644
+index 0aab277908d1b885916fb2276dc3aa3f332d51cf..65e0700570970862d24224d68ba9444e70a49f76 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -356,7 +356,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, S
+@@ -357,7 +357,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, S
      protected static final int FLAG_GLOWING = 6;
      protected static final int FLAG_FALL_FLYING = 7;
      private static final EntityDataAccessor<Integer> DATA_AIR_SUPPLY_ID = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.INT);

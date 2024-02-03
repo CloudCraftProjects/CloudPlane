@@ -27,7 +27,7 @@ runnables on the event loop.
 Co-authored-by: booky10 <boooky10@gmail.com>
 
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index c0ea20dcee8bb293df96bc6ee019e50ad6b383fd..11805569eefe100c2f469431d77a0d5a80c53244 100644
+index 4716f8bd8a64d4f20f0d5957c1e7fabf63020f43..8695b0f7b02c3001947c81b6f57680a3f7325787 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
 @@ -60,6 +60,21 @@ import org.slf4j.MarkerFactory;

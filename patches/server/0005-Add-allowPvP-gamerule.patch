@@ -5,10 +5,10 @@ Subject: [PATCH] Add allowPvP gamerule
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 1d6e1c1b7cd3488031529142394f756eafd8b2c2..fa40d709c43bb5a17960f8812419e17e2efa64f0 100644
+index e9adae2f97ce6e6296c0cda99399ee0170514de3..9f9624e2cb98ae72bbb81377617cdc775ff88363 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -1516,7 +1516,7 @@ public class ServerPlayer extends Player {
+@@ -1517,7 +1517,7 @@ public class ServerPlayer extends Player {
  
      @Override
      public boolean isInvulnerableTo(DamageSource damageSource) {
@@ -18,7 +18,7 @@ index 1d6e1c1b7cd3488031529142394f756eafd8b2c2..fa40d709c43bb5a17960f8812419e17e
  
      @Override
 diff --git a/src/main/java/net/minecraft/world/level/GameRules.java b/src/main/java/net/minecraft/world/level/GameRules.java
-index 4f2fa47d094348bb8f86a86e808019ddba56e187..d04956fd67eb1a376e046e01562b48fb160dec57 100644
+index c246981987017a2f86c5d632929356855e2b5714..76664730a3d1605a0b0568e2151e261635ecf8a5 100644
 --- a/src/main/java/net/minecraft/world/level/GameRules.java
 +++ b/src/main/java/net/minecraft/world/level/GameRules.java
 @@ -113,6 +113,8 @@ public class GameRules {
@@ -28,5 +28,5 @@ index 4f2fa47d094348bb8f86a86e808019ddba56e187..d04956fd67eb1a376e046e01562b48fb
 +    public static final GameRules.Key<GameRules.BooleanValue> RULE_ALLOW_PVP = GameRules.register("allowPvP", Category.PLAYER, GameRules.BooleanValue.create(true)); // CloudPlane - allowPvP gamerule
 +
      private final Map<GameRules.Key<?>, GameRules.Value<?>> rules;
-     private final GameRules.Value<?>[] gameruleArray; // Paper
+     private final GameRules.Value<?>[] gameruleArray; // Paper - Perf: Use array for gamerule storage
  

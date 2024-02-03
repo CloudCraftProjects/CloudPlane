@@ -18,7 +18,7 @@ index 020368da69b9a492155f6de6297f74732f4ab6ea..4a5ad92c7989d4f85eea3f2908732fb5
                  sender.sendMessage(Component.text("Failed to reload.", NamedTextColor.RED));
                  e.printStackTrace();
 diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
-index 13e6a1539360f48f8c8f63a9150a427de6027948..5ca225ff196958f764f2918cbd327293e91eecfa 100644
+index bc6bf6bd8c01a200d395399f6687dbfa0da4e6d5..1f940f6735dc76ff15910808549f015796c50fe6 100644
 --- a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
 +++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
 @@ -48,8 +48,8 @@ public class PufferfishConfig {
@@ -33,20 +33,20 @@ index 13e6a1539360f48f8c8f63a9150a427de6027948..5ca225ff196958f764f2918cbd327293
  		if (configFile.exists()) {
  			try {
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 219f91409f7e4624abcba6c9c70ee8c0fa9fc89c..720db1c8e1fb66ceb157a3a29c932d8e00417e53 100644
+index 701bfdeae23715d6891772062263b8dd137bfd2c..24e10809c72051cf330fbc8b0687703e9af3bef4 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -229,7 +229,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
-         com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // load version history now
-         io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // init PaperBrigadierProvider
-         // Paper end
+@@ -221,7 +221,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         com.destroystokyo.paper.Metrics.PaperMetrics.startMetrics(); // Paper - start metrics
+         com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // Paper - load version history now
+         io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // Paper - init PaperBrigadierProvider
 -        gg.pufferfish.pufferfish.PufferfishConfig.load(); // Pufferfish
 +        gg.pufferfish.pufferfish.PufferfishConfig.load((java.io.File) options.valueOf("pufferfish-settings")); // Pufferfish // CloudPlane
          gg.pufferfish.pufferfish.PufferfishCommand.init(); // Pufferfish
+         dev.booky.cloudplane.CloudPlaneConfig.init((java.io.File) this.options.valueOf("cloudplane-settings")); // CloudPlane - load configuration
  
-         this.setPvpAllowed(dedicatedserverproperties.pvp);
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index eb8f24293bbdec7c0ccb479cae7b41e4ac12302f..2b8bad2139b0d10cfdc6fcf931dd504608858010 100644
+index 0130571c45f072dcb3100ae6992e3ed0ed754cf3..f3d860488ff47f7e19028362dd302ed52e7981c3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
 @@ -180,6 +180,12 @@ public class Main {
