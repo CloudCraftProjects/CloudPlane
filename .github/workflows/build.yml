@@ -26,10 +26,10 @@ jobs:
           git config --global user.name "Github Actions"
 
       - name: Apply patches
-        run: ./gradlew applyPatches -Dpaperweight.debug=true --no-daemon
+        run: ./gradlew applyPatches --no-daemon
 
       - name: Build reobfuscated paperclip jar
-        run: ./gradlew createReobfPaperclipJar -Dpaperweight.debug=true --no-daemon
+        run: ./gradlew createReobfPaperclipJar --no-daemon
 
       - name: Upload reobfuscated paperclip jar
         uses: actions/upload-artifact@v3
