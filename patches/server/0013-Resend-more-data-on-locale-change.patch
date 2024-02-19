@@ -27,7 +27,7 @@ index 24e5993b281448734eb67c7a8439a349bbf9fd72..1e3864d864dc2e10e3c19ea1aae6d0e3
          this.player = owner;
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 9f9624e2cb98ae72bbb81377617cdc775ff88363..64cf742dcb5139f07ec0b0cc1bd31cccbc076c8a 100644
+index 881e893878a7d3b17ae272bbf25ff7dc53dc8c9a..1f06a468a54aa0068fbe1f4831133d58b325e00a 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -329,6 +329,10 @@ public class ServerPlayer extends Player {
@@ -41,18 +41,13 @@ index 9f9624e2cb98ae72bbb81377617cdc775ff88363..64cf742dcb5139f07ec0b0cc1bd31ccc
      public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile, ClientInformation clientOptions) {
          super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);
          this.chatVisibility = ChatVisiblity.FULL;
-@@ -2146,10 +2150,39 @@ public class ServerPlayer extends Player {
-             PlayerChangedMainHandEvent event = new PlayerChangedMainHandEvent(this.getBukkitEntity(), this.getMainArm() == HumanoidArm.LEFT ? MainHand.LEFT : MainHand.RIGHT);
-             this.server.server.getPluginManager().callEvent(event);
-         }
-+        java.util.Locale adventure$locale = net.kyori.adventure.translation.Translator.parseLocale(clientOptions.language()); // CloudPlane - parsing was moved up
-         if (this.language == null || !this.language.equals(clientOptions.language())) { // Paper
+@@ -2150,6 +2154,34 @@ public class ServerPlayer extends Player {
              PlayerLocaleChangeEvent event = new PlayerLocaleChangeEvent(this.getBukkitEntity(), clientOptions.language());
              this.server.server.getPluginManager().callEvent(event);
              this.server.server.getPluginManager().callEvent(new com.destroystokyo.paper.event.player.PlayerLocaleChangeEvent(this.getBukkitEntity(), this.language, clientOptions.language())); // Paper
 +
 +            // CloudPlane start - update more data on locale change
-+            // don't allow players to destroy the server by sending not that many packets
++            //   don't allow players to crash the server with only a few packets
 +            if (this.lastLocaleChange + 1000L < System.currentTimeMillis()) {
 +                this.lastLocaleChange = System.currentTimeMillis();
 +                this.advancements.refreshAll();
@@ -77,19 +72,10 @@ index 9f9624e2cb98ae72bbb81377617cdc775ff88363..64cf742dcb5139f07ec0b0cc1bd31ccc
 +                    }
 +                }
 +            }
-+            // CloudPlane end
++            // CloudPlane end - update more data on locale change
          }
          // CraftBukkit end
          // Paper start - don't call options events on login
-@@ -2158,7 +2191,7 @@ public class ServerPlayer extends Player {
-     public void updateOptionsNoEvents(ClientInformation clientOptions) {
-         // Paper end
-         this.language = clientOptions.language();
--        this.adventure$locale = net.kyori.adventure.translation.Translator.parseLocale(this.language); // Paper
-+        this.adventure$locale = adventure$locale; // Paper // CloudPlane - parsing moved up
-         this.requestedViewDistance = clientOptions.viewDistance();
-         this.chatVisibility = clientOptions.chatVisibility();
-         this.canChatColor = clientOptions.chatColors();
 diff --git a/src/main/java/net/minecraft/world/entity/Display.java b/src/main/java/net/minecraft/world/entity/Display.java
 index 2ecd3ed5b36475125c6f63af2612011fc8fba8a5..1cb2532bad5b30366a743000318bcbafb23e9e87 100644
 --- a/src/main/java/net/minecraft/world/entity/Display.java
@@ -104,7 +90,7 @@ index 2ecd3ed5b36475125c6f63af2612011fc8fba8a5..1cb2532bad5b30366a743000318bcbaf
          public static final EntityDataAccessor<Integer> DATA_BACKGROUND_COLOR_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.INT);
          private static final EntityDataAccessor<Byte> DATA_TEXT_OPACITY_ID = SynchedEntityData.defineId(Display.TextDisplay.class, EntityDataSerializers.BYTE);
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 0aab277908d1b885916fb2276dc3aa3f332d51cf..65e0700570970862d24224d68ba9444e70a49f76 100644
+index 734e792451d878aba40f287bd21203a176366b01..8487cfe34a72d1750f0abc4a76f859d3fcb9a49d 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -357,7 +357,7 @@ public abstract class Entity implements Nameable, EntityAccess, CommandSource, S

@@ -106,10 +106,10 @@ index 0000000000000000000000000000000000000000..a9a0117234026f119a64c2ae6c514730
 +    }
 +}
 diff --git a/src/main/java/io/papermc/paper/adventure/PaperAdventure.java b/src/main/java/io/papermc/paper/adventure/PaperAdventure.java
-index ca80cbe422d766b3d044a5b53ce40bb7f92558e4..d490531bcb91904b64329c55071ff47f4307b136 100644
+index cf5a4c142ed6d9ab4850373a9041bdc6af5a2a71..d9cba5921b3917cc024381abdde7b56832392836 100644
 --- a/src/main/java/io/papermc/paper/adventure/PaperAdventure.java
 +++ b/src/main/java/io/papermc/paper/adventure/PaperAdventure.java
-@@ -215,7 +215,7 @@ public final class PaperAdventure {
+@@ -217,7 +217,7 @@ public final class PaperAdventure {
          return PlainTextComponentSerializer.plainText().serialize(translated(component, locale));
      }
  

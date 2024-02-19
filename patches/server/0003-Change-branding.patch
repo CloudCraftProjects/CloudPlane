@@ -5,7 +5,7 @@ Subject: [PATCH] Change branding
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 6d54e1145ad71c0a66416f96ddd5c7c54374371b..1253a3baa15a1943c85f41111d1bfdd33a233769 100644
+index c3575658207faf8ea835de1bbcb4605cf2381117..55d1da6fa402f2ffc6f747196d407060176f3bb7 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -13,8 +13,10 @@ configurations.named(log4jPlugins.compileClasspathConfigurationName) {
@@ -21,7 +21,7 @@ index 6d54e1145ad71c0a66416f96ddd5c7c54374371b..1253a3baa15a1943c85f41111d1bfdd3
      // Paper start
      implementation("org.jline:jline-terminal-jansi:3.21.0")
      implementation("net.minecrell:terminalconsoleappender:1.3.0")
-@@ -85,7 +87,7 @@ tasks.jar {
+@@ -86,7 +88,7 @@ tasks.jar {
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
              "Implementation-Title" to "CraftBukkit",
@@ -118,10 +118,10 @@ index 91eb7d831db2e6c2b7e259151503afbf3c8aa8e0..6018901e7ac605dfc088df55ab9ca38b
  
      public SystemReport fillSystemReport(SystemReport details) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index a60edc00952185bc38019372005657cdd21a35ed..d003ce61fdf7750ae1597699bea74dc0ffb0fdb8 100644
+index 4b4449fbdb2ff58f2bc85831b7c5c5eb0deac21a..1eeaf3ac76a3dc8b559fb4629a0283b012211388 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -264,7 +264,7 @@ import javax.annotation.Nullable; // Paper
+@@ -266,7 +266,7 @@ import javax.annotation.Nullable; // Paper
  import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
