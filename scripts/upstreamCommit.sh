@@ -16,7 +16,7 @@ function getCommits() {
 set -e
 PS1="$"
 
-paperHash=$(git diff gradle.properties | awk '/^-paperCommit =/{print $NF}')
+paperHash=$(git diff HEAD gradle.properties | awk '/^-paperRef =/{print $NF}')
 pufferfishHash=""
 
 TEMP=$(getopt --long paper:,pufferfish: -o "" -- "$@")
@@ -44,8 +44,8 @@ logsuffix=""
 
 # Paper updates
 if [ -n "$paperHash" ]; then
-    newHash=$(git diff gradle.properties | awk '/^+paperRef =/{print $NF}')
-    paper=$(getCommits "PaperMC/Paper" "$paperHash" $(echo $newHash | grep . -q && echo $newHash || echo "HEAD"))
+    newHash=$(git diff HEAD gradle.properties | awk '/^+paperRef =/{print $NF}')
+    paper=$(getCommits "PaperMC/Paper" "$paperHash" "$(echo "$newHash" | grep . -q && echo "$newHash" || echo "HEAD")")
 
     # Updates found
     if [ -n "$paper" ]; then
