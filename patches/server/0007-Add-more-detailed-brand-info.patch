@@ -25,10 +25,10 @@ index b21f7a41581ddf36d61e206366c6398738a47813..9d3dafc4989b9fbaa32a337df9b3c56e
 +    }
  }
 diff --git a/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-index 76f31845fe50200d09e5ab6a6c08da00444414ad..9e0388a6fc638db8be3f6fed73bbbf84a045b813 100644
+index 87c5690774363edc1b7ebff10b041e48c0a6d56d..9892ab8a32f5182376daf850ddad6f276fabb6ca 100644
 --- a/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-@@ -67,7 +67,12 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
+@@ -71,7 +71,12 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
      }
  
      public void startConfiguration() {
@@ -43,7 +43,7 @@ index 76f31845fe50200d09e5ab6a6c08da00444414ad..9e0388a6fc638db8be3f6fed73bbbf84
  
          this.send(new ClientboundUpdateEnabledFeaturesPacket(FeatureFlags.REGISTRY.toNames(this.server.getWorldData().enabledFeatures())));
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 47deae9cb5c9a9350bfef89c9a55878c010b6a8d..1ebb1da427e8d9b3e2ca4984b288c1bb6a02d528 100644
+index 8972630f5216dded8374aaaae38e220eec22ddb6..0f1bb23df82ff871112afb1e28d5afd2b7ab8ada 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -267,7 +267,7 @@ import javax.annotation.Nonnull; // Paper

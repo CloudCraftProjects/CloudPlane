@@ -5,13 +5,13 @@ Subject: [PATCH] Pufferfish api patches
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index bf01892c248b988531d21d9fb0f74d0adf2205ac..e58933f5c8284971d81728932b95c05b5201983b 100644
+index 04853c43b99951bf0d4c96ef73724625bdaf018f..7a80637b31ed082e1506d9fb45ab8141abf79f73 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -75,6 +75,8 @@ dependencies {
      testImplementation("org.hamcrest:hamcrest:2.2")
-     testImplementation("org.mockito:mockito-core:5.5.0")
-     testImplementation("org.ow2.asm:asm-tree:9.5")
+     testImplementation("org.mockito:mockito-core:5.11.0")
+     testImplementation("org.ow2.asm:asm-tree:9.7")
 +
 +    api("io.sentry:sentry:5.4.0") // Pufferfish
  }
@@ -462,7 +462,7 @@ index eaefbb00e9993d54906cc8cf35cf753c0d6c7707..6efa6732e5559c3192d08b8631911be7
  
              if (cloader instanceof PluginClassLoader) {
 diff --git a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
-index f9b57b872780aa6b9b959494874b57c7a8ff0c53..90953bfc81168068a281be4d2d3942d5e7dd69ff 100644
+index 7e4f7cb2afbc145e532285c793573ad107bc3033..12449e18180d604e9cbbc744da74a8b222a18e1f 100644
 --- a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
 @@ -50,6 +50,8 @@ public final class PluginClassLoader extends URLClassLoader implements io.paperm

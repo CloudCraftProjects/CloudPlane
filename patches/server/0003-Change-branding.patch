@@ -5,7 +5,7 @@ Subject: [PATCH] Change branding
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index c3575658207faf8ea835de1bbcb4605cf2381117..55d1da6fa402f2ffc6f747196d407060176f3bb7 100644
+index eeea33edcfcf3ee4165d77cae22b407d6bcfeb58..01be207327f99c9eecd1989d57a1de786cb1ff22 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -13,8 +13,10 @@ configurations.named(log4jPlugins.compileClasspathConfigurationName) {
@@ -21,7 +21,7 @@ index c3575658207faf8ea835de1bbcb4605cf2381117..55d1da6fa402f2ffc6f747196d407060
      // Paper start
      implementation("org.jline:jline-terminal-jansi:3.21.0")
      implementation("net.minecrell:terminalconsoleappender:1.3.0")
-@@ -86,7 +88,7 @@ tasks.jar {
+@@ -87,7 +89,7 @@ tasks.jar {
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
              "Implementation-Title" to "CraftBukkit",
@@ -105,10 +105,10 @@ index 9d687da5bdf398bb3f6c84cdf1249a7213d09f2e..b650f1f7390374dd50b0a281441d0ddb
                  org.bukkit.Bukkit.getLogger().warning("Version: " + org.bukkit.Bukkit.getBukkitVersion());
              }
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 91eb7d831db2e6c2b7e259151503afbf3c8aa8e0..6018901e7ac605dfc088df55ab9ca38bdb654f01 100644
+index d25b8197e6b02ec6c5cd3aca4a2630a2f98ef60b..a581ba78433522a22be95d9e7e4d1be803aa61e0 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1857,7 +1857,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -1867,7 +1867,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
      @DontObfuscate
      public String getServerModName() {
@@ -118,7 +118,7 @@ index 91eb7d831db2e6c2b7e259151503afbf3c8aa8e0..6018901e7ac605dfc088df55ab9ca38b
  
      public SystemReport fillSystemReport(SystemReport details) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 4b4449fbdb2ff58f2bc85831b7c5c5eb0deac21a..1eeaf3ac76a3dc8b559fb4629a0283b012211388 100644
+index 4e5374c06858b2a03735c5fb0675e088d3646973..31f7ed380148f7d08b2267b514849989f37478fd 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -266,7 +266,7 @@ import javax.annotation.Nullable; // Paper
@@ -131,7 +131,7 @@ index 4b4449fbdb2ff58f2bc85831b7c5c5eb0deac21a..1eeaf3ac76a3dc8b559fb4629a0283b0
      private final String bukkitVersion = Versioning.getBukkitVersion();
      private final Logger logger = Logger.getLogger("Minecraft");
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index ce341f42b3a5e17fb6d1f7de8057e73137ae2a6e..2440847cc6e7a05d2438f51557a71a2fcd4b24e2 100644
+index 8d626fadcd4743b6472a2954d2b1b2ec89669814..1ba255a9ece97b05bbb2afbc0dab505b4d9b3fd7 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
 @@ -301,7 +301,7 @@ public class Main {

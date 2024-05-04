@@ -225,10 +225,10 @@ index 78e4675113ff2189a7bf3d418fe4adb21f6e6c37..3e875fb6e547812995f4efbb3509fe04
          this.setPvpAllowed(dedicatedserverproperties.pvp);
          this.setFlightAllowed(dedicatedserverproperties.allowFlight);
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index fa3ca8d83c247d6023736721e2632cca2702b99f..d31e41127959e448f2f3c735673f02863d7b9cab 100644
+index 1b74ffe050197dc96128b520c1f3644f11b67e6d..916a2ce18a8809d13ccb78c294aee63054f511fd 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
-@@ -220,10 +220,12 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
+@@ -229,10 +229,12 @@ public abstract class Level implements LevelAccessor, AutoCloseable {
      private final int height;
      private final int maxBuildHeight;
      // Pufferfish end
@@ -242,7 +242,7 @@ index fa3ca8d83c247d6023736721e2632cca2702b99f..d31e41127959e448f2f3c735673f0286
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 1eeaf3ac76a3dc8b559fb4629a0283b012211388..47deae9cb5c9a9350bfef89c9a55878c010b6a8d 100644
+index 31f7ed380148f7d08b2267b514849989f37478fd..8972630f5216dded8374aaaae38e220eec22ddb6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 @@ -1054,6 +1054,7 @@ public final class CraftServer implements Server {
@@ -253,7 +253,7 @@ index 1eeaf3ac76a3dc8b559fb4629a0283b012211388..47deae9cb5c9a9350bfef89c9a55878c
          for (ServerLevel world : this.console.getAllLevels()) {
              // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
              world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters, config.spawnAnimals); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
-@@ -3018,6 +3019,13 @@ public final class CraftServer implements Server {
+@@ -3033,6 +3034,13 @@ public final class CraftServer implements Server {
              return CraftServer.this.console.paperConfigurations.createLegacyObject(CraftServer.this.console);
          }
  
@@ -268,7 +268,7 @@ index 1eeaf3ac76a3dc8b559fb4629a0283b012211388..47deae9cb5c9a9350bfef89c9a55878c
          public void restart() {
              org.spigotmc.RestartCommand.restart();
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index 2440847cc6e7a05d2438f51557a71a2fcd4b24e2..0130571c45f072dcb3100ae6992e3ed0ed754cf3 100644
+index 1ba255a9ece97b05bbb2afbc0dab505b4d9b3fd7..c0f6b5d092fbd60f8e33e947495e329e350e0b5d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
 @@ -174,6 +174,14 @@ public class Main {
