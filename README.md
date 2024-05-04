@@ -1,12 +1,12 @@
 # CloudPlane
 
-A Minecraft server fork of [Pufferfish](https://github.com/pufferfish-gg/Pufferfish) with some more patches.
+A 1.20.6 Minecraft server fork of [Pufferfish](https://github.com/pufferfish-gg/Pufferfish) with some more patches.
 This fork is mainly designed to fit the CloudCraft Minecraft network.
 
 ## Features
 
 - `allowPvP` gamerule
-- Translate custom item names and their lore
+- Split item lore on newlines on protocol level
 - Instantly refresh various things on player locale change
 - Add version info to brand in F3 screen
 - Add option for changing Pufferfish config location
