@@ -1,7 +1,6 @@
 plugins {
     id("java-library")
-    id("com.github.johnrengelman.shadow") version "8.1.1" apply false
-    id("io.papermc.paperweight.patcher") version "1.5.15"
+    id("io.papermc.paperweight.patcher") version "1.6.3"
 }
 
 repositories {
@@ -12,7 +11,7 @@ repositories {
 }
 
 dependencies {
-    remapper("net.fabricmc:tiny-remapper:0.10.1:fat")
+    remapper("net.fabricmc:tiny-remapper:0.10.2:fat")
     decompiler("org.vineflower:vineflower:1.10.1")
     paperclip("io.papermc:paperclip:3.0.3")
 }
@@ -24,29 +23,24 @@ subprojects {
     java {
         withSourcesJar()
 
-        sourceCompatibility = JavaVersion.VERSION_17
-        targetCompatibility = JavaVersion.VERSION_17
+        sourceCompatibility = JavaVersion.VERSION_21
+        targetCompatibility = JavaVersion.VERSION_21
 
         toolchain {
-            languageVersion = JavaLanguageVersion.of(17)
+            languageVersion = JavaLanguageVersion.of(21)
             vendor = JvmVendorSpec.ADOPTIUM
         }
     }
 
     tasks.withType<JavaCompile> {
         options.encoding = Charsets.UTF_8.name()
-        options.release = 17
+        options.release = 21
     }
 
     repositories {
         mavenCentral()
-
-        maven("https://oss.sonatype.org/content/groups/public/")
         maven("https://repo.papermc.io/repository/maven-public/")
-        maven("https://ci.emc.gs/nexus/content/groups/aikar/")
-        maven("https://repo.aikar.co/content/groups/aikar")
-        maven("https://repo.md-5.net/content/repositories/releases/")
-        maven("https://hub.spigotmc.org/nexus/content/groups/public/")
+        maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") // adventure snapshot
         maven("https://jitpack.io/")
     }
 }

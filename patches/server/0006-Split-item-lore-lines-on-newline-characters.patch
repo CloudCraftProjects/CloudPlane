@@ -1,0 +1,138 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Sun, 22 Aug 2021 20:30:16 +0200
+Subject: [PATCH] Split item lore lines on newline characters
+
+The client doesn't respect newlines, so
+this has to be done at the network level
+
+diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+index 26e393051d2c5fe84b8ae6a33b376efab6198816..4672e336eada51d1dc6b6b7415392a8598634c16 100644
+--- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
++++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+@@ -107,4 +107,10 @@ public class CloudPlaneConfig {
+     private static Component getComponent(String path, Component def) {
+         return MiniMessage.miniMessage().deserialize(getString(path, MiniMessage.miniMessage().serialize(def)));
+     }
++
++    private static void adventure() {
++        if (version <= 4) {
++            set("settings.settings.translate-items", null);
++        }
++    }
+ }
+diff --git a/src/main/java/dev/booky/cloudplane/ComponentUtil.java b/src/main/java/dev/booky/cloudplane/ComponentUtil.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..11b8bdfc16620bbd8762d41c59642d552982c65b
+--- /dev/null
++++ b/src/main/java/dev/booky/cloudplane/ComponentUtil.java
+@@ -0,0 +1,66 @@
++package dev.booky.cloudplane;
++
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.TextComponent;
++import org.apache.commons.lang3.StringUtils;
++
++import java.util.ArrayList;
++import java.util.Collections;
++import java.util.List;
++
++public final class ComponentUtil {
++
++    private ComponentUtil() {
++    }
++
++    private static List<Component> inlineComponent(Component component) {
++        component = component.compact();
++        if (component.children().isEmpty()) {
++            return List.of(component);
++        }
++
++        List<Component> components = new ArrayList<>(5);
++        inlineComponent0(components, component);
++        return components;
++    }
++
++    private static void inlineComponent0(List<Component> components, Component component) {
++        components.add(component.children(List.of()));
++        for (Component child : component.children()) {
++            inlineComponent0(components, child.applyFallbackStyle(component.style()));
++        }
++    }
++
++    public static List<Component> getLines(Component component) {
++        List<Component> parts = inlineComponent(component);
++
++        List<Component> components = new ArrayList<>(parts.size());
++        List<Component> currentComponents = new ArrayList<>(parts.size());
++
++        for (Component part : parts) {
++            if (!(part instanceof TextComponent textComp)
++                    || textComp.content().indexOf('\n') == -1) {
++                currentComponents.add(part);
++                continue;
++            }
++
++            String[] strings = StringUtils.splitPreserveAllTokens(textComp.content(), '\n');
++            for (int i = 0; i < strings.length; i++) {
++                if (i != 0) {
++                    components.add(Component.text().append(currentComponents).build());
++                    currentComponents.clear();
++                }
++
++                String string = strings[i];
++                if (!string.isEmpty()) {
++                    currentComponents.add(Component.text(string, part.style()));
++                }
++            }
++        }
++
++        if (!currentComponents.isEmpty()) {
++            components.add(Component.text().append(currentComponents).build());
++        }
++        return Collections.unmodifiableList(components);
++    }
++}
+diff --git a/src/main/java/net/minecraft/core/component/DataComponents.java b/src/main/java/net/minecraft/core/component/DataComponents.java
+index 5632974af9c603d333ffc30a5a1b1e851821a3bb..dfc505afb0ef2ebb5673d61065d7d0eed5024a38 100644
+--- a/src/main/java/net/minecraft/core/component/DataComponents.java
++++ b/src/main/java/net/minecraft/core/component/DataComponents.java
+@@ -74,7 +74,7 @@ public class DataComponents {
+         "item_name", builder -> builder.persistent(ComponentSerialization.FLAT_CODEC).networkSynchronized(ComponentSerialization.STREAM_CODEC).cacheEncoding()
+     );
+     public static final DataComponentType<ItemLore> LORE = register(
+-        "lore", builder -> builder.persistent(ItemLore.CODEC).networkSynchronized(ItemLore.STREAM_CODEC).cacheEncoding()
++        "lore", builder -> builder.persistent(ItemLore.CODEC).networkSynchronized(ItemLore.SPLITTING_STREAM_CODEC).cacheEncoding() // CloudPlane
+     );
+     public static final DataComponentType<Rarity> RARITY = register(
+         "rarity", builder -> builder.persistent(Rarity.CODEC).networkSynchronized(Rarity.STREAM_CODEC)
+diff --git a/src/main/java/net/minecraft/world/item/component/ItemLore.java b/src/main/java/net/minecraft/world/item/component/ItemLore.java
+index ce17a9256b7d7e649ee90769ab561917b20514f9..6ec394939ffb8c53f2ffb57d58e54336aae8f1b2 100644
+--- a/src/main/java/net/minecraft/world/item/component/ItemLore.java
++++ b/src/main/java/net/minecraft/world/item/component/ItemLore.java
+@@ -25,6 +25,25 @@ public record ItemLore(List<Component> lines, List<Component> styledLines) imple
+         .apply(ByteBufCodecs.list(256))
+         .map(ItemLore::new, ItemLore::lines);
+ 
++    // CloudPlane start - split lore lines
++    public static final StreamCodec<RegistryFriendlyByteBuf, ItemLore> SPLITTING_STREAM_CODEC = ComponentSerialization.STREAM_CODEC
++        .apply(ByteBufCodecs.list(256))
++        .map(java.util.function.Function.identity(), lines -> {
++            if (lines.isEmpty()) {
++                return lines;
++            }
++            List<Component> realLines = new java.util.ArrayList<>(lines.size() * 2);
++            for (Component line : lines) {
++                net.kyori.adventure.text.Component advLine = io.papermc.paper.adventure.PaperAdventure.asAdventure(line);
++                for (net.kyori.adventure.text.Component realLine : dev.booky.cloudplane.ComponentUtil.getLines(advLine)) {
++                    realLines.add(io.papermc.paper.adventure.PaperAdventure.asVanilla(realLine));
++                }
++            }
++            return realLines;
++        })
++        .map(ItemLore::new, ItemLore::lines);
++    // CloudPlane end - split lore lines
++
+     public ItemLore(List<Component> lines) {
+         this(lines, Lists.transform(lines, style -> ComponentUtils.mergeStyles(style.copy(), LORE_STYLE)));
+     }

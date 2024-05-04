@@ -5,10 +5,10 @@ Subject: [PATCH] Add allowPvP gamerule
 
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 3bcd75b7d8f2077d0081a9d1acbf40bad24d2406..881e893878a7d3b17ae272bbf25ff7dc53dc8c9a 100644
+index 856fc37dddaf0bf76f9f8396524488ac077f5bf8..2c18904cf28550fc91bf06c2442d75ff6e2fdd40 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -1517,7 +1517,7 @@ public class ServerPlayer extends Player {
+@@ -1594,7 +1594,7 @@ public class ServerPlayer extends Player {
  
      @Override
      public boolean isInvulnerableTo(DamageSource damageSource) {
@@ -18,15 +18,14 @@ index 3bcd75b7d8f2077d0081a9d1acbf40bad24d2406..881e893878a7d3b17ae272bbf25ff7dc
  
      @Override
 diff --git a/src/main/java/net/minecraft/world/level/GameRules.java b/src/main/java/net/minecraft/world/level/GameRules.java
-index 4a340bd1f1859e43bb58e68aee4018fdb4ca7a5a..bfb820c0cde07e486bb62607c9cac3c91bde133e 100644
+index 89e327bc3a45879fe68887c7aadb077f31a770eb..8a8845864147819d156d0f76afd674adcdaea664 100644
 --- a/src/main/java/net/minecraft/world/level/GameRules.java
 +++ b/src/main/java/net/minecraft/world/level/GameRules.java
-@@ -114,6 +114,8 @@ public class GameRules {
-     public static final GameRules.Key<GameRules.BooleanValue> RULE_GLOBAL_SOUND_EVENTS = GameRules.register("globalSoundEvents", GameRules.Category.MISC, GameRules.BooleanValue.create(true));
-     public static final GameRules.Key<GameRules.BooleanValue> RULE_DO_VINES_SPREAD = GameRules.register("doVinesSpread", GameRules.Category.UPDATES, GameRules.BooleanValue.create(true));
-     public static final GameRules.Key<GameRules.BooleanValue> RULE_ENDER_PEARLS_VANISH_ON_DEATH = GameRules.register("enderPearlsVanishOnDeath", GameRules.Category.PLAYER, GameRules.BooleanValue.create(true));
+@@ -121,6 +121,7 @@ public class GameRules {
+ 
+         worldserver.setDefaultSpawnPos(worldserver.getSharedSpawnPos(), worldserver.getSharedSpawnAngle());
+     }));
 +    public static final GameRules.Key<GameRules.BooleanValue> RULE_ALLOW_PVP = GameRules.register("allowPvP", Category.PLAYER, GameRules.BooleanValue.create(true)); // CloudPlane - allowPvP gamerule
-+
      private final Map<GameRules.Key<?>, GameRules.Value<?>> rules;
      private final GameRules.Value<?>[] gameruleArray; // Paper - Perf: Use array for gamerule storage
  

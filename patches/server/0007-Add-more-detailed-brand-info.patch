@@ -6,12 +6,12 @@ Subject: [PATCH] Add more detailed brand info
 Sends version info to player in brand packet
 
 diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
-index b21f7a41581ddf36d61e206366c6398738a47813..9d3dafc4989b9fbaa32a337df9b3c56ea04f4568 100644
+index 4672e336eada51d1dc6b6b7415392a8598634c16..7352b9094917b57cae64198570c8768d595a5123 100644
 --- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
 +++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
-@@ -123,4 +123,14 @@ public class CloudPlaneConfig {
- 
-         localizeItems = getBoolean("settings.translate-items", localizeItems);
+@@ -113,4 +113,14 @@ public class CloudPlaneConfig {
+             set("settings.settings.translate-items", null);
+         }
      }
 +
 +    public static boolean detailedBrand = true;
@@ -25,10 +25,10 @@ index b21f7a41581ddf36d61e206366c6398738a47813..9d3dafc4989b9fbaa32a337df9b3c56e
 +    }
  }
 diff --git a/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-index 87c5690774363edc1b7ebff10b041e48c0a6d56d..9892ab8a32f5182376daf850ddad6f276fabb6ca 100644
+index e4086bea596e5f5d71491e0b7ad650d76939b8f9..5676e34c9b1dacbbac6ea34eeeb78b95b61cb93c 100644
 --- a/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-@@ -71,7 +71,12 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
+@@ -76,7 +76,12 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
      }
  
      public void startConfiguration() {
@@ -40,13 +40,13 @@ index 87c5690774363edc1b7ebff10b041e48c0a6d56d..9892ab8a32f5182376daf850ddad6f27
 +        // CloudPlane end
 +
          LayeredRegistryAccess<RegistryLayer> layeredregistryaccess = this.server.registries();
- 
-         this.send(new ClientboundUpdateEnabledFeaturesPacket(FeatureFlags.REGISTRY.toNames(this.server.getWorldData().enabledFeatures())));
+         List<KnownPack> list = this.server.getResourceManager().listPacks().flatMap((iresourcepack) -> {
+             return iresourcepack.location().knownPackInfo().stream();
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 8972630f5216dded8374aaaae38e220eec22ddb6..0f1bb23df82ff871112afb1e28d5afd2b7ab8ada 100644
+index 3b39ac5f1838746a0661c8aeffb3e2147faae05f..5750f5242c3034fcf02793e8dd1e34a0826bffb6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -267,7 +267,7 @@ import javax.annotation.Nonnull; // Paper
+@@ -269,7 +269,7 @@ import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
      private final String serverName = "CloudPlane"; // Paper // CloudPlane
