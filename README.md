@@ -1,6 +1,7 @@
 # CloudPlane
 
-A 1.20.6 Minecraft server fork of [Pufferfish](https://github.com/pufferfish-gg/Pufferfish) with some more patches.
+A 1.20.6 Minecraft server fork of [Paper](https://github.com/PaperMC/Paper) and
+[Pufferfish](https://github.com/pufferfish-gg/Pufferfish) with some more patches.
 This fork is mainly designed to fit the CloudCraft Minecraft network.
 
 ## Features
@@ -20,5 +21,7 @@ https://nightly.link/CloudCraftProjects/CloudPlane/workflows/build/master/CloudP
 
 _Building on Windows is untested and not recommended!_
 
-Clone this repository, don't download the ZIP. After cloning, apply the patches using `./gradlew applyPatches`.
-Then the reobfuscated paperclip jar can be compiled using `./gradlew createReobfPaperclipJar`.
+Clone this repository, _don't_ download the ZIP. After cloning,
+apply the patches using `./gradlew applyPatches`. This will take some time.
+
+The runnable paperclip jar can be compiled using `./gradlew createMojmapPaperclipJar`.
