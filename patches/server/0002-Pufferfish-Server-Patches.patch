@@ -3040,6 +3040,23 @@ index 260202fab3ac300552c557b44dcf251f083c6a78..f8a1f395521e6154c50a684783145374
          while (blockposition_mutableblockposition.getY() > this.level().getMinBuildHeight() && !this.level().getBlockState(blockposition_mutableblockposition).blocksMotion()) {
              blockposition_mutableblockposition.move(Direction.DOWN);
          }
+diff --git a/src/main/java/net/minecraft/world/entity/monster/Zoglin.java b/src/main/java/net/minecraft/world/entity/monster/Zoglin.java
+index cfdb2b793f11544ec5e2d1e726134089994b2b0f..0e924c7813e805e860ff51cb20922c539be68d0b 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/Zoglin.java
++++ b/src/main/java/net/minecraft/world/entity/monster/Zoglin.java
+@@ -232,9 +232,12 @@ public class Zoglin extends Monster implements Enemy, HoglinBase {
+         this.setAggressive(this.brain.hasMemoryValue(MemoryModuleType.ATTACK_TARGET));
+     }
+ 
++    private int behaviorTick; // Pufferfish
++
+     @Override
+     protected void customServerAiStep() {
+         this.level().getProfiler().push("zoglinBrain");
++        if (this.behaviorTick++ % this.activatedPriority == 0) // Pufferfish
+         this.getBrain().tick((ServerLevel)this.level(), this);
+         this.level().getProfiler().pop();
+         this.updateActivity();
 diff --git a/src/main/java/net/minecraft/world/entity/monster/breeze/Breeze.java b/src/main/java/net/minecraft/world/entity/monster/breeze/Breeze.java
 index 796ce24185ab9e80864116f9523c4289fcaad243..848e67b2e39cf66c01c893140077d538555e0731 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/breeze/Breeze.java
@@ -3091,6 +3108,23 @@ index a8ab486c7e11ec137da48174af6f1030dfd48056..6242e4b280ee465b23625fe1a7293795
          this.getBrain().tick((ServerLevel) this.level(), this);
          this.level().getProfiler().pop();
          PiglinAi.updateActivity(this);
+diff --git a/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinBrute.java b/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinBrute.java
+index fcadd7f28ccb81bbb36e97d8b8d8a8ba3f3d6a16..3d198f6eb99a7197b22a7680808c17c0b3063cb1 100644
+--- a/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinBrute.java
++++ b/src/main/java/net/minecraft/world/entity/monster/piglin/PiglinBrute.java
+@@ -104,9 +104,12 @@ public class PiglinBrute extends AbstractPiglin {
+         return stack.is(Items.GOLDEN_AXE) && super.wantsToPickUp(stack);
+     }
+ 
++    private int behaviorTick; // Pufferfish
++
+     @Override
+     protected void customServerAiStep() {
+         this.level().getProfiler().push("piglinBruteBrain");
++        if (this.behaviorTick++ % this.activatedPriority == 0) // Pufferfish
+         this.getBrain().tick((ServerLevel)this.level(), this);
+         this.level().getProfiler().pop();
+         PiglinBruteAi.updateActivity(this);
 diff --git a/src/main/java/net/minecraft/world/entity/monster/warden/Warden.java b/src/main/java/net/minecraft/world/entity/monster/warden/Warden.java
 index ddd60be52dce5773c80934be5aa5705db239e3dd..9cf56f2ada025aae0710099bcc3b5c62fd7bbb9e 100644
 --- a/src/main/java/net/minecraft/world/entity/monster/warden/Warden.java
