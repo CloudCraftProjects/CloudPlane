@@ -40,7 +40,6 @@ subprojects {
     repositories {
         mavenCentral()
         maven("https://repo.papermc.io/repository/maven-public/")
-        maven("https://s01.oss.sonatype.org/content/repositories/snapshots/") // adventure snapshot
         maven("https://jitpack.io/")
     }
 }
