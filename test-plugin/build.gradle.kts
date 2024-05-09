@@ -13,7 +13,6 @@ tasks.processResources {
     val properties = mapOf(
         "version" to project.version,
         "api_version" to rootProject.providers.gradleProperty("mcVersion").get()
-            .split(".", "-").take(2).joinToString(".")
     )
 
     inputs.properties(properties)
