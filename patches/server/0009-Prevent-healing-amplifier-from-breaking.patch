@@ -5,7 +5,7 @@ Subject: [PATCH] Prevent healing amplifier from breaking
 
 
 diff --git a/src/main/java/net/minecraft/world/effect/HealOrHarmMobEffect.java b/src/main/java/net/minecraft/world/effect/HealOrHarmMobEffect.java
-index 1c7794de5f0a7238b944c9473e2cc9d011ef2306..c343c2920943d40d8ec560bbfd03dd245336704a 100644
+index b95afa9f6b7cf6c522ff5ec278adec7a9a851e9a..f9e13b0aa8d1009cf4fe263b765d525139fbdb17 100644
 --- a/src/main/java/net/minecraft/world/effect/HealOrHarmMobEffect.java
 +++ b/src/main/java/net/minecraft/world/effect/HealOrHarmMobEffect.java
 @@ -30,13 +30,13 @@ class HealOrHarmMobEffect extends InstantenousMobEffect {

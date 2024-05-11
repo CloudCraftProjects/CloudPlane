@@ -3,6 +3,7 @@ From: booky10 <boooky10@gmail.com>
 Date: Fri, 9 Jul 2021 11:28:12 +0200
 Subject: [PATCH] Add allowPvP gamerule
 
+Dropped as this is now implemented as a plugin in https://github.com/CloudCraftProjects/CloudUtilities
 
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 index 856fc37dddaf0bf76f9f8396524488ac077f5bf8..2c18904cf28550fc91bf06c2442d75ff6e2fdd40 100644

@@ -3,6 +3,7 @@ From: booky10 <boooky10@gmail.com>
 Date: Fri, 9 Jul 2021 13:02:30 +0200
 Subject: [PATCH] Add allowPvP gamerule
 
+Dropped as this is now implemented as a plugin in https://github.com/CloudCraftProjects/CloudUtilities
 
 diff --git a/src/main/java/org/bukkit/GameRule.java b/src/main/java/org/bukkit/GameRule.java
 index be827e7fef0acb17bd41aeff9dc3dc4da3718e5e..2ce2d4845acc2d52dad27abf858621f26bebc2f7 100644

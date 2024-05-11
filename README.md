@@ -6,7 +6,6 @@ This fork is mainly designed to fit the CloudCraft Minecraft network.
 
 ## Features
 
-- `allowPvP` gamerule
 - Split item lore on newlines on protocol level
 - Instantly refresh various things on player locale change
 - Add version info to brand in F3 screen

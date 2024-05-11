@@ -27,7 +27,7 @@ index c7e1f2bac3eca9bb72bf1f8c26cccb2905e1ddfc..4ce4479619cc189e1d6999537deaceff
          this.player = owner;
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 2c18904cf28550fc91bf06c2442d75ff6e2fdd40..3a05f8401c65875386b8d7111c02026b95e04cf0 100644
+index 856fc37dddaf0bf76f9f8396524488ac077f5bf8..a2fe2f667046220ae802326e9c765f0e05ffe284 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -346,6 +346,10 @@ public class ServerPlayer extends Player {
