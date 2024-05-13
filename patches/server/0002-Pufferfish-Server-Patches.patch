@@ -5,10 +5,10 @@ Subject: [PATCH] Pufferfish Server Patches
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 079bf6878538a1c223ac912f29f6df79a1167218..eb8744752b8d730142d15fab51ed889f1ec3efe8 100644
+index 87bb3fd9b97506f61734ae7f2e6860610ba794e7..a086d94ae1eaa351958074c3d2661f8795197829 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -47,6 +47,14 @@ dependencies {
+@@ -46,6 +46,14 @@ dependencies {
      runtimeOnly("org.apache.maven.resolver:maven-resolver-connector-basic:1.9.18")
      runtimeOnly("org.apache.maven.resolver:maven-resolver-transport-http:1.9.18")
  
@@ -23,7 +23,7 @@ index 079bf6878538a1c223ac912f29f6df79a1167218..eb8744752b8d730142d15fab51ed889f
      testImplementation("io.github.classgraph:classgraph:4.8.47") // Paper - mob goal test
      testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
      testImplementation("org.hamcrest:hamcrest:2.2")
-@@ -67,6 +75,13 @@ paperweight {
+@@ -66,6 +74,13 @@ paperweight {
      craftBukkitPackageVersion.set("v1_20_R4") // also needs to be updated in MappingEnvironment
  }
  
@@ -2008,7 +2008,7 @@ index 300929a406905f5ff1ede664d5b99fb0938d4d2e..01a6b1135420ea659d092ddca499f281
                          throw new SignedMessageChain.DecodeException(SignedMessageChain.DecodeException.OUT_OF_ORDER_CHAT, org.bukkit.event.player.PlayerKickEvent.Cause.OUT_OF_ORDER_CHAT); // Paper - kick event causes
                      } else {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 8dc2f9df367c849ca333bf1a1fd92ff91617b548..8bc8ae04837f1bd61f4efaf1f07a755adcf9687c 100644
+index 39303bb4e336732db0ab19dee0c1f8b609bbb134..d4807d574789c02c677911fcd05009988276c1cc 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -320,6 +320,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -2020,7 +2020,7 @@ index 8dc2f9df367c849ca333bf1a1fd92ff91617b548..8bc8ae04837f1bd61f4efaf1f07a755a
      public static <S extends MinecraftServer> S spin(Function<Thread, S> serverFactory) {
          AtomicReference<S> atomicreference = new AtomicReference();
          Thread thread = new io.papermc.paper.util.TickThread(() -> { // Paper - rewrite chunk system
-@@ -2550,6 +2552,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2561,6 +2563,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      }
  
      public ProfilerFiller getProfiler() {
@@ -2029,19 +2029,19 @@ index 8dc2f9df367c849ca333bf1a1fd92ff91617b548..8bc8ae04837f1bd61f4efaf1f07a755a
      }
  
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index eb4fc900164d1fb3a78653ae8bc42ea30323f5b7..077c7507c87a120fb6e58dd07d343e6b0a82cfbf 100644
+index 2eb9c584cc77237f1c82d880a51a3f8b51008d73..6fb2a857d65d7b5de5fd8da224aa8dda79fe3505 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -234,6 +234,8 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -233,6 +233,8 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         io.papermc.paper.command.PaperCommands.registerCommands(this); // Paper - setup /paper command
          com.destroystokyo.paper.Metrics.PaperMetrics.startMetrics(); // Paper - start metrics
          com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // Paper - load version history now
-         io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // Paper - init PaperBrigadierProvider
 +        gg.pufferfish.pufferfish.PufferfishConfig.load(); // Pufferfish
 +        gg.pufferfish.pufferfish.PufferfishCommand.init(); // Pufferfish
  
          this.setPvpAllowed(dedicatedserverproperties.pvp);
          this.setFlightAllowed(dedicatedserverproperties.allowFlight);
-@@ -354,6 +356,11 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -353,6 +355,11 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
                  DedicatedServer.LOGGER.info("JMX monitoring enabled");
              }
  
@@ -2304,7 +2304,7 @@ index ca56a0b596976448da6bb2a0e82b3d5cd4133e12..7ca499376cb2b2de2676601d2b9008d0
                  this.getRandomBlockPosition(j, 0, k, 15, blockposition);
                  this.tickPrecipitation(blockposition, chunk);
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 8437316888c6056060a2780652147590b6fe7443..856fc37dddaf0bf76f9f8396524488ac077f5bf8 100644
+index c10401e587a710d49c4af481c1e531b4bf51f755..5ca3726e411ce9c7facac63d35b974617def0272 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -1330,6 +1330,7 @@ public class ServerPlayer extends Player {
@@ -2340,7 +2340,7 @@ index 8437316888c6056060a2780652147590b6fe7443..856fc37dddaf0bf76f9f8396524488ac
  
      @Override
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 5e9202bc7fc649764568b55d66ba0d684118c00c..4064c15a6bb2d2c44475d3d0460c9d26d1f65b66 100644
+index b9b3277c8ed94e0cd30b20b9c00a33eaad48e5ac..c0e3f69b8c2b478c9879c19ed41664cfedd7c1a2 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -1154,6 +1154,13 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
@@ -2656,7 +2656,7 @@ index a46bf73c608641bf1f00fd55242de71a0f2ee06e..ba4b288e8db199ac31a1dbabd4cad522
          return (EntityType) Registry.register(BuiltInRegistries.ENTITY_TYPE, id, (EntityType<T>) type.build(id)); // CraftBukkit - decompile error
      }
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 6e043457a29a890bcefd27fc5bb07c1a7e4e30f7..61ea7d42ca26f7f700b99c62020031d2a511b47e 100644
+index 517e10c3d8b1549cd30fd0e7cf2bcb35e88eb8ed..9bba1b16ec3a1d64ef5f41365fc7eab23050bb35 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -427,7 +427,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
@@ -3954,10 +3954,10 @@ index 88a4a72bb390947dc17e5da09a99b2d1b3ac4621..d52b48181feca2ab9723a7342240bd51
  
      @Nullable
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 57db399bc1d3b6b015740b059987bc8d9bcc3101..300028987c6db9cdfbbf6d8efa5627586f293efd 100644
+index da1aed63af837b193900bb85393611edbd56c363..5f8e1584432ba16bf2954f6af16fef98cc3ff4ec 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1138,6 +1138,11 @@ public final class CraftServer implements Server {
+@@ -1129,6 +1129,11 @@ public final class CraftServer implements Server {
                  plugin.getPluginMeta().getDisplayName(),
                  "This plugin is not properly shutting down its async tasks when it is being shut down. This task may throw errors during the final shutdown logs and might not complete before process dies."
              ));

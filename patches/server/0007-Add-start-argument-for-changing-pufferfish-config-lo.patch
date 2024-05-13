@@ -33,13 +33,13 @@ index 25c02b42b69c9497fdd9e35e1e72a57f542a06ce..47778592eeab62163613211858ff5d11
  		if (configFile.exists()) {
  			try {
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 315bcff697365903cb005e9987a00f7914dd9804..0b6af867074f40cc1508f23d7bfc0e892d74aa0b 100644
+index b69eeb58eb93869ed1637b7e98eededf14b13ced..cabef25272c170e02ccea0151648726f8bb23248 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -234,7 +234,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -233,7 +233,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         io.papermc.paper.command.PaperCommands.registerCommands(this); // Paper - setup /paper command
          com.destroystokyo.paper.Metrics.PaperMetrics.startMetrics(); // Paper - start metrics
          com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // Paper - load version history now
-         io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // Paper - init PaperBrigadierProvider
 -        gg.pufferfish.pufferfish.PufferfishConfig.load(); // Pufferfish
 +        gg.pufferfish.pufferfish.PufferfishConfig.load((java.io.File) options.valueOf("pufferfish-settings")); // Pufferfish // CloudPlane
          gg.pufferfish.pufferfish.PufferfishCommand.init(); // Pufferfish

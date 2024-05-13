@@ -213,11 +213,11 @@ index 0000000000000000000000000000000000000000..3d12a4fb9e6acb412d80bff777d08771
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 077c7507c87a120fb6e58dd07d343e6b0a82cfbf..315bcff697365903cb005e9987a00f7914dd9804 100644
+index 6fb2a857d65d7b5de5fd8da224aa8dda79fe3505..b69eeb58eb93869ed1637b7e98eededf14b13ced 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -236,6 +236,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
-         io.papermc.paper.brigadier.PaperBrigadierProviderImpl.INSTANCE.getClass(); // Paper - init PaperBrigadierProvider
+@@ -235,6 +235,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+         com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // Paper - load version history now
          gg.pufferfish.pufferfish.PufferfishConfig.load(); // Pufferfish
          gg.pufferfish.pufferfish.PufferfishCommand.init(); // Pufferfish
 +        dev.booky.cloudplane.CloudPlaneConfig.init((java.io.File) this.options.valueOf("cloudplane-settings")); // CloudPlane - load configuration
@@ -242,10 +242,10 @@ index cd00bac90d289a770e5c2723b36462a3d7bda88f..535f000000a9670e07713deda82c2f47
          this.world = new CraftWorld((ServerLevel) this, gen, biomeProvider, env);
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 84413ced2617881c916be823ec3ea4fb862f92c6..3b39ac5f1838746a0661c8aeffb3e2147faae05f 100644
+index da63843f68d26d8480bf59bdbf1f4652719da268..e2fe625f77bf688c49e17b90cb14311f3b828f55 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1054,6 +1054,7 @@ public final class CraftServer implements Server {
+@@ -1038,6 +1038,7 @@ public final class CraftServer implements Server {
  
          org.spigotmc.SpigotConfig.init((File) this.console.options.valueOf("spigot-settings")); // Spigot
          this.console.paperConfigurations.reloadConfigs(this.console);
@@ -253,7 +253,7 @@ index 84413ced2617881c916be823ec3ea4fb862f92c6..3b39ac5f1838746a0661c8aeffb3e214
          for (ServerLevel world : this.console.getAllLevels()) {
              // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
              world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters, config.spawnAnimals); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
-@@ -3053,6 +3054,13 @@ public final class CraftServer implements Server {
+@@ -3044,6 +3045,13 @@ public final class CraftServer implements Server {
              return CraftServer.this.console.paperConfigurations.createLegacyObject(CraftServer.this.console);
          }
  

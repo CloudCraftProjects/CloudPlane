@@ -43,10 +43,10 @@ index e4086bea596e5f5d71491e0b7ad650d76939b8f9..5676e34c9b1dacbbac6ea34eeeb78b95
          List<KnownPack> list = this.server.getResourceManager().listPacks().flatMap((iresourcepack) -> {
              return iresourcepack.location().knownPackInfo().stream();
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 8c0b010c76dac3f4d3ac01ef778dea113da89d8c..a665f2b0bfbe90e9a6a99350349b405885d66f0b 100644
+index e2fe625f77bf688c49e17b90cb14311f3b828f55..e47d373b7295fd3162427224432efe8e7b421972 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -269,7 +269,7 @@ import javax.annotation.Nonnull; // Paper
+@@ -270,7 +270,7 @@ import javax.annotation.Nonnull; // Paper
  
  public final class CraftServer implements Server {
      private final String serverName = "CloudPlane"; // Paper // CloudPlane
