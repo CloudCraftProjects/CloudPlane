@@ -5,10 +5,10 @@ Subject: [PATCH] Change branding
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index a086d94ae1eaa351958074c3d2661f8795197829..8fbe5694def099212dbe9a68266bcd558c939fb0 100644
+index a5dd317a230d6ccaee8a492df909615b7e516d87..ad19b751573953d902d2b361335396cfd27223a4 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -12,7 +12,7 @@ configurations.named(log4jPlugins.compileClasspathConfigurationName) {
+@@ -13,7 +13,7 @@ configurations.named(log4jPlugins.compileClasspathConfigurationName) {
  val alsoShade: Configuration by configurations.creating
  
  dependencies {
@@ -17,15 +17,17 @@ index a086d94ae1eaa351958074c3d2661f8795197829..8fbe5694def099212dbe9a68266bcd55
      // Paper start
      implementation("org.jline:jline-terminal-jansi:3.21.0")
      implementation("net.minecrell:terminalconsoleappender:1.3.0")
-@@ -93,7 +93,7 @@ tasks.jar {
-         attributes(
-             "Main-Class" to "org.bukkit.craftbukkit.Main",
-             "Implementation-Title" to "CraftBukkit",
--            "Implementation-Version" to "git-Paper-$implementationVersion",
-+            "Implementation-Version" to "git-CloudPlane-$implementationVersion", // CloudPlane
-             "Implementation-Vendor" to date, // Paper
-             "Specification-Title" to "Bukkit",
+@@ -101,8 +101,8 @@ tasks.jar {
+             "Specification-Title" to "Paper",
              "Specification-Version" to project.version,
+             "Specification-Vendor" to "Paper Team",
+-            "Brand-Id" to "papermc:paper",
+-            "Brand-Name" to "Paper",
++            "Brand-Id" to "cloudcraft:cloudplane", // CloudPlane
++            "Brand-Name" to "CloudPlane", // CloudPlane
+             "Build-Number" to (build ?: ""),
+             "Build-Time" to Instant.now().toString(),
+             "Git-Branch" to gitBranch, // Paper
 diff --git a/src/main/java/co/aikar/timings/TimingsExport.java b/src/main/java/co/aikar/timings/TimingsExport.java
 index b35a9f4c5f8960864c402ede8a51fb5ab9c4fcc0..577b5f42ca47763c2604795724f906e00e1ddc7e 100644
 --- a/src/main/java/co/aikar/timings/TimingsExport.java
@@ -68,74 +70,37 @@ index 4b002e8b75d117b726b0de274a76d3596fce015b..111dcc7284166e7d5e7014ecf00df48a
                  metrics.addCustomChart(new Metrics.DrilldownPie("java_version", () -> {
                      Map<String, Map<String, Integer>> map = new HashMap<>();
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index 9d687da5bdf398bb3f6c84cdf1249a7213d09f2e..b650f1f7390374dd50b0a281441d0ddb930879f8 100644
+index 532306cacd52579cdf37e4aca25887b1ed3ba6a1..8735c0b8e599d226d4a2d9ae15e18a903b73e422 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-@@ -20,7 +20,7 @@ import java.util.stream.StreamSupport;
- public class PaperVersionFetcher implements VersionFetcher {
-     private static final java.util.regex.Pattern VER_PATTERN = java.util.regex.Pattern.compile("^([0-9\\.]*)\\-.*R"); // R is an anchor, will always give '-R' at end
-     private static final String GITHUB_BRANCH_NAME = "master";
+@@ -35,7 +35,7 @@ public class PaperVersionFetcher implements VersionFetcher {
+     private static final Logger LOGGER = LogUtils.getClassLogger();
+     private static final int DISTANCE_ERROR = -1;
+     private static final int DISTANCE_UNKNOWN = -2;
 -    private static final String DOWNLOAD_PAGE = "https://papermc.io/downloads/paper";
-+    private static final String DOWNLOAD_PAGE = "https://nightly.link/CloudCraftProjects/CloudPlane/workflows/build/master/CloudPlane-Artifacts.zip"; // CloudPlane
-     private static @Nullable String mcVer;
++    private static final String DOWNLOAD_PAGE = "https://dl.cloudcraftmc.de/r/cloudplane"; // CloudPlane
  
      @Override
-@@ -31,8 +31,8 @@ public class PaperVersionFetcher implements VersionFetcher {
-     @Nonnull
-     @Override
-     public Component getVersionMessage(@Nonnull String serverVersion) {
--        String[] parts = serverVersion.substring("git-Paper-".length()).split("[-\\s]");
--        final Component updateMessage = getUpdateStatusMessage("PaperMC/Paper", GITHUB_BRANCH_NAME, parts[0]);
-+        String[] parts = serverVersion.substring("git-CloudPlane-".length()).split("[-\\s]"); // CloudPlane
-+        final Component updateMessage = getUpdateStatusMessage("CloudCraftProjects/CloudPlane", GITHUB_BRANCH_NAME, parts[0]); // CloudPlane
-         final Component history = getHistory();
+     public long getCacheTime() {
+@@ -49,7 +49,7 @@ public class PaperVersionFetcher implements VersionFetcher {
+         if (build.buildNumber().isEmpty() && build.gitCommit().isEmpty()) {
+             updateMessage = text("You are running a development version without access to version information", color(0xFF5300));
+         } else {
+-            updateMessage = getUpdateStatusMessage("PaperMC/Paper", build);
++            updateMessage = getUpdateStatusMessage("CloudCraftProjects/CloudPlane", build); // CloudPlane
+         }
+         final @Nullable Component history = this.getHistory();
  
-         return history != null ? TextComponent.ofChildren(updateMessage, Component.newline(), history) : updateMessage;
-@@ -45,7 +45,7 @@ public class PaperVersionFetcher implements VersionFetcher {
-                 String result = matcher.group();
-                 mcVer = result.substring(0, result.length() - 2); // strip 'R' anchor and trailing '-'
-             } else {
--                org.bukkit.Bukkit.getLogger().warning("Unable to match version to pattern! Report to PaperMC!");
-+                org.bukkit.Bukkit.getLogger().warning("Unable to match version to pattern! Report to CloudCraft!"); // CloudPlane
-                 org.bukkit.Bukkit.getLogger().warning("Pattern: " + VER_PATTERN.toString());
-                 org.bukkit.Bukkit.getLogger().warning("Version: " + org.bukkit.Bukkit.getBukkitVersion());
-             }
-diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index d4807d574789c02c677911fcd05009988276c1cc..2eac9f11d59dccff6a361b609c21df447dd79550 100644
---- a/src/main/java/net/minecraft/server/MinecraftServer.java
-+++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -1928,7 +1928,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
- 
-     @DontObfuscate
-     public String getServerModName() {
--        return "Paper"; // Paper
-+        return "CloudPlane"; // Paper // CloudPlane
-     }
- 
-     public SystemReport fillSystemReport(SystemReport details) {
-diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 5f8e1584432ba16bf2954f6af16fef98cc3ff4ec..da63843f68d26d8480bf59bdbf1f4652719da268 100644
---- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-+++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -269,7 +269,7 @@ import javax.annotation.Nullable; // Paper
- import javax.annotation.Nonnull; // Paper
- 
- public final class CraftServer implements Server {
--    private final String serverName = "Paper"; // Paper
-+    private final String serverName = "CloudPlane"; // Paper // CloudPlane
-     private final String serverVersion;
-     private final String bukkitVersion = Versioning.getBukkitVersion();
-     private final Logger logger = Logger.getLogger("Minecraft");
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index c988afa496d25314451435eedd64079a0d87cef0..6d33e821b72e07445fc25253a09ac15492c60b75 100644
+index e02102280ed1dc300191d19bbca8f00e17701753..00309c8e383d77a1263cb247b1c896f99ff32722 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
-@@ -302,7 +302,7 @@ public class Main {
+@@ -303,7 +303,7 @@ public class Main {
                      if (buildDate.before(deadline.getTime())) {
                          // Paper start - This is some stupid bullshit
                          System.err.println("*** Warning, you've not updated in a while! ***");
 -                        System.err.println("*** Please download a new build as per instructions from https://papermc.io/downloads/paper ***"); // Paper
-+                        System.err.println("*** Please download a new build as per instructions from https://nightly.link/CloudCraftProjects/CloudPlane/workflows/build/master/CloudPlane-Artifacts.zip ***"); // Paper // CloudPlane
++                        System.err.println("*** Please download a new build as per instructions from https://dl.cloudcraftmc.de/r/cloudplane ***"); // Paper // CloudPlane
                          //System.err.println("*** Server will start in 20 seconds ***");
                          //Thread.sleep(TimeUnit.SECONDS.toMillis(20));
                          // Paper end

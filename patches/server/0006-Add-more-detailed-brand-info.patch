@@ -25,7 +25,7 @@ index 4672e336eada51d1dc6b6b7415392a8598634c16..7352b9094917b57cae64198570c8768d
 +    }
  }
 diff --git a/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-index e4086bea596e5f5d71491e0b7ad650d76939b8f9..5676e34c9b1dacbbac6ea34eeeb78b95b61cb93c 100644
+index e4086bea596e5f5d71491e0b7ad650d76939b8f9..8af25d5e1e13d3bd0dbb2b0517565c0883c52de2 100644
 --- a/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 @@ -76,7 +76,12 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
@@ -34,24 +34,11 @@ index e4086bea596e5f5d71491e0b7ad650d76939b8f9..5676e34c9b1dacbbac6ea34eeeb78b95
      public void startConfiguration() {
 -        this.send(new ClientboundCustomPayloadPacket(new BrandPayload(this.server.getServerModName())));
 +        // CloudPlane start
-+        String serverBrand = dev.booky.cloudplane.CloudPlaneConfig.detailedBrand
-+                ? String.valueOf(this.server.server.serverVersion) : this.server.getServerModName();
++        String serverBrand = !dev.booky.cloudplane.CloudPlaneConfig.detailedBrand ? this.server.getServerModName() :
++                this.server.getServerModName() + ' ' + io.papermc.paper.ServerBuildInfo.buildInfo().asString(io.papermc.paper.ServerBuildInfo.StringRepresentation.VERSION_SIMPLE);
 +        this.send(new ClientboundCustomPayloadPacket(new BrandPayload(serverBrand)));
 +        // CloudPlane end
 +
          LayeredRegistryAccess<RegistryLayer> layeredregistryaccess = this.server.registries();
          List<KnownPack> list = this.server.getResourceManager().listPacks().flatMap((iresourcepack) -> {
              return iresourcepack.location().knownPackInfo().stream();
-diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index e2fe625f77bf688c49e17b90cb14311f3b828f55..e47d373b7295fd3162427224432efe8e7b421972 100644
---- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-+++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -270,7 +270,7 @@ import javax.annotation.Nonnull; // Paper
- 
- public final class CraftServer implements Server {
-     private final String serverName = "CloudPlane"; // Paper // CloudPlane
--    private final String serverVersion;
-+    public final String serverVersion; // CloudPlane - private-f -> public-f
-     private final String bukkitVersion = Versioning.getBukkitVersion();
-     private final Logger logger = Logger.getLogger("Minecraft");
-     private final ServicesManager servicesManager = new SimpleServicesManager();

@@ -5,10 +5,10 @@ Subject: [PATCH] Pufferfish Server Patches
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 87bb3fd9b97506f61734ae7f2e6860610ba794e7..a086d94ae1eaa351958074c3d2661f8795197829 100644
+index 4998aff0b7cb084dcda15c6a18bbe45e99b6000a..a5dd317a230d6ccaee8a492df909615b7e516d87 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -46,6 +46,14 @@ dependencies {
+@@ -47,6 +47,14 @@ dependencies {
      runtimeOnly("org.apache.maven.resolver:maven-resolver-connector-basic:1.9.18")
      runtimeOnly("org.apache.maven.resolver:maven-resolver-transport-http:1.9.18")
  
@@ -23,7 +23,7 @@ index 87bb3fd9b97506f61734ae7f2e6860610ba794e7..a086d94ae1eaa351958074c3d2661f87
      testImplementation("io.github.classgraph:classgraph:4.8.47") // Paper - mob goal test
      testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
      testImplementation("org.hamcrest:hamcrest:2.2")
-@@ -66,6 +74,13 @@ paperweight {
+@@ -67,6 +75,13 @@ paperweight {
      craftBukkitPackageVersion.set("v1_20_R4") // also needs to be updated in MappingEnvironment
  }
  
@@ -2008,10 +2008,10 @@ index 300929a406905f5ff1ede664d5b99fb0938d4d2e..01a6b1135420ea659d092ddca499f281
                          throw new SignedMessageChain.DecodeException(SignedMessageChain.DecodeException.OUT_OF_ORDER_CHAT, org.bukkit.event.player.PlayerKickEvent.Cause.OUT_OF_ORDER_CHAT); // Paper - kick event causes
                      } else {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 39303bb4e336732db0ab19dee0c1f8b609bbb134..d4807d574789c02c677911fcd05009988276c1cc 100644
+index dbc86b8d4d2af6e5f7e678f2bb77fd39b85c04c5..a1e18fa1eb40199bc4414ace8f87f31a08012848 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
-@@ -320,6 +320,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -317,6 +317,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      public volatile boolean abnormalExit = false; // Paper
      public static final long SERVER_INIT = System.nanoTime(); // Paper - Lag compensation
  
@@ -2020,7 +2020,7 @@ index 39303bb4e336732db0ab19dee0c1f8b609bbb134..d4807d574789c02c677911fcd0500998
      public static <S extends MinecraftServer> S spin(Function<Thread, S> serverFactory) {
          AtomicReference<S> atomicreference = new AtomicReference();
          Thread thread = new io.papermc.paper.util.TickThread(() -> { // Paper - rewrite chunk system
-@@ -2561,6 +2563,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -2558,6 +2560,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
      }
  
      public ProfilerFiller getProfiler() {
@@ -3954,10 +3954,10 @@ index 88a4a72bb390947dc17e5da09a99b2d1b3ac4621..d52b48181feca2ab9723a7342240bd51
  
      @Nullable
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index da1aed63af837b193900bb85393611edbd56c363..5f8e1584432ba16bf2954f6af16fef98cc3ff4ec 100644
+index 2fa5507aa2153a05208077f9547c165a1099b5bb..978f29a76af86e3e1397551d79cdec4fecec071a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1129,6 +1129,11 @@ public final class CraftServer implements Server {
+@@ -1124,6 +1124,11 @@ public final class CraftServer implements Server {
                  plugin.getPluginMeta().getDisplayName(),
                  "This plugin is not properly shutting down its async tasks when it is being shut down. This task may throw errors during the final shutdown logs and might not complete before process dies."
              ));

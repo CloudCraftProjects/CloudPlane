@@ -46,10 +46,10 @@ index b69eeb58eb93869ed1637b7e98eededf14b13ced..cabef25272c170e02ccea0151648726f
          dev.booky.cloudplane.CloudPlaneConfig.init((java.io.File) this.options.valueOf("cloudplane-settings")); // CloudPlane - load configuration
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index 2af824686c14ad78b0edb9e32ec224787694c3bb..65af64260681782572a08bb493b07fb3858a20bc 100644
+index f5439b615b7a9d5317647b723120c86e3616007e..d51d20cf97b00734f7b9cacc92623f175f1a9f6a 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
-@@ -181,6 +181,12 @@ public class Main {
+@@ -182,6 +182,12 @@ public class Main {
                          .ofType(File.class)
                          .defaultsTo(new File("cloudplane.yml"))
                          .describedAs("Yml file");
