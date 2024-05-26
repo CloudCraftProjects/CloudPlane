@@ -70,7 +70,7 @@ index 4b002e8b75d117b726b0de274a76d3596fce015b..111dcc7284166e7d5e7014ecf00df48a
                  metrics.addCustomChart(new Metrics.DrilldownPie("java_version", () -> {
                      Map<String, Map<String, Integer>> map = new HashMap<>();
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index 532306cacd52579cdf37e4aca25887b1ed3ba6a1..8735c0b8e599d226d4a2d9ae15e18a903b73e422 100644
+index 532306cacd52579cdf37e4aca25887b1ed3ba6a1..443b4702dda601962e7e59cdf2f22002837d6542 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 @@ -35,7 +35,7 @@ public class PaperVersionFetcher implements VersionFetcher {
@@ -78,7 +78,7 @@ index 532306cacd52579cdf37e4aca25887b1ed3ba6a1..8735c0b8e599d226d4a2d9ae15e18a90
      private static final int DISTANCE_ERROR = -1;
      private static final int DISTANCE_UNKNOWN = -2;
 -    private static final String DOWNLOAD_PAGE = "https://papermc.io/downloads/paper";
-+    private static final String DOWNLOAD_PAGE = "https://dl.cloudcraftmc.de/r/cloudplane"; // CloudPlane
++    private static final String DOWNLOAD_PAGE = "https://dl.cloudcraftmc.de/CloudPlane"; // CloudPlane
  
      @Override
      public long getCacheTime() {
@@ -92,7 +92,7 @@ index 532306cacd52579cdf37e4aca25887b1ed3ba6a1..8735c0b8e599d226d4a2d9ae15e18a90
          final @Nullable Component history = this.getHistory();
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index e02102280ed1dc300191d19bbca8f00e17701753..00309c8e383d77a1263cb247b1c896f99ff32722 100644
+index e02102280ed1dc300191d19bbca8f00e17701753..fa1c94da6894d37a9d986c1d32aac73ce4bf312d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
 @@ -303,7 +303,7 @@ public class Main {
@@ -100,7 +100,7 @@ index e02102280ed1dc300191d19bbca8f00e17701753..00309c8e383d77a1263cb247b1c896f9
                          // Paper start - This is some stupid bullshit
                          System.err.println("*** Warning, you've not updated in a while! ***");
 -                        System.err.println("*** Please download a new build as per instructions from https://papermc.io/downloads/paper ***"); // Paper
-+                        System.err.println("*** Please download a new build as per instructions from https://dl.cloudcraftmc.de/r/cloudplane ***"); // Paper // CloudPlane
++                        System.err.println("*** Please download a new build as per instructions from https://dl.cloudcraftmc.de/CloudPlane ***"); // Paper // CloudPlane
                          //System.err.println("*** Server will start in 20 seconds ***");
                          //Thread.sleep(TimeUnit.SECONDS.toMillis(20));
                          // Paper end

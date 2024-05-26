@@ -27,7 +27,7 @@ index c7e1f2bac3eca9bb72bf1f8c26cccb2905e1ddfc..4ce4479619cc189e1d6999537deaceff
          this.player = owner;
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 856fc37dddaf0bf76f9f8396524488ac077f5bf8..a2fe2f667046220ae802326e9c765f0e05ffe284 100644
+index 2ca184235af8a3934f9797231a6191aa7755a527..5d1dcc1328df8e2ec7380db6afbab37a94d8cfaa 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
 @@ -346,6 +346,10 @@ public class ServerPlayer extends Player {
@@ -41,7 +41,7 @@ index 856fc37dddaf0bf76f9f8396524488ac077f5bf8..a2fe2f667046220ae802326e9c765f0e
      public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile, ClientInformation clientOptions) {
          super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);
          this.chatVisibility = ChatVisiblity.FULL;
-@@ -2242,6 +2246,34 @@ public class ServerPlayer extends Player {
+@@ -2243,6 +2247,34 @@ public class ServerPlayer extends Player {
              PlayerLocaleChangeEvent event = new PlayerLocaleChangeEvent(this.getBukkitEntity(), clientOptions.language());
              this.server.server.getPluginManager().callEvent(event);
              this.server.server.getPluginManager().callEvent(new com.destroystokyo.paper.event.player.PlayerLocaleChangeEvent(this.getBukkitEntity(), this.language, clientOptions.language())); // Paper
@@ -90,10 +90,10 @@ index a658943669cdfd49f66ba713505d11b33306ed86..f3a3fd37de7660738ef843f226a30fed
          public static final EntityDataAccessor<Integer> DATA_BACKGROUND_COLOR_ID = SynchedEntityData.defineId(
              Display.TextDisplay.class, EntityDataSerializers.INT
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 2abb9194ea04918961774bc1d9f0ee291586e253..5eab41f6e3a4379d5efd0eeff9522b23cf9ee1ef 100644
+index 3509f92ce7007cb57d57274f89d5957b488b8559..49586b18d8500aeef17529e73557d60aa74f41c2 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -360,7 +360,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -359,7 +359,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      protected static final int FLAG_GLOWING = 6;
      protected static final int FLAG_FALL_FLYING = 7;
      private static final EntityDataAccessor<Integer> DATA_AIR_SUPPLY_ID = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.INT);
