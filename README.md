@@ -14,7 +14,7 @@ This fork is mainly designed to fit the CloudCraft Minecraft network.
 
 ## Download
 
-https://nightly.link/CloudCraftProjects/CloudPlane/workflows/build/master/CloudPlane-Artifacts.zip
+https://dl.cloudcraftmc.de/CloudPlane
 
 ## Building
 
