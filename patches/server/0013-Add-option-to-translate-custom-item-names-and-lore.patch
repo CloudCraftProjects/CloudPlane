@@ -1,0 +1,252 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Mon, 27 May 2024 03:13:37 +0200
+Subject: [PATCH] Add option to translate custom item names and lore
+
+
+diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+index b3402ff1789cf0e2ec661282a3ee7bad3f627041..ec8bdaa81a924e7d5eaf5c74b1c4cc2121fa3c8e 100644
+--- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
++++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
+@@ -117,4 +117,20 @@ public class CloudPlaneConfig {
+         }
+         detailedBrand = getBoolean("settings.detailed-brand-info", detailedBrand);
+     }
++
++    public static boolean localizeItems = true;
++    private static void adventure() {
++        if (version <= 2) {
++            localizeItems = getBoolean("settings.localize.items", localizeItems);
++            set("settings.adventure.localize-items", localizeItems);
++            set("settings.localize", null);
++        }
++        if (version <= 3) {
++            localizeItems = getBoolean("settings.adventure.localize-items", localizeItems);
++            set("settings.translate-items", localizeItems);
++            set("settings.adventure", null);
++        }
++
++        localizeItems = getBoolean("settings.translate-items", localizeItems);
++    }
+ }
+diff --git a/src/main/java/dev/booky/cloudplane/ItemUtil.java b/src/main/java/dev/booky/cloudplane/ItemUtil.java
+index cc19d9e75233465cbf28f65aecfdf498d4339a63..0117a2c5a714e9c9140380a51883b7fbc48bdf1e 100644
+--- a/src/main/java/dev/booky/cloudplane/ItemUtil.java
++++ b/src/main/java/dev/booky/cloudplane/ItemUtil.java
+@@ -1,18 +1,99 @@
+ package dev.booky.cloudplane;
+ 
++import com.mojang.datafixers.util.Pair;
++import com.mojang.serialization.Codec;
++import it.unimi.dsi.fastutil.objects.Reference2ObjectArrayMap;
++import it.unimi.dsi.fastutil.objects.Reference2ObjectMap;
+ import net.kyori.adventure.text.Component;
+ import net.kyori.adventure.text.TextComponent;
++import net.minecraft.core.component.DataComponentPatch;
++import net.minecraft.core.component.DataComponentType;
++import net.minecraft.core.component.DataComponents;
++import net.minecraft.core.registries.BuiltInRegistries;
++import net.minecraft.nbt.CompoundTag;
++import net.minecraft.nbt.NbtOps;
++import net.minecraft.nbt.Tag;
++import net.minecraft.world.item.ItemStack;
++import net.minecraft.world.item.component.CustomData;
+ import org.apache.commons.lang3.StringUtils;
+ 
+ import java.util.ArrayList;
+ import java.util.Collections;
+ import java.util.List;
++import java.util.Optional;
++import java.util.stream.Stream;
++
++import static net.minecraft.core.component.DataComponents.CUSTOM_DATA;
+ 
+ public final class ItemUtil {
+ 
++    private static final List<Pair<String, DataComponentType<?>>> SAVEABLE_COMPONENT_TYPES = Stream.of(
++                    DataComponents.ITEM_NAME, DataComponents.CUSTOM_NAME, DataComponents.LORE
++            )
++            .<Pair<String, DataComponentType<?>>>map(type -> Pair.of(BuiltInRegistries.DATA_COMPONENT_TYPE.getKey(type).toString(), type))
++            .toList();
++    private static final String SAVEABLE_COMPONENT_TAG_NAME = "CloudPlane$SavedData";
++
+     private ItemUtil() {
+     }
+ 
++    @SuppressWarnings("unchecked") // not unchecked
++    public static void unpackPatchSaves(ItemStack stack) {
++        CustomData customData = stack.getOrDefault(CUSTOM_DATA, CustomData.EMPTY);
++        if (customData.isEmpty() || !customData.contains(SAVEABLE_COMPONENT_TAG_NAME)) {
++            return; // nothing to unpack
++        }
++        CompoundTag savedTag = customData.getUnsafe().getCompound(SAVEABLE_COMPONENT_TAG_NAME);
++        for (Pair<String, DataComponentType<?>> type : SAVEABLE_COMPONENT_TYPES) {
++            Tag encoded = savedTag.get(type.getFirst());
++            if (encoded == null) {
++                continue; // nothing saved for this type, skip
++            }
++            Object decoded = type.getSecond().codecOrThrow()
++                    .decode(NbtOps.INSTANCE, encoded)
++                    .getOrThrow().getFirst();
++            stack.set((DataComponentType<Object>) type.getSecond(), decoded);
++        }
++        // generally unsafe to do, but this probably won't cause any issues at this place
++        customData.getUnsafe().remove(SAVEABLE_COMPONENT_TAG_NAME);
++    }
++
++    @SuppressWarnings("unchecked") // not unchecked
++    public static DataComponentPatch packPatchSaves(ItemStack stack) {
++        Reference2ObjectMap<DataComponentType<?>, Optional<?>> patch = stack.components.patch;
++        if (patch == null || patch.isEmpty()) {
++            return DataComponentPatch.EMPTY; // no patches, skip complex logic
++        }
++
++        CompoundTag savedTag = null; // lazy-loaded
++        for (Pair<String, DataComponentType<?>> type : SAVEABLE_COMPONENT_TYPES) {
++            Optional<?> value = patch.get(type.getSecond());
++            if (value == null || value.isEmpty()) {
++                continue;
++            }
++            if (savedTag == null) {
++                savedTag = new CompoundTag();
++            }
++            Codec<Object> codec = ((DataComponentType<Object>) type.getSecond()).codecOrThrow();
++            Tag encoded = codec.encodeStart(NbtOps.INSTANCE, value.get()).getOrThrow();
++            savedTag.put(type.getFirst(), encoded);
++        }
++        if (savedTag == null) { // nothing found to be saved, return original
++            return new DataComponentPatch(patch);
++        }
++
++        // add saved data to custom data component
++        CompoundTag tag = stack.getOrDefault(CUSTOM_DATA, CustomData.EMPTY).copyTag();
++        tag.put(SAVEABLE_COMPONENT_TAG_NAME, savedTag);
++
++        // copy patch map, prevents modification of original item stack
++        Reference2ObjectMap<DataComponentType<?>, Optional<?>> newPatch =
++                new Reference2ObjectArrayMap<>(patch.size() + 1);
++        newPatch.putAll(patch);
++        newPatch.put(CUSTOM_DATA, Optional.of(CustomData.of(tag)));
++        return new DataComponentPatch(newPatch);
++    }
++
+     private static List<Component> inlineComponent(Component component) {
+         component = component.compact();
+         if (component.children().isEmpty()) {
+diff --git a/src/main/java/net/minecraft/core/component/DataComponentPatch.java b/src/main/java/net/minecraft/core/component/DataComponentPatch.java
+index b8977749d35dd7343021425f477445bec470d46b..c94e5ed9d61f1586a08ce1ec6ea032eb4d2603a4 100644
+--- a/src/main/java/net/minecraft/core/component/DataComponentPatch.java
++++ b/src/main/java/net/minecraft/core/component/DataComponentPatch.java
+@@ -155,7 +155,7 @@ public final class DataComponentPatch {
+     private static final String REMOVED_PREFIX = "!";
+     final Reference2ObjectMap<DataComponentType<?>, Optional<?>> map;
+ 
+-    DataComponentPatch(Reference2ObjectMap<DataComponentType<?>, Optional<?>> changedComponents) {
++    public DataComponentPatch(Reference2ObjectMap<DataComponentType<?>, Optional<?>> changedComponents) { // CloudPlane - package-private -> public
+         this.map = changedComponents;
+     }
+ 
+diff --git a/src/main/java/net/minecraft/core/component/PatchedDataComponentMap.java b/src/main/java/net/minecraft/core/component/PatchedDataComponentMap.java
+index 22da75d8197de29a150c9eade7994deecae53a10..c026a6edf497c86be3b3f1b511bb285701173a88 100644
+--- a/src/main/java/net/minecraft/core/component/PatchedDataComponentMap.java
++++ b/src/main/java/net/minecraft/core/component/PatchedDataComponentMap.java
+@@ -16,7 +16,7 @@ import javax.annotation.Nullable;
+ 
+ public final class PatchedDataComponentMap implements DataComponentMap {
+     private final DataComponentMap prototype;
+-    private Reference2ObjectMap<DataComponentType<?>, Optional<?>> patch;
++    public Reference2ObjectMap<DataComponentType<?>, Optional<?>> patch; // CloudPlane - private -> public
+     private boolean copyOnWrite;
+ 
+     public PatchedDataComponentMap(DataComponentMap baseComponents) {
+diff --git a/src/main/java/net/minecraft/world/item/ItemStack.java b/src/main/java/net/minecraft/world/item/ItemStack.java
+index 58c38bc4361ddf24716f326b0c6fc626d434756e..24d035a40c675ce55893169c74101a9c392cac44 100644
+--- a/src/main/java/net/minecraft/world/item/ItemStack.java
++++ b/src/main/java/net/minecraft/world/item/ItemStack.java
+@@ -171,6 +171,11 @@ public final class ItemStack implements DataComponentHolder {
+                 if (false && !datacomponentpatch.isEmpty()) { // Paper - This is no longer needed with raw NBT being handled in metadata
+                     CraftItemStack.setItemMeta(itemstack, CraftItemStack.getItemMeta(itemstack));
+                 }
++                // CloudPlane start - item localization
++                if (dev.booky.cloudplane.CloudPlaneConfig.localizeItems) {
++                    dev.booky.cloudplane.ItemUtil.unpackPatchSaves(itemstack);
++                }
++                // CloudPlane end - item localization
+                 return itemstack;
+                 // CraftBukkit end
+             }
+@@ -186,15 +191,23 @@ public final class ItemStack implements DataComponentHolder {
+                 // CraftItemStack.setItemMeta(itemstack, CraftItemStack.getItemMeta(itemstack)); // Paper - This is no longer with raw NBT being handled in metadata
+                 // Spigot end
+                 ITEM_STREAM_CODEC.encode(registryfriendlybytebuf, itemstack.getItemHolder()); // CraftBukkit - decompile error
++                // CloudPlane start - item localization
++                if (dev.booky.cloudplane.CloudPlaneConfig.localizeItems
++                        && registryfriendlybytebuf.adventure$locale != null) {
++                    DataComponentPatch.STREAM_CODEC.encode(registryfriendlybytebuf,
++                            dev.booky.cloudplane.ItemUtil.packPatchSaves(itemstack));
++                } else {
++                // CloudPlane end - item localization
+                 // Paper start - adventure; conditionally render translatable components
+                 boolean prev = net.minecraft.network.chat.ComponentSerialization.DONT_RENDER_TRANSLATABLES.get();
+                 try {
+                     net.minecraft.network.chat.ComponentSerialization.DONT_RENDER_TRANSLATABLES.set(true);
+-                DataComponentPatch.STREAM_CODEC.encode(registryfriendlybytebuf, itemstack.components.asPatch());
++                DataComponentPatch.STREAM_CODEC.encode(registryfriendlybytebuf, itemstack.components.asPatch()); // CloudPlane - item localization; diff on change
+                 } finally {
+                     net.minecraft.network.chat.ComponentSerialization.DONT_RENDER_TRANSLATABLES.set(prev);
+                 }
+                 // Paper end - adventure; conditionally render translatable components
++                } // CloudPlane - item localization
+             }
+         }
+     };
+@@ -228,7 +241,7 @@ public final class ItemStack implements DataComponentHolder {
+     @Deprecated
+     @Nullable
+     private Item item;
+-    private PatchedDataComponentMap components;
++    public PatchedDataComponentMap components; // CloudPlane - private -> public
+     @Nullable
+     private Entity entityRepresentation;
+ 
+diff --git a/src/main/java/net/minecraft/world/item/component/ItemLore.java b/src/main/java/net/minecraft/world/item/component/ItemLore.java
+index e4bc72ffd982a06a71bfa1c20f4e66e13cf3234a..cda383fb63889177a96e85f41151dce92a891692 100644
+--- a/src/main/java/net/minecraft/world/item/component/ItemLore.java
++++ b/src/main/java/net/minecraft/world/item/component/ItemLore.java
+@@ -41,6 +41,36 @@ public record ItemLore(List<Component> lines, List<Component> styledLines) imple
+             }
+             return realLines;
+         })
++        // CloudPlane start - item localization; line splitting support
++        .<List<Component>>apply(codec -> new StreamCodec<>() {
++            @Override
++            public List<Component> decode(RegistryFriendlyByteBuf buf) {
++                return codec.decode(buf);
++            }
++
++            @Override
++            public void encode(RegistryFriendlyByteBuf buf, List<Component> value) {
++                if (dev.booky.cloudplane.CloudPlaneConfig.localizeItems && buf.adventure$locale != null) {
++                    // pre-render translations here to work around line splitting not working anymore
++                    boolean prevNoRender = ComponentSerialization.DONT_RENDER_TRANSLATABLES.get();
++                    try {
++                        ComponentSerialization.DONT_RENDER_TRANSLATABLES.set(true);
++                        List<Component> lines = Lists.newArrayListWithCapacity(value.size());
++                        for (Component line : value) {
++                            net.kyori.adventure.text.Component advLine = io.papermc.paper.adventure.PaperAdventure.asAdventure(line);
++                            net.kyori.adventure.text.Component i18nLine = net.kyori.adventure.translation.GlobalTranslator.render(advLine, buf.adventure$locale);
++                            lines.add(io.papermc.paper.adventure.PaperAdventure.asVanilla(i18nLine));
++                        }
++                        codec.encode(buf, lines);
++                    } finally {
++                        ComponentSerialization.DONT_RENDER_TRANSLATABLES.set(prevNoRender);
++                    }
++                } else {
++                    codec.encode(buf, value);
++                }
++            }
++        })
++        // CloudPlane end - item localization; line splitting support
+         .map(ItemLore::new, ItemLore::lines);
+     // CloudPlane end - split lore lines
+ 

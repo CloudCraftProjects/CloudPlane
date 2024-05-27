@@ -6,12 +6,12 @@ Subject: [PATCH] Add more detailed brand info
 Sends version info to player in brand packet
 
 diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
-index 4672e336eada51d1dc6b6b7415392a8598634c16..7352b9094917b57cae64198570c8768d595a5123 100644
+index 26e393051d2c5fe84b8ae6a33b376efab6198816..b3402ff1789cf0e2ec661282a3ee7bad3f627041 100644
 --- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
 +++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
-@@ -113,4 +113,14 @@ public class CloudPlaneConfig {
-             set("settings.settings.translate-items", null);
-         }
+@@ -107,4 +107,14 @@ public class CloudPlaneConfig {
+     private static Component getComponent(String path, Component def) {
+         return MiniMessage.miniMessage().deserialize(getString(path, MiniMessage.miniMessage().serialize(def)));
      }
 +
 +    public static boolean detailedBrand = true;

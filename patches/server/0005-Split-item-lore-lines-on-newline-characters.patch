@@ -6,26 +6,11 @@ Subject: [PATCH] Split item lore lines on newline characters
 The client doesn't respect newlines, so
 this has to be done at the network level
 
-diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
-index 26e393051d2c5fe84b8ae6a33b376efab6198816..4672e336eada51d1dc6b6b7415392a8598634c16 100644
---- a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
-+++ b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
-@@ -107,4 +107,10 @@ public class CloudPlaneConfig {
-     private static Component getComponent(String path, Component def) {
-         return MiniMessage.miniMessage().deserialize(getString(path, MiniMessage.miniMessage().serialize(def)));
-     }
-+
-+    private static void adventure() {
-+        if (version <= 4) {
-+            set("settings.settings.translate-items", null);
-+        }
-+    }
- }
-diff --git a/src/main/java/dev/booky/cloudplane/ComponentUtil.java b/src/main/java/dev/booky/cloudplane/ComponentUtil.java
+diff --git a/src/main/java/dev/booky/cloudplane/ItemUtil.java b/src/main/java/dev/booky/cloudplane/ItemUtil.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..11b8bdfc16620bbd8762d41c59642d552982c65b
+index 0000000000000000000000000000000000000000..cc19d9e75233465cbf28f65aecfdf498d4339a63
 --- /dev/null
-+++ b/src/main/java/dev/booky/cloudplane/ComponentUtil.java
++++ b/src/main/java/dev/booky/cloudplane/ItemUtil.java
 @@ -0,0 +1,66 @@
 +package dev.booky.cloudplane;
 +
@@ -37,9 +22,9 @@ index 0000000000000000000000000000000000000000..11b8bdfc16620bbd8762d41c59642d55
 +import java.util.Collections;
 +import java.util.List;
 +
-+public final class ComponentUtil {
++public final class ItemUtil {
 +
-+    private ComponentUtil() {
++    private ItemUtil() {
 +    }
 +
 +    private static List<Component> inlineComponent(Component component) {
@@ -94,7 +79,7 @@ index 0000000000000000000000000000000000000000..11b8bdfc16620bbd8762d41c59642d55
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/core/component/DataComponents.java b/src/main/java/net/minecraft/core/component/DataComponents.java
-index 5632974af9c603d333ffc30a5a1b1e851821a3bb..dfc505afb0ef2ebb5673d61065d7d0eed5024a38 100644
+index 9b2a209cda955ef3e5d8ff3ed1b2249888c7d139..de0f853ca0090de9c4fb0f54a87d25ef783b533e 100644
 --- a/src/main/java/net/minecraft/core/component/DataComponents.java
 +++ b/src/main/java/net/minecraft/core/component/DataComponents.java
 @@ -74,7 +74,7 @@ public class DataComponents {
@@ -107,7 +92,7 @@ index 5632974af9c603d333ffc30a5a1b1e851821a3bb..dfc505afb0ef2ebb5673d61065d7d0ee
      public static final DataComponentType<Rarity> RARITY = register(
          "rarity", builder -> builder.persistent(Rarity.CODEC).networkSynchronized(Rarity.STREAM_CODEC)
 diff --git a/src/main/java/net/minecraft/world/item/component/ItemLore.java b/src/main/java/net/minecraft/world/item/component/ItemLore.java
-index ce17a9256b7d7e649ee90769ab561917b20514f9..6ec394939ffb8c53f2ffb57d58e54336aae8f1b2 100644
+index ce17a9256b7d7e649ee90769ab561917b20514f9..e4bc72ffd982a06a71bfa1c20f4e66e13cf3234a 100644
 --- a/src/main/java/net/minecraft/world/item/component/ItemLore.java
 +++ b/src/main/java/net/minecraft/world/item/component/ItemLore.java
 @@ -25,6 +25,25 @@ public record ItemLore(List<Component> lines, List<Component> styledLines) imple
@@ -124,7 +109,7 @@ index ce17a9256b7d7e649ee90769ab561917b20514f9..6ec394939ffb8c53f2ffb57d58e54336
 +            List<Component> realLines = new java.util.ArrayList<>(lines.size() * 2);
 +            for (Component line : lines) {
 +                net.kyori.adventure.text.Component advLine = io.papermc.paper.adventure.PaperAdventure.asAdventure(line);
-+                for (net.kyori.adventure.text.Component realLine : dev.booky.cloudplane.ComponentUtil.getLines(advLine)) {
++                for (net.kyori.adventure.text.Component realLine : dev.booky.cloudplane.ItemUtil.getLines(advLine)) {
 +                    realLines.add(io.papermc.paper.adventure.PaperAdventure.asVanilla(realLine));
 +                }
 +            }

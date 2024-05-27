@@ -3,6 +3,7 @@ From: booky10 <boooky10@gmail.com>
 Date: Sun, 22 Aug 2021 20:30:16 +0200
 Subject: [PATCH] Add option to translate custom item names and lore
 
+This patch was completely rewritten with the 1.20.5/1.20.6 update
 
 diff --git a/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java b/src/main/java/dev/booky/cloudplane/CloudPlaneConfig.java
 index 26e393051d2c5fe84b8ae6a33b376efab6198816..b21f7a41581ddf36d61e206366c6398738a47813 100644
