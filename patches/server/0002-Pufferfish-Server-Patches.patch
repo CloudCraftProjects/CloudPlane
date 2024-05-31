@@ -2340,7 +2340,7 @@ index 6a4637eef14cbd84bbe26ef16f004b8f93367a3d..2ca184235af8a3934f9797231a6191aa
  
      @Override
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index c450447585af4c8cdc87abe871c229ff895c3e53..7f1957d84bc22940fae4928ef787d1f29c7c3a66 100644
+index 4ae88bfcead40cd05f9514a48a922a37767cb3cf..6ccc546563ed8027eed58d5b8a20983bf09cee99 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -1154,6 +1154,13 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
@@ -2455,7 +2455,7 @@ index f402dbbfe3a443e6bc51f88b85abe937852b52f0..3bf8b021e84df0ce277d48ac370f6224
  
      int getContainerSize();
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 4ee843dfd826772c9157ca421d8fe1f36f814b51..3509f92ce7007cb57d57274f89d5957b488b8559 100644
+index 7ef9f67d27cc240191dd5d07e8dcf5fbdebe1049..1d14b3c30b43fe5d4ceda067226a189653721668 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -311,7 +311,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -2656,7 +2656,7 @@ index a46bf73c608641bf1f00fd55242de71a0f2ee06e..ba4b288e8db199ac31a1dbabd4cad522
          return (EntityType) Registry.register(BuiltInRegistries.ENTITY_TYPE, id, (EntityType<T>) type.build(id)); // CraftBukkit - decompile error
      }
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 0ddf2e1a6d2ea836f8a140a435721e0ce96bd8d2..f0f8eaab8f4a0ce0e27a687f5e021f3db8dba76d 100644
+index ce01fe82dc1eaaf06ca317ddbc62b7d1b87a48b2..4e81e61889d0345889850a0444ee724e2e5bfde4 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -427,7 +427,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
@@ -2685,7 +2685,7 @@ index 0ddf2e1a6d2ea836f8a140a435721e0ce96bd8d2..f0f8eaab8f4a0ce0e27a687f5e021f3d
      @Override
      public boolean hurt(DamageSource source, float amount) {
          if (this.isInvulnerableTo(source)) {
-@@ -2050,6 +2060,20 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -2040,6 +2050,20 @@ public abstract class LivingEntity extends Entity implements Attackable {
          return this.lastClimbablePos;
      }
  
@@ -2707,7 +2707,7 @@ index 0ddf2e1a6d2ea836f8a140a435721e0ce96bd8d2..f0f8eaab8f4a0ce0e27a687f5e021f3d
          if (this.isSpectator()) {
              return false;
 diff --git a/src/main/java/net/minecraft/world/entity/Mob.java b/src/main/java/net/minecraft/world/entity/Mob.java
-index 9f42563699508fcb3d8a96cfdfc25a7bffd99759..d656c299b37c2f768d252dc11fbeff686253a6fc 100644
+index 8b612b772ca87c852d0b108c2afd6785c261c9b9..89d0594c5f385182c4bcda82fc707e523aeec2b3 100644
 --- a/src/main/java/net/minecraft/world/entity/Mob.java
 +++ b/src/main/java/net/minecraft/world/entity/Mob.java
 @@ -237,14 +237,17 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Targeti
@@ -3945,18 +3945,15 @@ index 88a4a72bb390947dc17e5da09a99b2d1b3ac4621..d52b48181feca2ab9723a7342240bd51
  
      @Nullable
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index af015237214cebc4d1c4bb9e9c5f939d433e365c..eca42acc4dd92d0466e2625191b814038f748f30 100644
+index 94a31c8f903eb61eb6d203e8e6fe8fb0beca28b1..daa60d4d15cfef5221f68e4538e477901b3ad459 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1124,6 +1124,11 @@ public final class CraftServer implements Server {
+@@ -1124,7 +1124,7 @@ public final class CraftServer implements Server {
                  plugin.getPluginMeta().getDisplayName(),
                  "This plugin is not properly shutting down its async tasks when it is being shut down. This task may throw errors during the final shutdown logs and might not complete before process dies."
              ));
-+            getLogger().log(Level.SEVERE, String.format("%s Stacktrace", worker.getThread().getName()));
-+            StackTraceElement[] stackTrace = worker.getThread().getStackTrace();
-+            for (StackTraceElement element : stackTrace) {
-+                getLogger().log(Level.SEVERE, "  " + element.toString());
-+            }
+-            if (console.isDebugging()) io.papermc.paper.util.TraceUtil.dumpTraceForThread(worker.getThread(), "still running"); // Paper - Debugging
++            if (true || console.isDebugging()) io.papermc.paper.util.TraceUtil.dumpTraceForThread(worker.getThread(), "still running"); // Paper - Debugging // Pufferfish
          }
      }
      // Paper end - Wait for Async Tasks during shutdown

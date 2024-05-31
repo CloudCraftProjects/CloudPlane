@@ -5,7 +5,7 @@ Subject: [PATCH] Log exceptions caused by packet sending
 
 
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index b9b29ac885a344bae6e5a39b1933afbcc42dc4d4..5851d614025716d0625c123d8196a2ecc705255c 100644
+index 8b00624b509a246ded65820ce8239df2da3eac79..dfd48720f4517cd78aeaedcd9608f3b3780b31f1 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
 @@ -228,7 +228,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
@@ -14,10 +14,10 @@ index b9b29ac885a344bae6e5a39b1933afbcc42dc4d4..5851d614025716d0625c123d8196a2ec
                      if (flag) {
 -                        Connection.LOGGER.debug("Failed to sent packet", throwable);
 +                        Connection.LOGGER.error("Failed to sent packet", throwable); // CloudPlane
-                         if (this.getSending() == PacketFlow.CLIENTBOUND) {
+                         boolean doesDisconnectExist = this.packetListener.protocol() != ConnectionProtocol.STATUS && this.packetListener.protocol() != ConnectionProtocol.HANDSHAKING; // Paper
+                         if (this.getSending() == PacketFlow.CLIENTBOUND && doesDisconnectExist) { // Paper
                              Packet<?> packet = this.sendLoginDisconnect ? new ClientboundLoginDisconnectPacket(ichatmutablecomponent) : new ClientboundDisconnectPacket(ichatmutablecomponent);
- 
-@@ -241,7 +241,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -242,7 +242,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
  
                          this.setReadOnly();
                      } else {
