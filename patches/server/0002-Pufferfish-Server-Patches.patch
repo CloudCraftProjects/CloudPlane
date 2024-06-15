@@ -2008,7 +2008,7 @@ index 300929a406905f5ff1ede664d5b99fb0938d4d2e..01a6b1135420ea659d092ddca499f281
                          throw new SignedMessageChain.DecodeException(SignedMessageChain.DecodeException.OUT_OF_ORDER_CHAT, org.bukkit.event.player.PlayerKickEvent.Cause.OUT_OF_ORDER_CHAT); // Paper - kick event causes
                      } else {
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 0ed42fa899721f83b598db05be1b5f321af3614a..64f35b254f322d573fd00232ffe27f3b80297277 100644
+index 3751c2a077bd13bac330b93c6efc2a640a17f4f2..44614349884da05c4983b8474f4f36d67dd514a1 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -317,6 +317,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -2029,7 +2029,7 @@ index 0ed42fa899721f83b598db05be1b5f321af3614a..64f35b254f322d573fd00232ffe27f3b
      }
  
 diff --git a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
-index 2eb9c584cc77237f1c82d880a51a3f8b51008d73..6fb2a857d65d7b5de5fd8da224aa8dda79fe3505 100644
+index ad967cc2283f902c76e48a59d59cf0dbdacbb5e3..88cd127a446f6d7d3a5d6ca4a4265105f6f1c8c6 100644
 --- a/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/src/main/java/net/minecraft/server/dedicated/DedicatedServer.java
 @@ -233,6 +233,8 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
@@ -2106,7 +2106,7 @@ index 7fb9ba3dadb1eca4a1000ea8cf4d13fed2b7db1e..aa91bc5657716321e23ab5848a53b6b1
              return this.scaledRange(i);
          }
 diff --git a/src/main/java/net/minecraft/server/level/ServerChunkCache.java b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
-index b99f50604bafecbc68835974c9ed0caa91911a40..78e3be9cec0f1d8dbb297b40854d08385b1bd2e0 100644
+index fcecfda569d2a8d6b8a7e228831f822fb7327748..3ca8d074eb0918c0e7d5f3f2abb641b3bb60187e 100644
 --- a/src/main/java/net/minecraft/server/level/ServerChunkCache.java
 +++ b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
 @@ -75,6 +75,9 @@ public class ServerChunkCache extends ChunkSource {
@@ -2656,7 +2656,7 @@ index a46bf73c608641bf1f00fd55242de71a0f2ee06e..ba4b288e8db199ac31a1dbabd4cad522
          return (EntityType) Registry.register(BuiltInRegistries.ENTITY_TYPE, id, (EntityType<T>) type.build(id)); // CraftBukkit - decompile error
      }
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index ce01fe82dc1eaaf06ca317ddbc62b7d1b87a48b2..4e81e61889d0345889850a0444ee724e2e5bfde4 100644
+index 21e61bb75ac7ce468bc757633ce678b21bcb9deb..94b54909a2976e51d0940c624c89ecfa23bdc3fa 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -427,7 +427,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
@@ -2685,7 +2685,7 @@ index ce01fe82dc1eaaf06ca317ddbc62b7d1b87a48b2..4e81e61889d0345889850a0444ee724e
      @Override
      public boolean hurt(DamageSource source, float amount) {
          if (this.isInvulnerableTo(source)) {
-@@ -2040,6 +2050,20 @@ public abstract class LivingEntity extends Entity implements Attackable {
+@@ -2034,6 +2044,20 @@ public abstract class LivingEntity extends Entity implements Attackable {
          return this.lastClimbablePos;
      }
  
@@ -3945,10 +3945,10 @@ index 88a4a72bb390947dc17e5da09a99b2d1b3ac4621..d52b48181feca2ab9723a7342240bd51
  
      @Nullable
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 94a31c8f903eb61eb6d203e8e6fe8fb0beca28b1..daa60d4d15cfef5221f68e4538e477901b3ad459 100644
+index 5db08432b6afd3639688830e717f40ceaf599248..29c1db783eeaca51ec4cbe7c91edfac2ef4c5d1e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1124,7 +1124,7 @@ public final class CraftServer implements Server {
+@@ -1147,7 +1147,7 @@ public final class CraftServer implements Server {
                  plugin.getPluginMeta().getDisplayName(),
                  "This plugin is not properly shutting down its async tasks when it is being shut down. This task may throw errors during the final shutdown logs and might not complete before process dies."
              ));
