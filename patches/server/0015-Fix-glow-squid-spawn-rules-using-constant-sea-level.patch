@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Fri, 19 Jul 2024 05:47:47 +0200
+Subject: [PATCH] Fix glow squid spawn rules using constant sea level
+
+This now gets the sea level from the noise settings which can be customized
+
+diff --git a/src/main/java/net/minecraft/world/entity/GlowSquid.java b/src/main/java/net/minecraft/world/entity/GlowSquid.java
+index 09fdea983772612ef3fff6b2da3cf469a34e4ec0..18b1cb5c547fd37288bfb5cf52ab0eef3737bd35 100644
+--- a/src/main/java/net/minecraft/world/entity/GlowSquid.java
++++ b/src/main/java/net/minecraft/world/entity/GlowSquid.java
+@@ -98,6 +98,6 @@ public class GlowSquid extends Squid {
+     public static boolean checkGlowSquidSpawnRules(
+         EntityType<? extends LivingEntity> type, ServerLevelAccessor world, MobSpawnType reason, BlockPos pos, RandomSource random
+     ) {
+-        return pos.getY() <= world.getSeaLevel() - 33 && world.getRawBrightness(pos, 0) == 0 && world.getBlockState(pos).is(Blocks.WATER);
++        return pos.getY() <= world.getLevel().chunkSource.getGenerator().getSeaLevel() - 33 && world.getRawBrightness(pos, 0) == 0 && world.getBlockState(pos).is(Blocks.WATER); // CloudPlane - fix sea level usage
+     }
+ }
