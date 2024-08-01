@@ -30,10 +30,10 @@ index b3402ff1789cf0e2ec661282a3ee7bad3f627041..ec8bdaa81a924e7d5eaf5c74b1c4cc21
 +    }
  }
 diff --git a/src/main/java/dev/booky/cloudplane/ItemUtil.java b/src/main/java/dev/booky/cloudplane/ItemUtil.java
-index cc19d9e75233465cbf28f65aecfdf498d4339a63..c5310a783a2b3f6bfa9b236ae43475d3f517a606 100644
+index cc19d9e75233465cbf28f65aecfdf498d4339a63..e379800c5bae90c9751f717318af6a82fa70f061 100644
 --- a/src/main/java/dev/booky/cloudplane/ItemUtil.java
 +++ b/src/main/java/dev/booky/cloudplane/ItemUtil.java
-@@ -1,18 +1,198 @@
+@@ -1,18 +1,200 @@
  package dev.booky.cloudplane;
  
 +import com.mojang.datafixers.util.Pair;
@@ -53,6 +53,7 @@ index cc19d9e75233465cbf28f65aecfdf498d4339a63..c5310a783a2b3f6bfa9b236ae43475d3
 +import net.minecraft.nbt.Tag;
 +import net.minecraft.world.item.ItemStack;
 +import net.minecraft.world.item.component.CustomData;
++import net.minecraft.world.item.component.ItemLore;
 +import net.minecraft.world.item.trading.ItemCost;
  import org.apache.commons.lang3.StringUtils;
  
@@ -193,7 +194,8 @@ index cc19d9e75233465cbf28f65aecfdf498d4339a63..c5310a783a2b3f6bfa9b236ae43475d3
 +                existingCustomData = (CustomData) component.value();
 +                continue;
 +            }
-+            if (!SAVEABLE_COMPONENT_TYPE_SET.contains(component.type())) {
++            if (!SAVEABLE_COMPONENT_TYPE_SET.contains(component.type())
++                || component.value() instanceof ItemLore lore && lore.lines().isEmpty()) {
 +                continue; // doesn't need to be saved
 +            }
 +            if (savedTag == null) {
@@ -224,7 +226,7 @@ index cc19d9e75233465cbf28f65aecfdf498d4339a63..c5310a783a2b3f6bfa9b236ae43475d3
 +            components.add(newComponent);
 +        }
 +
-+        // components isn't made immutable here, but doesn't matter
++        // components aren't made immutable here, but doesn't matter
 +        DataComponentPredicate componentsPredicate = new DataComponentPredicate(components);
 +        return new ItemCost(cost.item(), cost.count(), componentsPredicate, cost.itemStack());
 +    }
