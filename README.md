@@ -1,16 +1,17 @@
 # CloudPlane
 
-A 1.20.6 Minecraft server fork of [Paper](https://github.com/PaperMC/Paper) and
+A 1.21.1 Minecraft server fork of [Paper](https://github.com/PaperMC/Paper) and
 [Pufferfish](https://github.com/pufferfish-gg/Pufferfish) with some more patches.
 This fork is mainly designed to fit the CloudCraft Minecraft network.
 
 ## Features
 
 - Split item lore on newlines on protocol level
+- Items support adventure's translatable components
 - Instantly refresh various things on player locale change
 - Add version info to brand in F3 screen
 - Add option for changing Pufferfish config location
-- Various other fixes
+- Various other fixes and minor performance increases
 
 ## Download
 
