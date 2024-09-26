@@ -5,24 +5,24 @@ Subject: [PATCH] Log exceptions caused by packet sending
 
 
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index 8b00624b509a246ded65820ce8239df2da3eac79..dfd48720f4517cd78aeaedcd9608f3b3780b31f1 100644
+index f74a67dab6146ac95c5e79b3a7b53dc0aefb26b6..5f38c6d17ff575981f34fdb1445e18d2bb76e308 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
-@@ -228,7 +228,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -236,7 +236,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
  
                      if (player != null) player.quitReason = org.bukkit.event.player.PlayerQuitEvent.QuitReason.ERRONEOUS_STATE; // Paper - Add API for quit reason
                      if (flag) {
 -                        Connection.LOGGER.debug("Failed to sent packet", throwable);
-+                        Connection.LOGGER.error("Failed to sent packet", throwable); // CloudPlane
++                        Connection.LOGGER.error("Failed to sent packet", throwable); // CloudPlane - log connection errors
                          boolean doesDisconnectExist = this.packetListener.protocol() != ConnectionProtocol.STATUS && this.packetListener.protocol() != ConnectionProtocol.HANDSHAKING; // Paper
                          if (this.getSending() == PacketFlow.CLIENTBOUND && doesDisconnectExist) { // Paper
                              Packet<?> packet = this.sendLoginDisconnect ? new ClientboundLoginDisconnectPacket(ichatmutablecomponent) : new ClientboundDisconnectPacket(ichatmutablecomponent);
-@@ -242,7 +242,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -250,7 +250,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
  
                          this.setReadOnly();
                      } else {
 -                        Connection.LOGGER.debug("Double fault", throwable);
-+                        Connection.LOGGER.error("Double fault", throwable); // CloudPlane
-                         this.disconnect(ichatmutablecomponent);
++                        Connection.LOGGER.error("Double fault", throwable); // CloudPlane - log connection errors
+                         this.disconnect(disconnectiondetails);
                      }
                  }

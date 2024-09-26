@@ -25,20 +25,19 @@ index 26e393051d2c5fe84b8ae6a33b376efab6198816..b3402ff1789cf0e2ec661282a3ee7bad
 +    }
  }
 diff --git a/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-index e4086bea596e5f5d71491e0b7ad650d76939b8f9..8af25d5e1e13d3bd0dbb2b0517565c0883c52de2 100644
+index 880e5c52746e9e3a9a1f42ec6461be54e3ee136c..2bd69e8802132601596977681ff51601fe43ec74 100644
 --- a/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
-@@ -76,7 +76,12 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
+@@ -84,7 +84,11 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
      }
  
      public void startConfiguration() {
 -        this.send(new ClientboundCustomPayloadPacket(new BrandPayload(this.server.getServerModName())));
-+        // CloudPlane start
++        // CloudPlane start - detailed brand info
 +        String serverBrand = !dev.booky.cloudplane.CloudPlaneConfig.detailedBrand ? this.server.getServerModName() :
 +                this.server.getServerModName() + ' ' + io.papermc.paper.ServerBuildInfo.buildInfo().asString(io.papermc.paper.ServerBuildInfo.StringRepresentation.VERSION_SIMPLE);
 +        this.send(new ClientboundCustomPayloadPacket(new BrandPayload(serverBrand)));
-+        // CloudPlane end
-+
-         LayeredRegistryAccess<RegistryLayer> layeredregistryaccess = this.server.registries();
-         List<KnownPack> list = this.server.getResourceManager().listPacks().flatMap((iresourcepack) -> {
-             return iresourcepack.location().knownPackInfo().stream();
++        // CloudPlane end - detailed brand info
+         ServerLinks serverlinks = this.server.serverLinks();
+         // CraftBukkit start
+         CraftServerLinks wrapper = new CraftServerLinks(serverlinks);

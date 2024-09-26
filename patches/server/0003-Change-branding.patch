@@ -5,7 +5,7 @@ Subject: [PATCH] Change branding
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index a5dd317a230d6ccaee8a492df909615b7e516d87..ad19b751573953d902d2b361335396cfd27223a4 100644
+index 6fc937c1aac700c00e76e4d9817fbd5cf2575a23..72c5ebef2210dd870c9ce0b25dae6669ef3d5c35 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -13,7 +13,7 @@ configurations.named(log4jPlugins.compileClasspathConfigurationName) {
@@ -17,7 +17,7 @@ index a5dd317a230d6ccaee8a492df909615b7e516d87..ad19b751573953d902d2b361335396cf
      // Paper start
      implementation("org.jline:jline-terminal-jansi:3.21.0")
      implementation("net.minecrell:terminalconsoleappender:1.3.0")
-@@ -101,8 +101,8 @@ tasks.jar {
+@@ -106,8 +106,8 @@ tasks.jar {
              "Specification-Title" to "Paper",
              "Specification-Version" to project.version,
              "Specification-Vendor" to "Paper Team",
@@ -92,10 +92,10 @@ index 532306cacd52579cdf37e4aca25887b1ed3ba6a1..443b4702dda601962e7e59cdf2f22002
          final @Nullable Component history = this.getHistory();
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index e02102280ed1dc300191d19bbca8f00e17701753..fa1c94da6894d37a9d986c1d32aac73ce4bf312d 100644
+index c1e88c31910e96ef07cece05046c0b55e708b52d..5b757333e54573faf2d86622b9969e69f7f28150 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
-@@ -303,7 +303,7 @@ public class Main {
+@@ -267,7 +267,7 @@ public class Main {
                      if (buildDate.before(deadline.getTime())) {
                          // Paper start - This is some stupid bullshit
                          System.err.println("*** Warning, you've not updated in a while! ***");

@@ -79,10 +79,10 @@ index 0000000000000000000000000000000000000000..cc19d9e75233465cbf28f65aecfdf498
 +    }
 +}
 diff --git a/src/main/java/net/minecraft/core/component/DataComponents.java b/src/main/java/net/minecraft/core/component/DataComponents.java
-index 9b2a209cda955ef3e5d8ff3ed1b2249888c7d139..de0f853ca0090de9c4fb0f54a87d25ef783b533e 100644
+index 60757f8df706cba92350d73503b73913cff3bcfc..1752255abf1da7ef8df11a6c00bc23e7eb091ef4 100644
 --- a/src/main/java/net/minecraft/core/component/DataComponents.java
 +++ b/src/main/java/net/minecraft/core/component/DataComponents.java
-@@ -74,7 +74,7 @@ public class DataComponents {
+@@ -75,7 +75,7 @@ public class DataComponents {
          "item_name", builder -> builder.persistent(ComponentSerialization.FLAT_CODEC).networkSynchronized(ComponentSerialization.STREAM_CODEC).cacheEncoding()
      );
      public static final DataComponentType<ItemLore> LORE = register(

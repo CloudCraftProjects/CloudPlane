@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Tue, 13 Aug 2024 05:30:10 +0200
+Subject: [PATCH] Don't adjust spawn location if no chunks are loaded
+
+
+diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+index d52458a2238e27be3a95c985ba8466ad9735e3a6..304e0269ada247356dfde0a3e37d99419baf1a27 100644
+--- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
++++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
+@@ -524,6 +524,7 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
+             blockposition1 = basePos;
+         }
+ 
++        if (world.hasChunkAt(blockposition1)) { // CloudPlane - don't adjust spawn location if no chunks are loaded
+         while (!world.noCollision(this, axisalignedbb.move(blockposition1.getBottomCenter())) && blockposition1.getY() < world.getMaxBuildHeight() - 1) {
+             blockposition1 = blockposition1.above();
+         }
+@@ -531,6 +532,7 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
+         while (world.noCollision(this, axisalignedbb.move(blockposition1.below().getBottomCenter())) && blockposition1.getY() > world.getMinBuildHeight() + 1) {
+             blockposition1 = blockposition1.below();
+         }
++        } // CloudPlane - don't adjust spawn location if no chunks are loaded
+ 
+         return blockposition1;
+     }

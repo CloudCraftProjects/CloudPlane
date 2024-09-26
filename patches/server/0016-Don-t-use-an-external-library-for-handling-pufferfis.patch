@@ -1,0 +1,93 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Wed, 26 Jul 2023 02:23:25 +0200
+Subject: [PATCH] Don't use an external library for handling pufferfish config
+
+The config was copied from Airplane, which used it for comment support. Comment support is now in bukkit's yaml configuration api, but pufferfish didn't switch to it yet.
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 72c5ebef2210dd870c9ce0b25dae6669ef3d5c35..7ffc2951613e2ee019b625a37503e3742ccb81a5 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -48,10 +48,10 @@ dependencies {
+     runtimeOnly("org.apache.maven.resolver:maven-resolver-transport-http:1.9.18")
+ 
+     // Pufferfish start
+-    implementation("me.carleslc.Simple-YAML:Simple-Yaml:1.8.4") {
+-        // exclude to prioritize version in api
+-        exclude(group="org.yaml", module="snakeyaml")
+-    }
++    // implementation("me.carleslc.Simple-YAML:Simple-Yaml:1.8.4") { // CloudPlane
++    //     // exclude to prioritize version in api // CloudPlane
++    //     exclude(group="org.yaml", module="snakeyaml") // CloudPlane
++    // } // CloudPlane
+     // Pufferfish end
+     implementation("com.github.technove:Flare:34637f3f87") // Pufferfish - flare
+ 
+diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
+index 728349b7381718cb2416d1bad5203017f5e2c23b..20855fd21b00ff610b969ffbb6867732b4c8c9b5 100644
+--- a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
++++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
+@@ -9,9 +9,9 @@ import org.bukkit.command.SimpleCommandMap;
+ import org.bukkit.configuration.ConfigurationSection;
+ import org.bukkit.configuration.MemoryConfiguration;
+ import org.jetbrains.annotations.Nullable;
+-import org.simpleyaml.configuration.comments.CommentType;
+-import org.simpleyaml.configuration.file.YamlFile;
+-import org.simpleyaml.exceptions.InvalidConfigurationException;
++// import org.simpleyaml.configuration.comments.CommentType; // CloudPlane
++// import org.simpleyaml.configuration.file.YamlFile; // CloudPlane
++// import org.simpleyaml.exceptions.InvalidConfigurationException; // CloudPlane
+ 
+ import java.io.File;
+ import java.io.IOException;
+@@ -25,9 +25,10 @@ import java.util.Map;
+ 
+ public class PufferfishConfig {
+ 
+-	private static final YamlFile config = new YamlFile();
++	private static final org.bukkit.configuration.file.YamlConfiguration config = new org.bukkit.configuration.file.YamlConfiguration(); // CloudPlane
+ 	private static int updates = 0;
+ 
++	/* // CloudPlane
+ 	private static ConfigurationSection convertToBukkit(org.simpleyaml.configuration.ConfigurationSection section) {
+ 		ConfigurationSection newSection = new MemoryConfiguration();
+ 		for (String key : section.getKeys(false)) {
+@@ -39,9 +40,10 @@ public class PufferfishConfig {
+ 		}
+ 		return newSection;
+ 	}
++	*/ // CloudPlane
+ 
+ 	public static ConfigurationSection getConfigCopy() {
+-		return convertToBukkit(config);
++		return config; // CloudPlane
+ 	}
+ 
+ 	public static int getUpdates() {
+@@ -54,7 +56,7 @@ public class PufferfishConfig {
+ 		if (configFile.exists()) {
+ 			try {
+ 				config.load(configFile);
+-			} catch (InvalidConfigurationException e) {
++			} catch (org.bukkit.configuration.InvalidConfigurationException e) { // CloudPlane
+ 				throw new IOException(e);
+ 			}
+ 		}
+@@ -103,14 +105,14 @@ public class PufferfishConfig {
+ 
+ 	private static void setComment(String key, String... comment) {
+ 		if (config.contains(key)) {
+-			config.setComment(key, String.join("\n", comment), CommentType.BLOCK);
++			config.setComments(key, List.of(comment)); // CloudPlane
+ 		}
+ 	}
+ 
+ 	private static void ensureDefault(String key, Object defaultValue, String... comment) {
+ 		if (!config.contains(key)) {
+ 			config.set(key, defaultValue);
+-			config.setComment(key, String.join("\n", comment), CommentType.BLOCK);
++			config.setComments(key, List.of(comment)); // CloudPlane
+ 		}
+ 	}
+ 

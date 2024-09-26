@@ -6,7 +6,7 @@ Subject: [PATCH] Resend more data on locale change
 Includes advancements, inventories, entity custom names, text display texts and item frame items
 
 diff --git a/src/main/java/net/minecraft/server/PlayerAdvancements.java b/src/main/java/net/minecraft/server/PlayerAdvancements.java
-index c7e1f2bac3eca9bb72bf1f8c26cccb2905e1ddfc..4ce4479619cc189e1d6999537deaceff0158795b 100644
+index 862a4bf003b7f810fb57dbcd150a1417c902b633..6ebbf6ebb3fc27bc54bad7ffac926aff7e855891 100644
 --- a/src/main/java/net/minecraft/server/PlayerAdvancements.java
 +++ b/src/main/java/net/minecraft/server/PlayerAdvancements.java
 @@ -76,6 +76,16 @@ public class PlayerAdvancements {
@@ -27,12 +27,12 @@ index c7e1f2bac3eca9bb72bf1f8c26cccb2905e1ddfc..4ce4479619cc189e1d6999537deaceff
          this.player = owner;
      }
 diff --git a/src/main/java/net/minecraft/server/level/ServerPlayer.java b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-index 2ca184235af8a3934f9797231a6191aa7755a527..5d1dcc1328df8e2ec7380db6afbab37a94d8cfaa 100644
+index 508045b063f267245256331d86daa64d44da761e..d52458a2238e27be3a95c985ba8466ad9735e3a6 100644
 --- a/src/main/java/net/minecraft/server/level/ServerPlayer.java
 +++ b/src/main/java/net/minecraft/server/level/ServerPlayer.java
-@@ -346,6 +346,10 @@ public class ServerPlayer extends Player {
-     public double lastEntitySpawnRadiusSquared = -1.0;
-     // Paper end - optimise chunk tick iteration
+@@ -333,6 +333,10 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
+     }
+     // Paper end - rewrite chunk system
  
 +    // CloudPlane start
 +    private long lastLocaleChange = 0L;
@@ -41,10 +41,10 @@ index 2ca184235af8a3934f9797231a6191aa7755a527..5d1dcc1328df8e2ec7380db6afbab37a
      public ServerPlayer(MinecraftServer server, ServerLevel world, GameProfile profile, ClientInformation clientOptions) {
          super(world, world.getSharedSpawnPos(), world.getSharedSpawnAngle(), profile);
          this.chatVisibility = ChatVisiblity.FULL;
-@@ -2243,6 +2247,34 @@ public class ServerPlayer extends Player {
+@@ -2287,6 +2291,34 @@ public class ServerPlayer extends net.minecraft.world.entity.player.Player imple
+         if (this.language == null || !this.language.equals(clientOptions.language())) { // Paper
              PlayerLocaleChangeEvent event = new PlayerLocaleChangeEvent(this.getBukkitEntity(), clientOptions.language());
              this.server.server.getPluginManager().callEvent(event);
-             this.server.server.getPluginManager().callEvent(new com.destroystokyo.paper.event.player.PlayerLocaleChangeEvent(this.getBukkitEntity(), this.language, clientOptions.language())); // Paper
 +
 +            // CloudPlane start - update more data on locale change
 +            //   don't allow players to crash the server with only a few packets
@@ -57,7 +57,7 @@ index 2ca184235af8a3934f9797231a6191aa7755a527..5d1dcc1328df8e2ec7380db6afbab37a
 +                }
 +
 +                for (Entity entity : this.serverLevel().getEntities().getAll()) {
-+                    if (!entity.tracker.seenBy.contains(this.connection)) {
++                    if (!entity.moonrise$getTrackedEntity().seenBy.contains(this.connection)) {
 +                        continue;
 +                    }
 +
@@ -90,10 +90,10 @@ index a658943669cdfd49f66ba713505d11b33306ed86..f3a3fd37de7660738ef843f226a30fed
          public static final EntityDataAccessor<Integer> DATA_BACKGROUND_COLOR_ID = SynchedEntityData.defineId(
              Display.TextDisplay.class, EntityDataSerializers.INT
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index 3509f92ce7007cb57d57274f89d5957b488b8559..49586b18d8500aeef17529e73557d60aa74f41c2 100644
+index 4cb548ea68b3845b45c720b308e9d0eabf27184c..e908e58eebda88d66ece593ff05c1868d2806d29 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
-@@ -359,7 +359,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -363,7 +363,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      protected static final int FLAG_GLOWING = 6;
      protected static final int FLAG_FALL_FLYING = 7;
      private static final EntityDataAccessor<Integer> DATA_AIR_SUPPLY_ID = SynchedEntityData.defineId(Entity.class, EntityDataSerializers.INT);

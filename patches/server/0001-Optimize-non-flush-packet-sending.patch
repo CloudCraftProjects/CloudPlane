@@ -27,7 +27,7 @@ runnables on the event loop.
 Co-authored-by: booky10 <boooky10@gmail.com>
 
 diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index f40420a6841f03983b0837e177ea2ae7c3a37ca1..8b00624b509a246ded65820ce8239df2da3eac79 100644
+index 3e550f8e7cd4f4e16f499a8a2a4b95420270f07a..f74a67dab6146ac95c5e79b3a7b53dc0aefb26b6 100644
 --- a/src/main/java/net/minecraft/network/Connection.java
 +++ b/src/main/java/net/minecraft/network/Connection.java
 @@ -69,6 +69,21 @@ import org.slf4j.MarkerFactory;
@@ -52,7 +52,7 @@ index f40420a6841f03983b0837e177ea2ae7c3a37ca1..8b00624b509a246ded65820ce8239df2
      private static final float AVERAGE_PACKETS_SMOOTHING = 0.75F;
      private static final Logger LOGGER = LogUtils.getLogger();
      public static final Marker ROOT_MARKER = MarkerFactory.getMarker("NETWORK");
-@@ -486,9 +501,24 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -494,9 +509,24 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          if (this.channel.eventLoop().inEventLoop()) {
              this.doSendPacket(packet, callbacks, flush);
          } else {

@@ -235,10 +235,10 @@ index cc19d9e75233465cbf28f65aecfdf498d4339a63..e379800c5bae90c9751f717318af6a82
          component = component.compact();
          if (component.children().isEmpty()) {
 diff --git a/src/main/java/net/minecraft/core/component/DataComponentPatch.java b/src/main/java/net/minecraft/core/component/DataComponentPatch.java
-index b8977749d35dd7343021425f477445bec470d46b..c94e5ed9d61f1586a08ce1ec6ea032eb4d2603a4 100644
+index cee4a0639b3c73e300a8450f8a831cb4a71958ba..7d91f063b60457aec7f7c51c94343a6c6f9e33ff 100644
 --- a/src/main/java/net/minecraft/core/component/DataComponentPatch.java
 +++ b/src/main/java/net/minecraft/core/component/DataComponentPatch.java
-@@ -155,7 +155,7 @@ public final class DataComponentPatch {
+@@ -156,7 +156,7 @@ public final class DataComponentPatch {
      private static final String REMOVED_PREFIX = "!";
      final Reference2ObjectMap<DataComponentType<?>, Optional<?>> map;
  
@@ -277,10 +277,10 @@ index 22da75d8197de29a150c9eade7994deecae53a10..c026a6edf497c86be3b3f1b511bb2857
  
      public PatchedDataComponentMap(DataComponentMap baseComponents) {
 diff --git a/src/main/java/net/minecraft/world/item/ItemStack.java b/src/main/java/net/minecraft/world/item/ItemStack.java
-index f8589837070039b4911a9532b92fa959c7af6352..c6082e43c5f5ab4fc58726e481341990d45cb7e2 100644
+index eec0ec43590be7e8ae5b530a7404c98b5e23cb53..ee75966f66ceab3516b830291c197d21fd6f4cb3 100644
 --- a/src/main/java/net/minecraft/world/item/ItemStack.java
 +++ b/src/main/java/net/minecraft/world/item/ItemStack.java
-@@ -171,6 +171,11 @@ public final class ItemStack implements DataComponentHolder {
+@@ -168,6 +168,11 @@ public final class ItemStack implements DataComponentHolder {
                  if (false && !datacomponentpatch.isEmpty()) { // Paper - This is no longer needed with raw NBT being handled in metadata
                      CraftItemStack.setItemMeta(itemstack, CraftItemStack.getItemMeta(itemstack));
                  }
@@ -292,7 +292,7 @@ index f8589837070039b4911a9532b92fa959c7af6352..c6082e43c5f5ab4fc58726e481341990
                  return itemstack;
                  // CraftBukkit end
              }
-@@ -186,15 +191,23 @@ public final class ItemStack implements DataComponentHolder {
+@@ -183,15 +188,23 @@ public final class ItemStack implements DataComponentHolder {
                  // CraftItemStack.setItemMeta(itemstack, CraftItemStack.getItemMeta(itemstack)); // Paper - This is no longer with raw NBT being handled in metadata
                  // Spigot end
                  ITEM_STREAM_CODEC.encode(registryfriendlybytebuf, itemstack.getItemHolder()); // CraftBukkit - decompile error
@@ -317,7 +317,7 @@ index f8589837070039b4911a9532b92fa959c7af6352..c6082e43c5f5ab4fc58726e481341990
              }
          }
      };
-@@ -228,7 +241,7 @@ public final class ItemStack implements DataComponentHolder {
+@@ -225,7 +238,7 @@ public final class ItemStack implements DataComponentHolder {
      @Deprecated
      @Nullable
      private Item item;

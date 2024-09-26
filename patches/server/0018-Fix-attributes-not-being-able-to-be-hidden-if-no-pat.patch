@@ -1,0 +1,80 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Tue, 13 Aug 2024 05:11:35 +0200
+Subject: [PATCH] Fix attributes not being able to be hidden if no patch got
+ built
+
+This now re-applies the prototype attributes (if present) to actually make the tag work
+
+diff --git a/src/main/java/net/minecraft/core/component/PatchedDataComponentMap.java b/src/main/java/net/minecraft/core/component/PatchedDataComponentMap.java
+index c026a6edf497c86be3b3f1b511bb285701173a88..fbf6f19979555292da1e99547dde5329ab956e44 100644
+--- a/src/main/java/net/minecraft/core/component/PatchedDataComponentMap.java
++++ b/src/main/java/net/minecraft/core/component/PatchedDataComponentMap.java
+@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
+ import javax.annotation.Nullable;
+ 
+ public final class PatchedDataComponentMap implements DataComponentMap {
+-    private final DataComponentMap prototype;
++    public final DataComponentMap prototype; // CloudPlane - private-f -> public-f
+     public Reference2ObjectMap<DataComponentType<?>, Optional<?>> patch; // CloudPlane - private -> public
+     private boolean copyOnWrite;
+ 
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
+index 454d1ad710159a47f2112f77ea4b6c87241caf4e..a0d0bfa01e78f267e0c7460ab6a104641dee7e19 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
+@@ -372,6 +372,7 @@ public final class CraftItemStack extends ItemStack {
+                 itemStack.set(DataComponents.PROFILE, profile);
+             }
+         };
++        tag.base = itemStack.components.prototype; // CloudPlane - add base components
+         // Paper end - support updating profile after resolving it
+         ((CraftMetaItem) itemMeta).applyToItem(tag);
+         itemStack.applyComponents(tag.build());
+@@ -429,6 +430,7 @@ public final class CraftItemStack extends ItemStack {
+             };
+             // Paper end - support updating profile after resolving it
+ 
++            tag.base = item.components.prototype; // CloudPlane - add base components
+             ((CraftMetaItem) itemMeta).applyToItem(tag);
+             item.restorePatch(DataComponentPatch.EMPTY); // Paper - properly apply the new patch from itemmeta
+             item.applyComponents(tag.build()); // Paper - properly apply the new patch from itemmeta
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java
+index d8ec01c65c6a57accf1b510499f9446e73c2f7e4..6f75764e07c09debc568907155579939d8b21741 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java
+@@ -286,6 +286,7 @@ public class CraftMetaBlockState extends CraftMetaItem implements BlockStateMeta
+         final PatchedDataComponentMap patchedMap = new PatchedDataComponentMap(nmsBlockState.getBlock().asItem().components());
+         patchedMap.setAll(this.components);
+         final Applicator applicator = new Applicator() {};
++        applicator.base = nmsBlockState.getBlock().asItem().components(); // CloudPlane - add base components
+         super.applyToItem(applicator);
+         patchedMap.applyPatch(applicator.build());
+         blockEntity.applyComponents(nmsBlockState.getBlock().asItem().components(), patchedMap.asPatch());
+diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
+index e0414b0a48a95f1f5e718070dd0e5f955052a898..27abd9022a0f7b4c62a625c963cd9f9b64152f3a 100644
+--- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
++++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
+@@ -184,6 +184,8 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+ 
+     static abstract class Applicator { // Paper - support updating profile after resolving it
+ 
++        net.minecraft.core.component.DataComponentMap base; // CloudPlane - add base components
++
+         final DataComponentPatch.Builder builder = DataComponentPatch.builder(); // Paper - private -> package-private
+         void skullCallback(net.minecraft.world.item.component.ResolvableProfile resolvableProfile) {} // Paper - support updating profile after resolving it
+ 
+@@ -974,6 +976,13 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+     void applyModifiers(Multimap<Attribute, AttributeModifier> modifiers, CraftMetaItem.Applicator tag) {
+         if (modifiers == null/* || modifiers.isEmpty()*/) { // Paper - empty modifiers has a specific meaning, they should still be saved
+             // Paper - don't save ItemFlag if the underlying data isn't present
++            // CloudPlane start - ignore above comment and just do it
++            if (this.hasItemFlag(ItemFlag.HIDE_ATTRIBUTES)) {
++                List<ItemAttributeModifiers.Entry> entries = tag.base == null ? List.of() :
++                        tag.base.getOrDefault(DataComponents.ATTRIBUTE_MODIFIERS, ItemAttributeModifiers.EMPTY).modifiers();
++                tag.put(CraftMetaItem.ATTRIBUTES, new ItemAttributeModifiers(entries, false));
++            }
++            // CloudPlane end - ignore above comment and just do it
+             return;
+         }
+ 

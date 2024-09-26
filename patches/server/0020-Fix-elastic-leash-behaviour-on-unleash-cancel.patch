@@ -1,0 +1,73 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Sat, 31 Aug 2024 18:57:57 +0200
+Subject: [PATCH] Fix elastic leash behaviour on unleash cancel
+
+
+diff --git a/src/main/java/net/minecraft/world/entity/Leashable.java b/src/main/java/net/minecraft/world/entity/Leashable.java
+index e7535f15be3cc1537aafee53779ccfb4f21d1f38..d3f2a68c371c4bbeb5f10917f1930d2d8bfee8ae 100644
+--- a/src/main/java/net/minecraft/world/entity/Leashable.java
++++ b/src/main/java/net/minecraft/world/entity/Leashable.java
+@@ -182,8 +182,10 @@ public interface Leashable {
+                     return;
+                 }
+ 
+-                if ((double) f > entity.level().paperConfig().misc.maxLeashDistance.or(LEASH_TOO_FAR_DIST)) { // Paper - Configurable max leash distance
+-                    ((Leashable) entity).leashTooFarBehaviour();
++
++                // CloudPlane start - fix elastic leash behaviour on unleash cancel
++                if ((double) f > entity.level().paperConfig().misc.maxLeashDistance.or(LEASH_TOO_FAR_DIST) && entity.leashTooFarBehaviour0()) { // Paper - Configurable max leash distance
++                    // CloudPlane end - fix elastic leash behaviour on unleash cancel
+                 } else if ((double) f > 6.0D) {
+                     ((Leashable) entity).elasticRangeLeashBehaviour(entity1, f);
+                     entity.checkSlowFallDistance();
+@@ -199,18 +201,27 @@ public interface Leashable {
+         return true;
+     }
+ 
++    // CloudPlane start - fix elastic leash behaviour on unleash cancel
++    @io.papermc.paper.annotation.DoNotUse
++    @Deprecated
+     default void leashTooFarBehaviour() {
++        this.leashTooFarBehaviour0();
++    }
++
++    default boolean leashTooFarBehaviour0() {
++        // CloudPlane end - fix elastic leash behaviour on unleash cancel
+         // CraftBukkit start
+         boolean dropLeash = true; // Paper
+         if (this instanceof Entity entity) {
+             // Paper start - Expand EntityUnleashEvent
+             final EntityUnleashEvent event = new EntityUnleashEvent(entity.getBukkitEntity(), EntityUnleashEvent.UnleashReason.DISTANCE, true);
+-            if (!event.callEvent()) return;
++            if (!event.callEvent()) return false; // CloudPlane - fix elastic leash behaviour on unleash cancel
+             dropLeash = event.isDropLeash();
+             // Paper end - Expand EntityUnleashEvent
+         }
+         // CraftBukkit end
+         this.dropLeash(true, dropLeash); // Paper
++        return true; // CloudPlane - fix elastic leash behaviour on unleash cancel
+     }
+ 
+     default void closeRangeLeashBehaviour(Entity entity) {}
+diff --git a/src/main/java/net/minecraft/world/entity/Mob.java b/src/main/java/net/minecraft/world/entity/Mob.java
+index 38f8e0c919f5a771ebb344c335e25f3767d4096f..c46b52deee483eda779152f68fa13d7a9d60bd44 100644
+--- a/src/main/java/net/minecraft/world/entity/Mob.java
++++ b/src/main/java/net/minecraft/world/entity/Mob.java
+@@ -1632,10 +1632,14 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+ 
+     }
+ 
++    // CloudPlane start - fix elastic leash behaviour on unleash cancel
+     @Override
+-    public void leashTooFarBehaviour() {
+-        Leashable.super.leashTooFarBehaviour();
++    public boolean leashTooFarBehaviour0() {
++        boolean ret = Leashable.super.leashTooFarBehaviour0();
++        if (ret)
+         this.goalSelector.disableControlFlag(Goal.Flag.MOVE);
++        return ret;
++        // CloudPlane end - fix elastic leash behaviour on unleash cancel
+     }
+ 
+     @Override
