@@ -2295,7 +2295,7 @@ index 6a4637eef14cbd84bbe26ef16f004b8f93367a3d..2ca184235af8a3934f9797231a6191aa
  
      @Override
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index 4ae88bfcead40cd05f9514a48a922a37767cb3cf..6ccc546563ed8027eed58d5b8a20983bf09cee99 100644
+index dd0610104822bee532542c87ecc9cd16ccf3c216..e896bc4861b59ce35c1b216df6231580f1842104 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -1154,6 +1154,13 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
@@ -2311,7 +2311,7 @@ index 4ae88bfcead40cd05f9514a48a922a37767cb3cf..6ccc546563ed8027eed58d5b8a20983b
 +
          // Paper start - Book size limits
          if (!this.cserver.isPrimaryThread()) {
-             List<String> pageList = packet.pages();
+             final List<String> pageList = packet.pages();
 diff --git a/src/main/java/net/minecraft/world/CompoundContainer.java b/src/main/java/net/minecraft/world/CompoundContainer.java
 index 241fec02e6869c638d3a160819b32173a081467b..af8739c1349161f3620ea37b2f6caf3e4f43a092 100644
 --- a/src/main/java/net/minecraft/world/CompoundContainer.java
@@ -3570,7 +3570,7 @@ index b88aa184cd06a0485146f58a5b61a56a50911209..7b64c57795fe27d8397500bfa41f71f9
  
      @Override
 diff --git a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index 8310d132006043e93c612890514c4c7f3eb1c74d..74e80ac798bf0535659a2d2f0d0035347cc52008 100644
+index ab5ce14f024305fcf3df4254212363145457eddb..21fa25c5efabefdd104379dc9318a180d9498e31 100644
 --- a/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/src/main/java/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 @@ -48,6 +48,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
@@ -3622,7 +3622,7 @@ index 8310d132006043e93c612890514c4c7f3eb1c74d..74e80ac798bf0535659a2d2f0d003534
          if (!this.tryLoadLootTable(nbt)) {
              ContainerHelper.loadAllItems(nbt, this.items, registryLookup);
          }
-@@ -723,7 +747,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -732,7 +756,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
  
          if (HopperBlockEntity.canPlaceItemInContainer(to, stack, slot, side)) {
              boolean flag = false;
@@ -3631,7 +3631,7 @@ index 8310d132006043e93c612890514c4c7f3eb1c74d..74e80ac798bf0535659a2d2f0d003534
  
              if (itemstack1.isEmpty()) {
                  // Spigot start - SPIGOT-6693, InventorySubcontainer#setItem
-@@ -911,7 +935,10 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -920,7 +944,10 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
  
      @Override
      protected void setItems(NonNullList<ItemStack> inventory) {
