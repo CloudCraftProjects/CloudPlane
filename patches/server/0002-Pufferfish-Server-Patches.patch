@@ -2122,7 +2122,7 @@ index dcb5651d1d9b10b40430fb2f713beedf68336704..ee1af3ed8f3d486ea2579ea01921ec41
  
      private void getFullChunk(long pos, Consumer<LevelChunk> chunkConsumer) {
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index c96f3dcd365bc140b1f4680ef6bd770c80f8eda1..b5d2e1bd9b03d17e9958af3778e65733c17c7342 100644
+index f9abf63e12ea930275121b470e4e4906cff0fc12..1b062dccff209405e9bb63960bc9483f3fdb434f 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -715,6 +715,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ca.spottedleaf.
@@ -2340,7 +2340,7 @@ index 5db5ba026462ca642dcee718af732f80fadabef5..9869646d634f11b707a0c2238b6b62f8
  
      boolean isEmpty();
 diff --git a/src/main/java/net/minecraft/world/entity/Entity.java b/src/main/java/net/minecraft/world/entity/Entity.java
-index bc45c74987974b4828201e06fc8b1f3fbc0af8b4..4cb548ea68b3845b45c720b308e9d0eabf27184c 100644
+index 4b54d0ea31062972e68ee8fafe3cfaf68f65a5cd..f0bf97b3f1ae028e3e9292bf9ba4eacf8f706886 100644
 --- a/src/main/java/net/minecraft/world/entity/Entity.java
 +++ b/src/main/java/net/minecraft/world/entity/Entity.java
 @@ -315,7 +315,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -2377,7 +2377,7 @@ index bc45c74987974b4828201e06fc8b1f3fbc0af8b4..4cb548ea68b3845b45c720b308e9d0ea
          this.baseTick();
      }
  
-@@ -4450,7 +4461,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4452,7 +4463,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
  
      public boolean updateFluidHeightAndDoFluidPushing(TagKey<Fluid> tag, double speed) {
@@ -2386,7 +2386,7 @@ index bc45c74987974b4828201e06fc8b1f3fbc0af8b4..4cb548ea68b3845b45c720b308e9d0ea
              return false;
          } else {
              AABB axisalignedbb = this.getBoundingBox().deflate(0.001D);
-@@ -4467,13 +4478,60 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4469,13 +4480,60 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              int k1 = 0;
              BlockPos.MutableBlockPos blockposition_mutableblockposition = new BlockPos.MutableBlockPos();
  
@@ -2452,7 +2452,7 @@ index bc45c74987974b4828201e06fc8b1f3fbc0af8b4..4cb548ea68b3845b45c720b308e9d0ea
                              double d2 = (double) ((float) i2 + fluid.getHeight(this.level(), blockposition_mutableblockposition));
  
                              if (d2 >= axisalignedbb.minY) {
-@@ -4496,9 +4554,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4498,9 +4556,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                                  // CraftBukkit end
                              }
                          }
@@ -2480,7 +2480,7 @@ index cb61462d4691a055a4b25f7b953609d8a154fdfe..6a19ff5b84a0ab72bb5bdc04d9b837fb
          return (EntityType) Registry.register(BuiltInRegistries.ENTITY_TYPE, id, (EntityType<T>) type.build(id)); // CraftBukkit - decompile error
      }
 diff --git a/src/main/java/net/minecraft/world/entity/LivingEntity.java b/src/main/java/net/minecraft/world/entity/LivingEntity.java
-index 30f4f1254fc295442d72d50479e8af635f2fe983..71eea3665ee31d67b63ec3b69c4ba77ee169146c 100644
+index 2aa6374cd4a96efd85899be8cd3172a8257bfe6b..345b7aad5ad60a4ff9974104f474039485f4f481 100644
 --- a/src/main/java/net/minecraft/world/entity/LivingEntity.java
 +++ b/src/main/java/net/minecraft/world/entity/LivingEntity.java
 @@ -449,7 +449,7 @@ public abstract class LivingEntity extends Entity implements Attackable {
@@ -3163,7 +3163,7 @@ index 5f51e64cb0611a4ba6bdcdcacbcba1063a7f3a5c..639ddfa5ec0d0919b4a14d7b95cf1c58
                              enderdragonbattle.tryRespawn(aboveBlockPosition); // Paper - Perf: Do crystal-portal proximity check before entity lookup
                          }
 diff --git a/src/main/java/net/minecraft/world/level/Level.java b/src/main/java/net/minecraft/world/level/Level.java
-index e2a0487089eb5a7bdc1433e4c75f69d8e9f9d5f9..c92fe79103e43cb5a12fc80a8e2eae8287fba861 100644
+index 507671476c3d2d92a2fdb05be24443af27d26dcf..0151183e57444fb20f7b75b9db79f3a91de75bfa 100644
 --- a/src/main/java/net/minecraft/world/level/Level.java
 +++ b/src/main/java/net/minecraft/world/level/Level.java
 @@ -684,6 +684,14 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
@@ -3258,7 +3258,7 @@ index e2a0487089eb5a7bdc1433e4c75f69d8e9f9d5f9..c92fe79103e43cb5a12fc80a8e2eae82
              // Paper end - Prevent block entity and entity crashes
          }
          this.moonrise$midTickTasks(); // Paper - rewrite chunk system
-@@ -1944,6 +1986,11 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -1961,6 +2003,11 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
      }
  
      public ProfilerFiller getProfiler() {

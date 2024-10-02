@@ -18,10 +18,10 @@ index dfea98dc0bff5abdf4d8088ef8b26d4473b96911..da78d78d8bc802f7dba1c0ff6aa7e0af
                  }
                  // CraftBukkit end
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index ad740739437be632fc7fedec488a7d0c49534688..06d243bb0fb3a645acee43953b6c8829b9b992bf 100644
+index 42d7660efe5baa6f796f2a7606686c765b6f2478..83799caf96b2d35af30f8592da64ac9605c3239e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -2247,7 +2247,14 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2252,7 +2252,14 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
      @Override
      public boolean canSee(org.bukkit.entity.Entity entity) {

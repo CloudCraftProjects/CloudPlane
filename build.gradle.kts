@@ -1,6 +1,6 @@
 plugins {
     id("java-library")
-    id("io.papermc.paperweight.patcher") version "1.7.2"
+    id("io.papermc.paperweight.patcher") version "1.7.3"
 }
 
 repositories {

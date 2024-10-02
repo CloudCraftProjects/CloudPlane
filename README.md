@@ -15,7 +15,7 @@ This fork is mainly designed to fit the CloudCraft Minecraft network.
 
 ## Download
 
-https://dl.cloudcraftmc.de/CloudPlane
+https://dl.cloudcraftmc.de/cloudplane
 
 ## Building
 
