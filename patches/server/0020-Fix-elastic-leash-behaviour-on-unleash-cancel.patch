@@ -5,10 +5,10 @@ Subject: [PATCH] Fix elastic leash behaviour on unleash cancel
 
 
 diff --git a/src/main/java/net/minecraft/world/entity/Leashable.java b/src/main/java/net/minecraft/world/entity/Leashable.java
-index e7535f15be3cc1537aafee53779ccfb4f21d1f38..d3f2a68c371c4bbeb5f10917f1930d2d8bfee8ae 100644
+index bd6d587cedfe0e345536d7ebb6b7ca204f073efe..1e2a34dbed750915c9e5a5402357dc687d6b54ab 100644
 --- a/src/main/java/net/minecraft/world/entity/Leashable.java
 +++ b/src/main/java/net/minecraft/world/entity/Leashable.java
-@@ -182,8 +182,10 @@ public interface Leashable {
+@@ -188,8 +188,10 @@ public interface Leashable {
                      return;
                  }
  
@@ -21,7 +21,7 @@ index e7535f15be3cc1537aafee53779ccfb4f21d1f38..d3f2a68c371c4bbeb5f10917f1930d2d
                  } else if ((double) f > 6.0D) {
                      ((Leashable) entity).elasticRangeLeashBehaviour(entity1, f);
                      entity.checkSlowFallDistance();
-@@ -199,18 +201,27 @@ public interface Leashable {
+@@ -205,18 +207,27 @@ public interface Leashable {
          return true;
      }
  
