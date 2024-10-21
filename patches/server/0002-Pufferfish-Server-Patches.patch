@@ -5,7 +5,7 @@ Subject: [PATCH] Pufferfish Server Patches
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 648281575eb8d45a5c06549eb3d0f517c086fe64..6fc937c1aac700c00e76e4d9817fbd5cf2575a23 100644
+index de0474b8dce58cb419c00b7614d7dd66be832a02..808500157b8ef2aafaef767e0a18bd058d11b2cf 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -47,6 +47,14 @@ dependencies {
@@ -22,8 +22,8 @@ index 648281575eb8d45a5c06549eb3d0f517c086fe64..6fc937c1aac700c00e76e4d9817fbd5c
 +
      testImplementation("io.github.classgraph:classgraph:4.8.47") // Paper - mob goal test
      testImplementation("org.junit.jupiter:junit-jupiter:5.10.2")
-     testImplementation("org.hamcrest:hamcrest:2.2")
-@@ -71,6 +79,14 @@ paperweight {
+     testImplementation("org.junit.platform:junit-platform-suite-engine:1.10.0")
+@@ -72,6 +80,14 @@ paperweight {
      craftBukkitPackageVersion.set("v1_21_R1") // also needs to be updated in MappingEnvironment
  }
  
@@ -2225,7 +2225,7 @@ index c396580a9cfd86ff261bed439bb4662ae88010b5..508045b063f267245256331d86daa64d
  
      @Override
 diff --git a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index befeaac4786760f6847a5945da2296a3e68dbb17..c89f128c697be891b8b65b0a60dc2de88908ee2c 100644
+index 064d52d4479727c6a32bf357be8da32d1760e7fc..ffee50f931a21adc7f599b8f14db3a3720409ef2 100644
 --- a/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/src/main/java/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -1157,6 +1157,13 @@ public class ServerGamePacketListenerImpl extends ServerCommonPacketListenerImpl
@@ -3722,10 +3722,10 @@ index 88a4a72bb390947dc17e5da09a99b2d1b3ac4621..47f67ae8b7a88f33c89aa86d8f11f654
  
      @Nullable
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index b7af2d4300facf41a025c8ca322bf6541949b3ab..87fab3563e2709a38135ae630e820c49d2891d8c 100644
+index c7df339aeb62ee627edaf1bb4c8474b61e357ba6..b27b90598cb5eef4e909da360f40a08d7bc192b3 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1163,7 +1163,7 @@ public final class CraftServer implements Server {
+@@ -1165,7 +1165,7 @@ public final class CraftServer implements Server {
                  plugin.getPluginMeta().getDisplayName(),
                  "This plugin is not properly shutting down its async tasks when it is being shut down. This task may throw errors during the final shutdown logs and might not complete before process dies."
              ));

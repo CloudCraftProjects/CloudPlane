@@ -20,7 +20,7 @@ index c026a6edf497c86be3b3f1b511bb285701173a88..fbf6f19979555292da1e99547dde5329
      private boolean copyOnWrite;
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
-index 454d1ad710159a47f2112f77ea4b6c87241caf4e..a0d0bfa01e78f267e0c7460ab6a104641dee7e19 100644
+index 6081c588c61406d0d21a15e8e6140d5d5240f0a8..348c43f4c0ea99c189fd3f4af42f83d1aa1bf8f4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 @@ -372,6 +372,7 @@ public final class CraftItemStack extends ItemStack {
@@ -40,10 +40,10 @@ index 454d1ad710159a47f2112f77ea4b6c87241caf4e..a0d0bfa01e78f267e0c7460ab6a10464
              item.restorePatch(DataComponentPatch.EMPTY); // Paper - properly apply the new patch from itemmeta
              item.applyComponents(tag.build()); // Paper - properly apply the new patch from itemmeta
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java
-index d8ec01c65c6a57accf1b510499f9446e73c2f7e4..6f75764e07c09debc568907155579939d8b21741 100644
+index d688339a57f0b4f12588ced0f7860a0d77eae728..32e514f568abf5e8ef9f960fa74ee73ba6542381 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaBlockState.java
-@@ -286,6 +286,7 @@ public class CraftMetaBlockState extends CraftMetaItem implements BlockStateMeta
+@@ -304,6 +304,7 @@ public class CraftMetaBlockState extends CraftMetaItem implements BlockStateMeta
          final PatchedDataComponentMap patchedMap = new PatchedDataComponentMap(nmsBlockState.getBlock().asItem().components());
          patchedMap.setAll(this.components);
          final Applicator applicator = new Applicator() {};
@@ -52,7 +52,7 @@ index d8ec01c65c6a57accf1b510499f9446e73c2f7e4..6f75764e07c09debc568907155579939
          patchedMap.applyPatch(applicator.build());
          blockEntity.applyComponents(nmsBlockState.getBlock().asItem().components(), patchedMap.asPatch());
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-index e0414b0a48a95f1f5e718070dd0e5f955052a898..27abd9022a0f7b4c62a625c963cd9f9b64152f3a 100644
+index 60ec9b228518de0521b12f3f4ef26cb30260315a..b992e621b4d11010b15321da2b0044d5e3bf82df 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 @@ -184,6 +184,8 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
@@ -64,7 +64,7 @@ index e0414b0a48a95f1f5e718070dd0e5f955052a898..27abd9022a0f7b4c62a625c963cd9f9b
          final DataComponentPatch.Builder builder = DataComponentPatch.builder(); // Paper - private -> package-private
          void skullCallback(net.minecraft.world.item.component.ResolvableProfile resolvableProfile) {} // Paper - support updating profile after resolving it
  
-@@ -974,6 +976,13 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -976,6 +978,13 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
      void applyModifiers(Multimap<Attribute, AttributeModifier> modifiers, CraftMetaItem.Applicator tag) {
          if (modifiers == null/* || modifiers.isEmpty()*/) { // Paper - empty modifiers has a specific meaning, they should still be saved
              // Paper - don't save ItemFlag if the underlying data isn't present

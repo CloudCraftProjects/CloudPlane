@@ -5,15 +5,15 @@ Subject: [PATCH] Pufferfish api patches
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index ab84a1405acc1f0d5f267892243b82b8dab03e21..10c5f8d45bb896a212d45b6ebb67b4239398d23f 100644
+index e7c96be769fde8375b9a1b128cc7ce474144d16d..5e2211b843014e5c6e52525030abc01c079b4aca 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -77,6 +77,8 @@ dependencies {
      testImplementation("org.hamcrest:hamcrest:2.2")
-     testImplementation("org.mockito:mockito-core:5.11.0")
-     testImplementation("org.ow2.asm:asm-tree:9.7")
+     testImplementation("org.mockito:mockito-core:5.14.1")
+     testImplementation("org.ow2.asm:asm-tree:9.7.1")
 +
-+    api("io.sentry:sentry:5.4.0") // Pufferfish
++    api("io.sentry:sentry:7.15.0") // Pufferfish - sentry
  }
  
  // Paper start
@@ -33,7 +33,7 @@ index ab84a1405acc1f0d5f267892243b82b8dab03e21..10c5f8d45bb896a212d45b6ebb67b423
          into("META-INF/maven/${project.group}/${project.name}")
 diff --git a/src/main/java/gg/pufferfish/pufferfish/sentry/SentryContext.java b/src/main/java/gg/pufferfish/pufferfish/sentry/SentryContext.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..10310fdd53de28efb8a8250f6d3b0c8eb08fb68a
+index 0000000000000000000000000000000000000000..022b35a7b9fa1f0f0feafe96827b183e627a29c7
 --- /dev/null
 +++ b/src/main/java/gg/pufferfish/pufferfish/sentry/SentryContext.java
 @@ -0,0 +1,161 @@
@@ -61,7 +61,7 @@ index 0000000000000000000000000000000000000000..10310fdd53de28efb8a8250f6d3b0c8e
 +	public static void setPluginContext(@Nullable Plugin plugin) {
 +		if (plugin != null) {
 +			ThreadContext.put("pufferfishsentry_pluginname", plugin.getName());
-+			ThreadContext.put("pufferfishsentry_pluginversion", plugin.getDescription().getVersion());
++			ThreadContext.put("pufferfishsentry_pluginversion", plugin.getPluginMeta().getVersion());
 +		}
 +	}
 +	
