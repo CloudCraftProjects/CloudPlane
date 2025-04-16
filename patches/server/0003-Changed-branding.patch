@@ -1,76 +1,38 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: booky10 <boooky10@gmail.com>
 Date: Fri, 25 Jun 2021 20:37:53 +0200
-Subject: [PATCH] Change branding
+Subject: [PATCH] Changed branding
 
 
-diff --git a/build.gradle.kts b/build.gradle.kts
-index 808500157b8ef2aafaef767e0a18bd058d11b2cf..c3932a93c11d7b364f894db17a89348e2b381f71 100644
---- a/build.gradle.kts
-+++ b/build.gradle.kts
-@@ -13,7 +13,7 @@ configurations.named(log4jPlugins.compileClasspathConfigurationName) {
- val alsoShade: Configuration by configurations.creating
- 
- dependencies {
--    implementation(project(":paper-api"))
-+    implementation(project(":CloudPlane-API")) // CloudPlane
-     // Paper start
-     implementation("org.jline:jline-terminal-jansi:3.21.0")
-     implementation("net.minecrell:terminalconsoleappender:1.3.0")
-@@ -107,8 +107,8 @@ tasks.jar {
-             "Specification-Title" to "Paper",
-             "Specification-Version" to project.version,
-             "Specification-Vendor" to "Paper Team",
--            "Brand-Id" to "papermc:paper",
--            "Brand-Name" to "Paper",
-+            "Brand-Id" to "cloudcraft:cloudplane", // CloudPlane
-+            "Brand-Name" to "CloudPlane", // CloudPlane
-             "Build-Number" to (build ?: ""),
-             "Build-Time" to Instant.now().toString(),
-             "Git-Branch" to gitBranch, // Paper
-diff --git a/src/main/java/co/aikar/timings/TimingsExport.java b/src/main/java/co/aikar/timings/TimingsExport.java
-index b35a9f4c5f8960864c402ede8a51fb5ab9c4fcc0..577b5f42ca47763c2604795724f906e00e1ddc7e 100644
---- a/src/main/java/co/aikar/timings/TimingsExport.java
-+++ b/src/main/java/co/aikar/timings/TimingsExport.java
-@@ -241,7 +241,8 @@ public class TimingsExport extends Thread {
-             pair("spigot", mapAsJSON(Bukkit.spigot().getSpigotConfig(), null)),
-             pair("bukkit", mapAsJSON(Bukkit.spigot().getBukkitConfig(), null)),
-             pair("paper", mapAsJSON(Bukkit.spigot().getPaperConfig(), null)), // Pufferfish
--            pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)) // Pufferfish
-+            pair("pufferfish", mapAsJSON(gg.pufferfish.pufferfish.PufferfishConfig.getConfigCopy(), null)), // Pufferfish // CloudPlane
-+            pair("cloudplane", mapAsJSON(Bukkit.spigot().getCloudPlaneConfig(), null)) // CloudPlane
-         ));
- 
-         new TimingsExport(listeners, parent, history).start();
 diff --git a/src/main/java/com/destroystokyo/paper/Metrics.java b/src/main/java/com/destroystokyo/paper/Metrics.java
-index 4b002e8b75d117b726b0de274a76d3596fce015b..111dcc7284166e7d5e7014ecf00df48a63870c0b 100644
+index 8f62879582195d8ae4f64bd23f752fa133b1c973..adc4bad2156b0f2db668538cd9c79c0787d759af 100644
 --- a/src/main/java/com/destroystokyo/paper/Metrics.java
 +++ b/src/main/java/com/destroystokyo/paper/Metrics.java
-@@ -593,7 +593,7 @@ public class Metrics {
+@@ -592,7 +592,7 @@ public class Metrics {
              boolean logFailedRequests = config.getBoolean("logFailedRequests", false);
              // Only start Metrics, if it's enabled in the config
              if (config.getBoolean("enabled", true)) {
 -                Metrics metrics = new Metrics("Paper", serverUUID, logFailedRequests, Bukkit.getLogger());
-+                Metrics metrics = new Metrics("CloudPlane", serverUUID, logFailedRequests, Bukkit.getLogger()); // CloudPlane
++                Metrics metrics = new Metrics("CloudPlane", serverUUID, logFailedRequests, Bukkit.getLogger()); // CloudPlane - branding
  
                  metrics.addCustomChart(new Metrics.SimplePie("minecraft_version", () -> {
                      String minecraftVersion = Bukkit.getVersion();
-@@ -607,11 +607,11 @@ public class Metrics {
+@@ -606,11 +606,11 @@ public class Metrics {
                  final String implVersion = org.bukkit.craftbukkit.Main.class.getPackage().getImplementationVersion();
                  if (implVersion != null) {
                      final String buildOrHash = implVersion.substring(implVersion.lastIndexOf('-') + 1);
 -                    paperVersion = "git-Paper-%s-%s".formatted(Bukkit.getServer().getMinecraftVersion(), buildOrHash);
-+                    paperVersion = "git-CloudPlane-%s-%s".formatted(Bukkit.getServer().getMinecraftVersion(), buildOrHash); // CloudPlane
++                    paperVersion = "git-CloudPlane-%s-%s".formatted(Bukkit.getServer().getMinecraftVersion(), buildOrHash); // CloudPlane - branding
                  } else {
                      paperVersion = "unknown";
                  }
 -                metrics.addCustomChart(new Metrics.SimplePie("paper_version", () -> paperVersion));
-+                metrics.addCustomChart(new Metrics.SimplePie("cloudplane_version", () -> paperVersion)); // CloudPlane
++                metrics.addCustomChart(new Metrics.SimplePie("cloudplane_version", () -> paperVersion)); // CloudPlane - branding
  
                  metrics.addCustomChart(new Metrics.DrilldownPie("java_version", () -> {
                      Map<String, Map<String, Integer>> map = new HashMap<>();
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index 532306cacd52579cdf37e4aca25887b1ed3ba6a1..443b4702dda601962e7e59cdf2f22002837d6542 100644
+index 532306cacd52579cdf37e4aca25887b1ed3ba6a1..8f1b57680731152102e69cc2d7c323b58ca08d26 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 @@ -35,7 +35,7 @@ public class PaperVersionFetcher implements VersionFetcher {
@@ -78,7 +40,7 @@ index 532306cacd52579cdf37e4aca25887b1ed3ba6a1..443b4702dda601962e7e59cdf2f22002
      private static final int DISTANCE_ERROR = -1;
      private static final int DISTANCE_UNKNOWN = -2;
 -    private static final String DOWNLOAD_PAGE = "https://papermc.io/downloads/paper";
-+    private static final String DOWNLOAD_PAGE = "https://dl.cloudcraftmc.de/CloudPlane"; // CloudPlane
++    private static final String DOWNLOAD_PAGE = "https://dl.cloudcraftmc.de/CloudPlane"; // CloudPlane - branding
  
      @Override
      public long getCacheTime() {
@@ -87,25 +49,25 @@ index 532306cacd52579cdf37e4aca25887b1ed3ba6a1..443b4702dda601962e7e59cdf2f22002
              updateMessage = text("You are running a development version without access to version information", color(0xFF5300));
          } else {
 -            updateMessage = getUpdateStatusMessage("PaperMC/Paper", build);
-+            updateMessage = getUpdateStatusMessage("CloudCraftProjects/CloudPlane", build); // CloudPlane
++            updateMessage = getUpdateStatusMessage("CloudCraftProjects/CloudPlane", build); // CloudPlane - branding
          }
          final @Nullable Component history = this.getHistory();
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index b3ba6bccdbb08af27916f0c611c60b2595b90164..b211ea978d7f785ab11d2edb3624192c4eae98db 100644
+index bf5343b0847e9f57ffbc7f33714ae6ca62f14332..242c3bb588d3be12e84e5aaccd047c7dfc8f787e 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
 @@ -267,7 +267,7 @@ public class Main {
                      if (buildDate.before(deadline.getTime())) {
                          // Paper start - This is some stupid bullshit
                          System.err.println("*** Warning, you've not updated in a while! ***");
--                        System.err.println("*** Please download a new build as per instructions from https://papermc.io/downloads/paper ***"); // Paper
-+                        System.err.println("*** Please download a new build as per instructions from https://dl.cloudcraftmc.de/CloudPlane ***"); // Paper // CloudPlane
+-                        System.err.println("*** Please download a new build from https://papermc.io/downloads/paper ***"); // Paper
++                        System.err.println("*** Please download a new build from https://dl.cloudcraftmc.de/CloudPlane ***"); // Paper // CloudPlane - branding
                          //System.err.println("*** Server will start in 20 seconds ***");
                          //Thread.sleep(TimeUnit.SECONDS.toMillis(20));
                          // Paper end
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
-index 774556a62eb240da42e84db4502e2ed43495be17..45502cf7a124fe189fd28d0e320dd8dbcd200ddb 100644
+index 774556a62eb240da42e84db4502e2ed43495be17..a2d3961b0027327327c248a2c11f5e285030964c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
 @@ -11,7 +11,7 @@ public final class Versioning {
@@ -113,7 +75,7 @@ index 774556a62eb240da42e84db4502e2ed43495be17..45502cf7a124fe189fd28d0e320dd8db
          String result = "Unknown-Version";
  
 -        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/io.papermc.paper/paper-api/pom.properties");
-+        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/dev.booky.cloudplane/CloudPlane-API/pom.properties"); // CloudPlane
++        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/dev.booky.cloudplane/cloudplane-api/pom.properties"); // CloudPlane - branding
          Properties properties = new Properties();
  
          if (stream != null) {

@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: Spottedleaf <Spottedleaf@users.noreply.github.com>
 Date: Tue, 22 Sep 2020 01:49:19 -0700
-Subject: [PATCH] Optimize non-flush packet sending
+Subject: [PATCH] Optimise non-flush packet sending
 
 Places like entity tracking make heavy use of packet sending,
 and internally netty will use some very expensive thread wakeup
@@ -19,21 +19,21 @@ up on this optimisation before he came along.
 
 Locally this patch drops the entity tracker tick by a full 1.5x.
 
-(1.20.2 update)
 Netty broke this LazyRunnable system in some version - this now uses
 the internal safeExecute method for lazy-scheduling the packet-sending
 runnables on the event loop.
 
 Co-authored-by: booky10 <boooky10@gmail.com>
 
-diff --git a/src/main/java/net/minecraft/network/Connection.java b/src/main/java/net/minecraft/network/Connection.java
-index 3e550f8e7cd4f4e16f499a8a2a4b95420270f07a..f74a67dab6146ac95c5e79b3a7b53dc0aefb26b6 100644
---- a/src/main/java/net/minecraft/network/Connection.java
-+++ b/src/main/java/net/minecraft/network/Connection.java
-@@ -69,6 +69,21 @@ import org.slf4j.MarkerFactory;
+diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
+index 4ed9611994c5c8da01fede690197527c5b3a5731..0ea3db162831c538a10d1a4996c666f440c2d14c 100644
+--- a/net/minecraft/network/Connection.java
++++ b/net/minecraft/network/Connection.java
+@@ -67,6 +67,22 @@ import org.slf4j.Marker;
+ import org.slf4j.MarkerFactory;
  
  public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
- 
++
 +    // Paper start
 +    private static final java.lang.invoke.MethodHandle SAFE_EXECUTE;
 +
@@ -52,17 +52,13 @@ index 3e550f8e7cd4f4e16f499a8a2a4b95420270f07a..f74a67dab6146ac95c5e79b3a7b53dc0
      private static final float AVERAGE_PACKETS_SMOOTHING = 0.75F;
      private static final Logger LOGGER = LogUtils.getLogger();
      public static final Marker ROOT_MARKER = MarkerFactory.getMarker("NETWORK");
-@@ -494,9 +509,24 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -476,7 +492,21 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          if (this.channel.eventLoop().inEventLoop()) {
-             this.doSendPacket(packet, callbacks, flush);
+             this.doSendPacket(packet, sendListener, flush);
          } else {
--            this.channel.eventLoop().execute(() -> {
+-            this.channel.eventLoop().execute(() -> this.doSendPacket(packet, sendListener, flush));
 +            // Paper start - optimise packets that are not flushed
-+            Runnable run = () -> {
-                 this.doSendPacket(packet, callbacks, flush);
--            });
-+            };
-+
++            final Runnable run = () -> this.doSendPacket(packet, sendListener, flush);
 +            if (flush) {
 +                this.channel.eventLoop().execute(run);
 +            } else {
@@ -75,7 +71,7 @@ index 3e550f8e7cd4f4e16f499a8a2a4b95420270f07a..f74a67dab6146ac95c5e79b3a7b53dc0
 +                    throw new RuntimeException(throwable);
 +                }
 +            }
-+            // Paper end
++            // Paper end - optimise packets that are not flushed
          }
- 
      }
+ 
