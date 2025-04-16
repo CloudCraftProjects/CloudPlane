@@ -1,0 +1,51 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Sun, 27 Jun 2021 20:30:37 +0200
+Subject: [PATCH] Add CloudPlane configuration
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index 7b59bdb422dad797f3bdeaaf86fda7ffac88c25d..59578240299afe459678d039f5ba189078dbd5cb 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -1088,6 +1088,7 @@ public final class CraftServer implements Server {
+ 
+         org.spigotmc.SpigotConfig.init((File) this.console.options.valueOf("spigot-settings")); // Spigot
+         this.console.paperConfigurations.reloadConfigs(this.console);
++        dev.booky.cloudplane.CloudPlaneConfig.init((File) console.options.valueOf("cloudplane-settings")); // CloudPlane - config
+         for (ServerLevel world : this.console.getAllLevels()) {
+             // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
+             world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
+@@ -3047,6 +3048,13 @@ public final class CraftServer implements Server {
+             return CraftServer.this.console.paperConfigurations.createLegacyObject(CraftServer.this.console);
+         }
+ 
++        // CloudPlane start - config
++        @Override
++        public YamlConfiguration getCloudPlaneConfig() {
++            return dev.booky.cloudplane.CloudPlaneConfig.config;
++        }
++        // CloudPlane end - config
++
+         @Override
+         public void restart() {
+             CraftServer.this.restart();
+diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
+index 242c3bb588d3be12e84e5aaccd047c7dfc8f787e..8a7c45c2c17575a674bf2a9af390042ff82e95b5 100644
+--- a/src/main/java/org/bukkit/craftbukkit/Main.java
++++ b/src/main/java/org/bukkit/craftbukkit/Main.java
+@@ -176,6 +176,14 @@ public class Main {
+                         .describedAs("Jar file");
+                 // Paper end
+ 
++                // CloudPlane start - config
++                acceptsAll(asList("cloudplane", "cloudplane-settings"), "File for cloudplane settings")
++                        .withRequiredArg()
++                        .ofType(File.class)
++                        .defaultsTo(new File("cloudplane.yml"))
++                        .describedAs("Yml file");
++                // CloudPlane end - config
++
+                 // Paper start
+                 acceptsAll(asList("server-name"), "Name of the server")
+                         .withRequiredArg()
