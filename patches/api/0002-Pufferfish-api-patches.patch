@@ -5,32 +5,39 @@ Subject: [PATCH] Pufferfish api patches
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index e7c96be769fde8375b9a1b128cc7ce474144d16d..5e2211b843014e5c6e52525030abc01c079b4aca 100644
+index f6ca099256c196851114ad2e2dbac3209caa7f57..8c89084e08c2c0f19048427ddf73b00336a7b7a2 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -77,6 +77,8 @@ dependencies {
-     testImplementation("org.hamcrest:hamcrest:2.2")
-     testImplementation("org.mockito:mockito-core:5.14.1")
+@@ -91,6 +91,8 @@ dependencies {
      testImplementation("org.ow2.asm:asm-tree:9.7.1")
+     mockitoAgent("org.mockito:mockito-core:5.14.1") { isTransitive = false } // configure mockito agent that is needed in newer java versions
+     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 +
-+    api("io.sentry:sentry:7.15.0") // Pufferfish - sentry
++    api("io.sentry:sentry:7.15.0") // Pufferfish
  }
  
- // Paper start
-@@ -131,6 +133,13 @@ val generateApiVersioningFile by tasks.registering {
+ val generatedApiPath: java.nio.file.Path = layout.projectDirectory.dir("src/generated/java").asFile.toPath()
+@@ -150,6 +152,12 @@ val generateApiVersioningFile by tasks.registering {
      }
  }
  
-+// Pufferfish Start
++// Pufferfish start
 +tasks.withType<JavaCompile> {
-+    val compilerArgs = options.compilerArgs
-+    compilerArgs.add("--add-modules=jdk.incubator.vector")
++    options.compilerArgs.add("--add-modules=jdk.incubator.vector")
 +}
-+// Pufferfish End
++// Pufferfish end
 +
  tasks.jar {
      from(generateApiVersioningFile.map { it.outputs.files.singleFile }) {
          into("META-INF/maven/${project.group}/${project.name}")
+@@ -169,6 +177,7 @@ val services = objects.newInstance<Services>()
+ 
+ tasks.withType<Javadoc> {
+     val options = options as StandardJavadocDocletOptions
++    options.addStringOption("-add-modules", "jdk.incubator.vector") // Pufferfish
+     options.overview = "src/main/javadoc/overview.html"
+     options.use()
+     options.isDocFilesSubDirs = true
 diff --git a/src/main/java/gg/pufferfish/pufferfish/sentry/SentryContext.java b/src/main/java/gg/pufferfish/pufferfish/sentry/SentryContext.java
 new file mode 100644
 index 0000000000000000000000000000000000000000..022b35a7b9fa1f0f0feafe96827b183e627a29c7
@@ -200,7 +207,7 @@ index 0000000000000000000000000000000000000000..022b35a7b9fa1f0f0feafe96827b183e
 +}
 diff --git a/src/main/java/gg/pufferfish/pufferfish/simd/SIMDChecker.java b/src/main/java/gg/pufferfish/pufferfish/simd/SIMDChecker.java
 new file mode 100644
-index 0000000000000000000000000000000000000000..93f5d7ca36e043e6c0f959450d38e6946b348eaf
+index 0000000000000000000000000000000000000000..cf84c78626614f13a582020ea8bf1c9064fd530a
 --- /dev/null
 +++ b/src/main/java/gg/pufferfish/pufferfish/simd/SIMDChecker.java
 @@ -0,0 +1,40 @@
@@ -221,7 +228,7 @@ index 0000000000000000000000000000000000000000..93f5d7ca36e043e6c0f959450d38e694
 +	@Deprecated
 +	public static boolean canEnable(Logger logger) {
 +		try {
-+			if (SIMDDetection.getJavaVersion() != 17 && SIMDDetection.getJavaVersion() != 18) {
++			if (SIMDDetection.getJavaVersion() != 17 && SIMDDetection.getJavaVersion() != 21) {
 +				return false;
 +			} else {
 +				SIMDDetection.testRun = true;
@@ -375,7 +382,7 @@ index 0000000000000000000000000000000000000000..ae2464920c9412ac90b819a540ee58be
 +	
 +}
 diff --git a/src/main/java/org/bukkit/map/MapPalette.java b/src/main/java/org/bukkit/map/MapPalette.java
-index c80faa079eca1564847070f0338fc98024639829..e632d51d3487eb4807243b6705999ad124466bf5 100644
+index 6995f9cc08d162e3adcd3a28f6bfa6d329661999..b9edb96fc5bac8793477657dbb45ccf98ab17f27 100644
 --- a/src/main/java/org/bukkit/map/MapPalette.java
 +++ b/src/main/java/org/bukkit/map/MapPalette.java
 @@ -1,6 +1,7 @@
@@ -386,7 +393,7 @@ index c80faa079eca1564847070f0338fc98024639829..e632d51d3487eb4807243b6705999ad1
  import java.awt.Color;
  import java.awt.Graphics2D;
  import java.awt.Image;
-@@ -40,7 +41,7 @@ public final class MapPalette {
+@@ -45,7 +46,7 @@ public final class MapPalette {
      }
  
      @NotNull
@@ -395,7 +402,7 @@ index c80faa079eca1564847070f0338fc98024639829..e632d51d3487eb4807243b6705999ad1
          c(0, 0, 0, 0), c(0, 0, 0, 0), c(0, 0, 0, 0), c(0, 0, 0, 0),
          c(89, 125, 39), c(109, 153, 48), c(127, 178, 56), c(67, 94, 29),
          c(174, 164, 115), c(213, 201, 140), c(247, 233, 163), c(130, 123, 86),
-@@ -211,9 +212,15 @@ public final class MapPalette {
+@@ -216,9 +217,15 @@ public final class MapPalette {
          temp.getRGB(0, 0, temp.getWidth(), temp.getHeight(), pixels, 0, temp.getWidth());
  
          byte[] result = new byte[temp.getWidth() * temp.getHeight()];
@@ -412,7 +419,7 @@ index c80faa079eca1564847070f0338fc98024639829..e632d51d3487eb4807243b6705999ad1
      }
  
 diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-index 003bece642b682985625db93cad93026352bfc66..e8ba4f1108f2548a487877027e37d81fc150e042 100644
+index 001465eedafa51ac027a4db51cba6223edfe1171..2e6d62c4f3687e299c34e876c503b400e13be05a 100644
 --- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 @@ -597,7 +597,9 @@ public final class SimplePluginManager implements PluginManager {
@@ -438,7 +445,7 @@ index 003bece642b682985625db93cad93026352bfc66..e8ba4f1108f2548a487877027e37d81f
                      callEvent(new com.destroystokyo.paper.event.server.ServerExceptionEvent(new com.destroystokyo.paper.exception.ServerEventException(msg, ex, registration.getPlugin(), registration.getListener(), event)));
                  }
 diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-index eaefbb00e9993d54906cc8cf35cf753c0d6c7707..6efa6732e5559c3192d08b8631911be7cdaf15b4 100644
+index b412aaf08901d169ac9fc89b36f9d6ccb95c53d3..8a1e1582120a26c1ae432c2e9af6d5fdc82b560b 100644
 --- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 @@ -336,7 +336,9 @@ public final class JavaPluginLoader implements PluginLoader {

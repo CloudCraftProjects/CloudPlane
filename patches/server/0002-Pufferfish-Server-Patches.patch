@@ -1,0 +1,1739 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Kevin Raneri <kevin.raneri@gmail.com>
+Date: Tue, 9 Nov 2021 23:36:56 -0500
+Subject: [PATCH] Pufferfish Server Patches
+
+
+diff --git a/src/main/java/ca/spottedleaf/moonrise/common/list/IteratorSafeOrderedReferenceSet.java b/src/main/java/ca/spottedleaf/moonrise/common/list/IteratorSafeOrderedReferenceSet.java
+index c21e00812f1aaa1279834a0562d360d6b89e146c..877d2095a066854939f260ca4b0b8c7b5abb620f 100644
+--- a/src/main/java/ca/spottedleaf/moonrise/common/list/IteratorSafeOrderedReferenceSet.java
++++ b/src/main/java/ca/spottedleaf/moonrise/common/list/IteratorSafeOrderedReferenceSet.java
+@@ -18,7 +18,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+ 
+     private final double maxFragFactor;
+ 
+-    private int iteratorCount;
++    private final java.util.concurrent.atomic.AtomicInteger iteratorCount = new java.util.concurrent.atomic.AtomicInteger(); // Pufferfish - async mob spawning
+ 
+     public IteratorSafeOrderedReferenceSet() {
+         this(16, 0.75f, 16, 0.2);
+@@ -79,7 +79,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+     }
+ 
+     public int createRawIterator() {
+-        ++this.iteratorCount;
++        this.iteratorCount.incrementAndGet(); // Pufferfish - async mob spawning
+         if (this.indexMap.isEmpty()) {
+             return -1;
+         } else {
+@@ -100,7 +100,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+     }
+ 
+     public void finishRawIterator() {
+-        if (--this.iteratorCount == 0) {
++        if (this.iteratorCount.decrementAndGet() == 0) { // Pufferfish - async mob spawning
+             if (this.getFragFactor() >= this.maxFragFactor) {
+                 this.defrag();
+             }
+@@ -117,7 +117,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+                 throw new IllegalStateException();
+             }
+             this.listElements[index] = null;
+-            if (this.iteratorCount == 0 && this.getFragFactor() >= this.maxFragFactor) {
++            if (this.iteratorCount.get() == 0 && this.getFragFactor() >= this.maxFragFactor) { // Pufferfish - async mob spawning
+                 this.defrag();
+             }
+             //this.check();
+@@ -219,7 +219,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+     }
+ 
+     public IteratorSafeOrderedReferenceSet.Iterator<E> iterator(final int flags) {
+-        ++this.iteratorCount;
++        this.iteratorCount.incrementAndGet(); // Pufferfish - async mob spawning
+         return new BaseIterator<>(this, true, (flags & ITERATOR_FLAG_SEE_ADDITIONS) != 0 ? Integer.MAX_VALUE : this.listSize);
+     }
+ 
+diff --git a/src/main/java/ca/spottedleaf/moonrise/common/util/CoordinateUtils.java b/src/main/java/ca/spottedleaf/moonrise/common/util/CoordinateUtils.java
+index 31b92bd48828cbea25b44a9f0f96886347aa1ae6..5f4238c6cf4bc78542826f3fd4d2cbc4861d72c8 100644
+--- a/src/main/java/ca/spottedleaf/moonrise/common/util/CoordinateUtils.java
++++ b/src/main/java/ca/spottedleaf/moonrise/common/util/CoordinateUtils.java
+@@ -16,7 +16,7 @@ public final class CoordinateUtils {
+     }
+ 
+     public static long getChunkKey(final Entity entity) {
+-        return ((Mth.lfloor(entity.getZ()) >> 4) << 32) | ((Mth.lfloor(entity.getX()) >> 4) & 0xFFFFFFFFL);
++        return ((long)(entity.blockPosition.getZ() >> 4) << 32) | ((long)(entity.blockPosition.getX() >> 4) & 0xFFFFFFFFL); // Pufferfish - eliminate double->long cast in hotpath
+     }
+ 
+     public static long getChunkKey(final ChunkPos pos) {
+diff --git a/src/main/java/gg/airplane/structs/ItemListWithBitset.java b/src/main/java/gg/airplane/structs/ItemListWithBitset.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..1b7a4ee47f4445d7f2ac91d3a73ae113edbdddb2
+--- /dev/null
++++ b/src/main/java/gg/airplane/structs/ItemListWithBitset.java
+@@ -0,0 +1,114 @@
++package gg.airplane.structs;
++
++import net.minecraft.core.NonNullList;
++import net.minecraft.world.item.ItemStack;
++import org.apache.commons.lang.Validate;
++import org.jetbrains.annotations.NotNull;
++import org.jetbrains.annotations.Nullable;
++
++import java.util.AbstractList;
++import java.util.Arrays;
++import java.util.List;
++
++public class ItemListWithBitset extends AbstractList<ItemStack> {
++    public static ItemListWithBitset fromList(List<ItemStack> list) {
++        if (list instanceof ItemListWithBitset ours) {
++            return ours;
++        }
++        return new ItemListWithBitset(list);
++    }
++
++    private static ItemStack[] createArray(int size) {
++        ItemStack[] array = new ItemStack[size];
++        Arrays.fill(array, ItemStack.EMPTY);
++        return array;
++    }
++
++    private final ItemStack[] items;
++
++    private long bitSet = 0;
++    private final long allBits;
++
++    private static class OurNonNullList extends NonNullList<ItemStack> {
++        protected OurNonNullList(List<ItemStack> delegate) {
++            super(delegate, ItemStack.EMPTY);
++        }
++    }
++
++    public final NonNullList<ItemStack> nonNullList = new OurNonNullList(this);
++
++    private ItemListWithBitset(List<ItemStack> list) {
++        this(list.size());
++
++        for (int i = 0; i < list.size(); i++) {
++            this.set(i, list.get(i));
++        }
++    }
++
++    public ItemListWithBitset(int size) {
++        Validate.isTrue(size < Long.BYTES * 8, "size is too large");
++
++        this.items = createArray(size);
++        this.allBits = ((1L << size) - 1);
++    }
++
++    public boolean isCompletelyEmpty() {
++        return this.bitSet == 0;
++    }
++
++    public boolean hasFullStacks() {
++        return (this.bitSet & this.allBits) == allBits;
++    }
++
++    @Override
++    public ItemStack set(int index, @NotNull ItemStack itemStack) {
++        ItemStack existing = this.items[index];
++
++        this.items[index] = itemStack;
++
++        if (itemStack == ItemStack.EMPTY) {
++            this.bitSet &= ~(1L << index);
++        } else {
++            this.bitSet |= 1L << index;
++        }
++
++        return existing;
++    }
++
++    @NotNull
++    @Override
++    public ItemStack get(int var0) {
++        return this.items[var0];
++    }
++
++    @Override
++    public int size() {
++        return this.items.length;
++    }
++
++    @Override
++    public void clear() {
++        Arrays.fill(this.items, ItemStack.EMPTY);
++    }
++
++    // these are unsupported for block inventories which have a static size
++    @Override
++    public void add(int var0, ItemStack var1) {
++        throw new UnsupportedOperationException();
++    }
++
++    @Override
++    public ItemStack remove(int var0) {
++        throw new UnsupportedOperationException();
++    }
++
++    @Override
++    public String toString() {
++        return "ItemListWithBitset{" +
++          "items=" + Arrays.toString(items) +
++          ", bitSet=" + Long.toString(bitSet, 2) +
++          ", allBits=" + Long.toString(allBits, 2) +
++          ", size=" + this.items.length +
++          '}';
++    }
++}
+diff --git a/src/main/java/gg/airplane/structs/Long2FloatAgingCache.java b/src/main/java/gg/airplane/structs/Long2FloatAgingCache.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..a7f297ebb569f7c1f205e967ca485be70013a714
+--- /dev/null
++++ b/src/main/java/gg/airplane/structs/Long2FloatAgingCache.java
+@@ -0,0 +1,119 @@
++package gg.airplane.structs;
++
++import it.unimi.dsi.fastutil.HashCommon;
++
++/**
++ * A replacement for the cache used in Biome.
++ */
++public class Long2FloatAgingCache {
++
++    private static class AgingEntry {
++        private long data;
++        private float value;
++        private int uses = 0;
++        private int age = 0;
++
++        private AgingEntry(long data, float value) {
++            this.data = data;
++            this.value = value;
++        }
++
++        public void replace(long data, float flag) {
++            this.data = data;
++            this.value = flag;
++        }
++
++        public int getValue() {
++            return this.uses - (this.age >> 1); // age isn't as important as uses
++        }
++
++        public void incrementUses() {
++            this.uses = this.uses + 1 & Integer.MAX_VALUE;
++        }
++
++        public void incrementAge() {
++            this.age = this.age + 1 & Integer.MAX_VALUE;
++        }
++    }
++
++    private final AgingEntry[] entries;
++    private final int mask;
++    private final int maxDistance; // the most amount of entries to check for a value
++
++    public Long2FloatAgingCache(int size) {
++        int arraySize = HashCommon.nextPowerOfTwo(size);
++        this.entries = new AgingEntry[arraySize];
++        this.mask = arraySize - 1;
++        this.maxDistance = Math.min(arraySize, 4);
++    }
++
++    public float getValue(long data) {
++        AgingEntry curr;
++        int pos;
++
++        if ((curr = this.entries[pos = HashCommon.mix(HashCommon.long2int(data)) & this.mask]) == null) {
++            return Float.NaN;
++        } else if (data == curr.data) {
++            curr.incrementUses();
++            return curr.value;
++        }
++
++        int checked = 1; // start at 1 because we already checked the first spot above
++
++        while ((curr = this.entries[pos = (pos + 1) & this.mask]) != null) {
++            if (data == curr.data) {
++                curr.incrementUses();
++                return curr.value;
++            } else if (++checked >= this.maxDistance) {
++                break;
++            }
++        }
++
++        return Float.NaN;
++    }
++
++    public void putValue(long data, float value) {
++        AgingEntry curr;
++        int pos;
++
++        if ((curr = this.entries[pos = HashCommon.mix(HashCommon.long2int(data)) & this.mask]) == null) {
++            this.entries[pos] = new AgingEntry(data, value); // add
++            return;
++        } else if (data == curr.data) {
++            curr.incrementUses();
++            return;
++        }
++
++        int checked = 1; // start at 1 because we already checked the first spot above
++
++        while ((curr = this.entries[pos = (pos + 1) & this.mask]) != null) {
++            if (data == curr.data) {
++                curr.incrementUses();
++                return;
++            } else if (++checked >= this.maxDistance) {
++                this.forceAdd(data, value);
++                return;
++            }
++        }
++
++        this.entries[pos] = new AgingEntry(data, value); // add
++    }
++
++    private void forceAdd(long data, float value) {
++        int expectedPos = HashCommon.mix(HashCommon.long2int(data)) & this.mask;
++        AgingEntry entryToRemove = this.entries[expectedPos];
++
++        for (int i = expectedPos + 1; i < expectedPos + this.maxDistance; i++) {
++            int pos = i & this.mask;
++            AgingEntry entry = this.entries[pos];
++            if (entry.getValue() < entryToRemove.getValue()) {
++                entryToRemove = entry;
++            }
++
++            entry.incrementAge(); // use this as a mechanism to age the other entries
++        }
++
++        // remove the least used/oldest entry
++        entryToRemove.replace(data, value);
++    }
++}
+diff --git a/src/main/java/gg/airplane/structs/ThreadUnsafeRandom.java b/src/main/java/gg/airplane/structs/ThreadUnsafeRandom.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..5de68a00bb72e99cba60e0ab0967c1a9969f8762
+--- /dev/null
++++ b/src/main/java/gg/airplane/structs/ThreadUnsafeRandom.java
+@@ -0,0 +1,66 @@
++package gg.airplane.structs;
++
++import net.minecraft.util.RandomSource;
++import net.minecraft.world.level.levelgen.LegacyRandomSource;
++import net.minecraft.world.level.levelgen.PositionalRandomFactory;
++import org.checkerframework.checker.nullness.qual.NonNull;
++import org.checkerframework.framework.qual.DefaultQualifier;
++
++// https://github.com/PaperMC/Paper/blob/20f51650a9648c78e608d4d80f0e89dba24ac799/patches/server/1004-Optimise-random-block-ticking.patch#L21-L91
++@DefaultQualifier(NonNull.class)
++public final class ThreadUnsafeRandom extends LegacyRandomSource {
++
++    // See javadoc and internal comments for java.util.Random where these values come from, how they are used, and the author for them.
++    private static final long multiplier = 0x5DEECE66DL;
++    private static final long addend = 0xBL;
++    private static final long mask = (1L << 48) - 1;
++
++    private static long initialScramble(long seed) {
++        return (seed ^ multiplier) & mask;
++    }
++
++    private long seed;
++
++    public ThreadUnsafeRandom(long seed) {
++        super(seed);
++    }
++
++    @Override
++    public RandomSource fork() {
++        return new ThreadUnsafeRandom(this.nextLong());
++    }
++
++    @Override
++    public PositionalRandomFactory forkPositional() {
++        throw new UnsupportedOperationException();
++    }
++
++    @Override
++    public void setSeed(long seed) {
++        // note: called by Random constructor
++        this.seed = initialScramble(seed);
++    }
++
++    @Override
++    public int next(int bits) {
++        // avoid the expensive CAS logic used by superclass
++        return (int) (((this.seed = this.seed * multiplier + addend) & mask) >>> (48 - bits));
++    }
++
++    // Taken from
++    // https://lemire.me/blog/2016/06/27/a-fast-alternative-to-the-modulo-reduction/
++    // https://github.com/lemire/Code-used-on-Daniel-Lemire-s-blog/blob/master/2016/06/25/fastrange.c
++    // Original license is public domain
++    public static int fastRandomBounded(final long randomInteger, final long limit) {
++        // randomInteger must be [0, pow(2, 32))
++        // limit must be [0, pow(2, 32))
++        return (int)((randomInteger * limit) >>> 32);
++    }
++
++    @Override
++    public int nextInt(int bound) {
++        // yes this breaks random's spec
++        // however there's nothing that uses this class that relies on it
++        return fastRandomBounded(this.next(32) & 0xFFFFFFFFL, bound);
++    }
++}
+diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishCommand.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishCommand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..020368da69b9a492155f6de6297f74732f4ab6ea
+--- /dev/null
++++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishCommand.java
+@@ -0,0 +1,68 @@
++package gg.pufferfish.pufferfish;
++
++import java.io.IOException;
++import java.util.Collections;
++import java.util.List;
++import java.util.stream.Collectors;
++import java.util.stream.Stream;
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.format.NamedTextColor;
++import net.md_5.bungee.api.ChatColor;
++import net.minecraft.server.MinecraftServer;
++import org.bukkit.Bukkit;
++import org.bukkit.Location;
++import org.bukkit.command.Command;
++import org.bukkit.command.CommandSender;
++
++public class PufferfishCommand extends Command {
++
++    public PufferfishCommand() {
++        super("pufferfish");
++        this.description = "Pufferfish related commands";
++        this.usageMessage = "/pufferfish [reload | version]";
++        this.setPermission("bukkit.command.pufferfish");
++    }
++    
++    public static void init() {
++        MinecraftServer.getServer().server.getCommandMap().register("pufferfish", "Pufferfish", new PufferfishCommand());
++    }
++
++    @Override
++    public List<String> tabComplete(CommandSender sender, String alias, String[] args, Location location) throws IllegalArgumentException {
++        if (args.length == 1) {
++            return Stream.of("reload", "version")
++              .filter(arg -> arg.startsWith(args[0].toLowerCase()))
++              .collect(Collectors.toList());
++        }
++        return Collections.emptyList();
++    }
++
++    @Override
++    public boolean execute(CommandSender sender, String commandLabel, String[] args) {
++        if (!testPermission(sender)) return true;
++        String prefix = ChatColor.of("#12fff6") + "" + ChatColor.BOLD + "Pufferfish » " + ChatColor.of("#e8f9f9");
++
++        if (args.length != 1) {
++            sender.sendMessage(prefix + "Usage: " + usageMessage);
++            args = new String[]{"version"};
++        }
++
++        if (args[0].equalsIgnoreCase("reload")) {
++            MinecraftServer console = MinecraftServer.getServer();
++            try {
++                PufferfishConfig.load();
++            } catch (IOException e) {
++                sender.sendMessage(Component.text("Failed to reload.", NamedTextColor.RED));
++                e.printStackTrace();
++                return true;
++            }
++            console.server.reloadCount++;
++
++            Command.broadcastCommandMessage(sender, prefix + "Pufferfish configuration has been reloaded.");
++        } else if (args[0].equalsIgnoreCase("version")) {
++            Command.broadcastCommandMessage(sender, prefix + "This server is running " + Bukkit.getName() + " version " + Bukkit.getVersion() + " (Implementing API version " + Bukkit.getBukkitVersion() + ")");
++        }
++
++        return true;
++    }
++}
+diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..5020189d7f1814930f80edf4d81bcfe93445d0b8
+--- /dev/null
++++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
+@@ -0,0 +1,294 @@
++package gg.pufferfish.pufferfish;
++
++import gg.pufferfish.pufferfish.flare.FlareCommand;
++import gg.pufferfish.pufferfish.simd.SIMDDetection;
++import net.minecraft.core.registries.BuiltInRegistries;
++import net.minecraft.server.MinecraftServer;
++import net.minecraft.world.entity.EntityType;
++import org.bukkit.command.SimpleCommandMap;
++import org.bukkit.configuration.ConfigurationSection;
++import org.bukkit.configuration.MemoryConfiguration;
++import org.jetbrains.annotations.Nullable;
++import org.simpleyaml.configuration.comments.CommentType;
++import org.simpleyaml.configuration.file.YamlFile;
++import org.simpleyaml.exceptions.InvalidConfigurationException;
++
++import java.io.File;
++import java.io.IOException;
++import java.lang.reflect.Method;
++import java.lang.reflect.Modifier;
++import java.net.URI;
++import java.util.Collections;
++import java.util.List;
++import java.util.Locale;
++import java.util.Map;
++
++public class PufferfishConfig {
++
++	private static final YamlFile config = new YamlFile();
++	private static int updates = 0;
++
++	private static ConfigurationSection convertToBukkit(org.simpleyaml.configuration.ConfigurationSection section) {
++		ConfigurationSection newSection = new MemoryConfiguration();
++		for (String key : section.getKeys(false)) {
++			if (section.isConfigurationSection(key)) {
++				newSection.set(key, convertToBukkit(section.getConfigurationSection(key)));
++			} else {
++				newSection.set(key, section.get(key));
++			}
++		}
++		return newSection;
++	}
++
++	public static ConfigurationSection getConfigCopy() {
++		return convertToBukkit(config);
++	}
++
++	public static int getUpdates() {
++		return updates;
++	}
++
++	public static void load() throws IOException {
++		File configFile = new File("pufferfish.yml");
++
++		if (configFile.exists()) {
++			try {
++				config.load(configFile);
++			} catch (InvalidConfigurationException e) {
++				throw new IOException(e);
++			}
++		}
++
++		getString("info.version", "1.0");
++		setComment("info",
++				"Pufferfish Configuration",
++				"Check out Pufferfish Host for maximum performance server hosting: https://pufferfish.host",
++				"Join our Discord for support: https://discord.gg/reZw4vQV9H",
++				"Download new builds at https://ci.pufferfish.host/job/Pufferfish");
++
++		for (Method method : PufferfishConfig.class.getDeclaredMethods()) {
++			if (Modifier.isStatic(method.getModifiers()) && Modifier.isPrivate(method.getModifiers()) && method.getParameterCount() == 0 &&
++					method.getReturnType() == Void.TYPE && !method.getName().startsWith("lambda")) {
++				method.setAccessible(true);
++				try {
++					method.invoke(null);
++				} catch (Throwable t) {
++					MinecraftServer.LOGGER.warn("Failed to load configuration option from " + method.getName(), t);
++				}
++			}
++		}
++
++		updates++;
++
++		config.save(configFile);
++
++		// Attempt to detect vectorization
++		try {
++			SIMDDetection.isEnabled = SIMDDetection.canEnable(PufferfishLogger.LOGGER);
++			SIMDDetection.versionLimited = SIMDDetection.getJavaVersion() != 17 && SIMDDetection.getJavaVersion() != 21;
++		} catch (NoClassDefFoundError | Exception ignored) {}
++
++		if (false) // don't care if activated or not
++		if (SIMDDetection.isEnabled) {
++			PufferfishLogger.LOGGER.info("SIMD operations detected as functional. Will replace some operations with faster versions.");
++		} else if (SIMDDetection.versionLimited) {
++			PufferfishLogger.LOGGER.warning("Will not enable SIMD! These optimizations are only safely supported on Java 17 and Java 21.");
++		} else {
++			PufferfishLogger.LOGGER.warning("SIMD operations are available for your server, but are not configured!");
++			PufferfishLogger.LOGGER.warning("To enable additional optimizations, add \"--add-modules=jdk.incubator.vector\" to your startup flags, BEFORE the \"-jar\".");
++			PufferfishLogger.LOGGER.warning("If you have already added this flag, then SIMD operations are not supported on your JVM or CPU.");
++			PufferfishLogger.LOGGER.warning("Debug: Java: " + System.getProperty("java.version") + ", test run: " + SIMDDetection.testRun);
++		}
++	}
++
++	private static void setComment(String key, String... comment) {
++		if (config.contains(key)) {
++			config.setComment(key, String.join("\n", comment), CommentType.BLOCK);
++		}
++	}
++
++	private static void ensureDefault(String key, Object defaultValue, String... comment) {
++		if (!config.contains(key)) {
++			config.set(key, defaultValue);
++			config.setComment(key, String.join("\n", comment), CommentType.BLOCK);
++		}
++	}
++
++	private static boolean getBoolean(String key, boolean defaultValue, String... comment) {
++		return getBoolean(key, null, defaultValue, comment);
++	}
++
++	private static boolean getBoolean(String key, @Nullable String oldKey, boolean defaultValue, String... comment) {
++		ensureDefault(key, defaultValue, comment);
++		return config.getBoolean(key, defaultValue);
++	}
++
++	private static int getInt(String key, int defaultValue, String... comment) {
++		return getInt(key, null, defaultValue, comment);
++	}
++
++	private static int getInt(String key, @Nullable String oldKey, int defaultValue, String... comment) {
++		ensureDefault(key, defaultValue, comment);
++		return config.getInt(key, defaultValue);
++	}
++
++	private static double getDouble(String key, double defaultValue, String... comment) {
++		return getDouble(key, null, defaultValue, comment);
++	}
++
++	private static double getDouble(String key, @Nullable String oldKey, double defaultValue, String... comment) {
++		ensureDefault(key, defaultValue, comment);
++		return config.getDouble(key, defaultValue);
++	}
++
++	private static String getString(String key, String defaultValue, String... comment) {
++		return getOldString(key, null, defaultValue, comment);
++	}
++
++	private static String getOldString(String key, @Nullable String oldKey, String defaultValue, String... comment) {
++		ensureDefault(key, defaultValue, comment);
++		return config.getString(key, defaultValue);
++	}
++
++	private static List<String> getStringList(String key, List<String> defaultValue, String... comment) {
++		return getStringList(key, null, defaultValue, comment);
++	}
++
++	private static List<String> getStringList(String key, @Nullable String oldKey, List<String> defaultValue, String... comment) {
++		ensureDefault(key, defaultValue, comment);
++		return config.getStringList(key);
++	}
++
++	public static String sentryDsn;
++	private static void sentry() {
++		String sentryEnvironment = System.getenv("SENTRY_DSN");
++		String sentryConfig = getString("sentry-dsn", "", "Sentry DSN for improved error logging, leave blank to disable", "Obtain from https://sentry.io/");
++
++		sentryDsn = sentryEnvironment == null ? sentryConfig : sentryEnvironment;
++		if (sentryDsn != null && !sentryDsn.isBlank()) {
++			gg.pufferfish.pufferfish.sentry.SentryManager.init();
++		}
++	}
++
++	public static boolean enableBooks;
++	private static void books() {
++		enableBooks = getBoolean("enable-books", true,
++				"Whether or not books should be writeable.",
++				"Servers that anticipate being a target for duping may want to consider",
++				"disabling this option.",
++				"This can be overridden per-player with the permission pufferfish.usebooks");
++	}
++
++	public static boolean enableSuffocationOptimization;
++	private static void suffocationOptimization() {
++		enableSuffocationOptimization = getBoolean("enable-suffocation-optimization", true,
++				"Optimizes the suffocation check by selectively skipping",
++				"the check in a way that still appears vanilla. This should",
++				"be left enabled on most servers, but is provided as a",
++				"configuration option if the vanilla deviation is undesirable.");
++	}
++
++	public static boolean enableAsyncMobSpawning;
++	public static boolean asyncMobSpawningInitialized;
++	private static void asyncMobSpawning() {
++		boolean temp = getBoolean("enable-async-mob-spawning", true,
++				"Whether or not asynchronous mob spawning should be enabled.",
++				"On servers with many entities, this can improve performance by up to 15%. You must have",
++				"paper's per-player-mob-spawns setting set to true for this to work.",
++				"One quick note - this does not actually spawn mobs async (that would be very unsafe).",
++				"This just offloads some expensive calculations that are required for mob spawning.");
++
++		// This prevents us from changing the value during a reload.
++		if (!asyncMobSpawningInitialized) {
++			asyncMobSpawningInitialized = true;
++			enableAsyncMobSpawning = temp;
++		}
++	}
++
++    public static int maxProjectileLoadsPerTick;
++    public static int maxProjectileLoadsPerProjectile;
++    private static void projectileLoading() {
++        maxProjectileLoadsPerTick = getInt("projectile.max-loads-per-tick", 10, "Controls how many chunks are allowed", "to be sync loaded by projectiles in a tick.");
++        maxProjectileLoadsPerProjectile = getInt("projectile.max-loads-per-projectile", 10, "Controls how many chunks a projectile", "can load in its lifetime before it gets", "automatically removed.");
++
++        setComment("projectile", "Optimizes projectile settings");
++    }
++
++
++    public static boolean dearEnabled;
++    public static int startDistance;
++    public static int startDistanceSquared;
++    public static int maximumActivationPrio;
++    public static int activationDistanceMod;
++
++    private static void dynamicActivationOfBrains() throws IOException {
++        dearEnabled = getBoolean("dab.enabled", "activation-range.enabled", true);
++        startDistance = getInt("dab.start-distance", "activation-range.start-distance", 12,
++                "This value determines how far away an entity has to be",
++                "from the player to start being effected by DEAR.");
++        startDistanceSquared = startDistance * startDistance;
++        maximumActivationPrio = getInt("dab.max-tick-freq", "activation-range.max-tick-freq", 20,
++                "This value defines how often in ticks, the furthest entity",
++                "will get their pathfinders and behaviors ticked. 20 = 1s");
++        activationDistanceMod = getInt("dab.activation-dist-mod", "activation-range.activation-dist-mod", 8,
++                "This value defines how much distance modifies an entity's",
++                "tick frequency. freq = (distanceToPlayer^2) / (2^value)",
++                "If you want further away entities to tick less often, use 7.",
++                "If you want further away entities to tick more often, try 9.");
++
++        for (EntityType<?> entityType : BuiltInRegistries.ENTITY_TYPE) {
++            entityType.dabEnabled = true; // reset all, before setting the ones to true
++        }
++        getStringList("dab.blacklisted-entities", "activation-range.blacklisted-entities", Collections.emptyList(), "A list of entities to ignore for activation")
++                .forEach(name -> EntityType.byString(name).ifPresentOrElse(entityType -> {
++                    entityType.dabEnabled = false;
++                }, () -> MinecraftServer.LOGGER.warn("Unknown entity \"" + name + "\"")));
++
++        setComment("dab", "Optimizes entity brains when", "they're far away from the player");
++    }
++
++    public static boolean throttleInactiveGoalSelectorTick = true;
++	private static void inactiveGoalSelectorThrottle() {
++		throttleInactiveGoalSelectorTick = getBoolean("inactive-goal-selector-throttle", "inactive-goal-selector-disable", throttleInactiveGoalSelectorTick,
++				"Throttles the AI goal selector in entity inactive ticks.",
++				"This can improve performance by a few percent, but has minor gameplay implications.");
++	}
++
++	public static boolean allowEndCrystalRespawn = true;
++	private static void allowEndCrystalRespawn() {
++		allowEndCrystalRespawn = getBoolean("allow-end-crystal-respawn", allowEndCrystalRespawn,
++				"Allows end crystals to respawn the ender dragon.",
++				"On servers that expect end crystal fights in the end dimension, disabling this",
++				"will prevent the server from performing an expensive search to attempt respawning",
++				"the ender dragon whenever a player places an end crystal.");
++	}
++
++    public static URI profileWebUrl;
++    private static void profilerOptions() {
++        profileWebUrl = URI.create(getString("flare.url", "https://flare.airplane.gg", "Sets the server to use for profiles."));
++        setComment("flare", "Configures Flare, the built-in profiler");
++    }
++
++    public static String accessToken;
++    private static void airplaneWebServices() {
++        accessToken = getString("web-services.token", "");
++        // todo lookup token (off-thread) and let users know if their token is valid
++        if (accessToken.length() > 0) {
++            gg.pufferfish.pufferfish.flare.FlareSetup.init(); // Pufferfish
++            SimpleCommandMap commandMap = MinecraftServer.getServer().server.getCommandMap();
++            if (commandMap.getCommand("flare") == null) {
++                commandMap.register("flare", "Pufferfish", new FlareCommand());
++            }
++        }
++
++        setComment("web-services", "Options for connecting to Pufferfish/Airplane's online utilities");
++    }
++
++    public static boolean disableMethodProfiler = true;
++	 public static boolean disableOutOfOrderChat = false;
++    private static void miscSettings() {
++		disableMethodProfiler = getBoolean("misc.disable-method-profiler", disableMethodProfiler);
++		disableOutOfOrderChat = getBoolean("misc.disable-out-of-order-chat", disableOutOfOrderChat);
++       setComment("misc", "Settings for things that don't belong elsewhere");
++    }
++}
+diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishLogger.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishLogger.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..53f2df00c6809618a9ee3d2ea72e85e8052fbcf1
+--- /dev/null
++++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishLogger.java
+@@ -0,0 +1,16 @@
++package gg.pufferfish.pufferfish;
++
++import java.util.logging.Level;
++import java.util.logging.Logger;
++import org.bukkit.Bukkit;
++
++public class PufferfishLogger extends Logger {
++    public static final PufferfishLogger LOGGER = new PufferfishLogger();
++
++    private PufferfishLogger() {
++        super("Pufferfish", null);
++
++        setParent(Bukkit.getLogger());
++        setLevel(Level.ALL);
++    }
++}
+diff --git a/src/main/java/gg/pufferfish/pufferfish/compat/ServerConfigurations.java b/src/main/java/gg/pufferfish/pufferfish/compat/ServerConfigurations.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..f4ee2b700b3687eb9eda363bc905d8cf24dd7cff
+--- /dev/null
++++ b/src/main/java/gg/pufferfish/pufferfish/compat/ServerConfigurations.java
+@@ -0,0 +1,77 @@
++package gg.pufferfish.pufferfish.compat;
++
++import co.aikar.timings.TimingsManager;
++import com.google.common.io.Files;
++import org.bukkit.configuration.InvalidConfigurationException;
++import org.bukkit.configuration.file.YamlConfiguration;
++
++import java.io.ByteArrayOutputStream;
++import java.io.File;
++import java.io.FileInputStream;
++import java.io.IOException;
++import java.util.Arrays;
++import java.util.HashMap;
++import java.util.List;
++import java.util.Map;
++import java.util.Properties;
++import java.util.stream.Collectors;
++
++public class ServerConfigurations {
++
++    public static final String[] configurationFiles = new String[]{
++            "server.properties",
++            "bukkit.yml",
++            "spigot.yml",
++            // "paper.yml", // TODO: Figure out what to do with this.
++            "pufferfish.yml"
++    };
++
++    public static Map<String, String> getCleanCopies() throws IOException {
++        Map<String, String> files = new HashMap<>(configurationFiles.length);
++        for (String file : configurationFiles) {
++            files.put(file, getCleanCopy(file));
++        }
++        return files;
++    }
++
++    public static String getCleanCopy(String configName) throws IOException {
++        File file = new File(configName);
++        List<String> hiddenConfigs = TimingsManager.hiddenConfigs;
++
++        switch (Files.getFileExtension(configName)) {
++            case "properties": {
++                Properties properties = new Properties();
++                try (FileInputStream inputStream = new FileInputStream(file)) {
++                    properties.load(inputStream);
++                }
++                for (String hiddenConfig : hiddenConfigs) {
++                    properties.remove(hiddenConfig);
++                }
++                ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
++                properties.store(outputStream, "");
++                return Arrays.stream(outputStream.toString()
++                                .split("\n"))
++                        .filter(line -> !line.startsWith("#"))
++                        .collect(Collectors.joining("\n"));
++            }
++            case "yml": {
++                YamlConfiguration configuration = new YamlConfiguration();
++                try {
++                    configuration.load(file);
++                } catch (InvalidConfigurationException e) {
++                    throw new IOException(e);
++                }
++                configuration.options().setHeader(null);
++                for (String key : configuration.getKeys(true)) {
++                    if (hiddenConfigs.contains(key)) {
++                        configuration.set(key, null);
++                    }
++                }
++                return configuration.saveToString();
++            }
++            default:
++                throw new IllegalArgumentException("Bad file type " + configName);
++        }
++    }
++
++}
+diff --git a/src/main/java/gg/pufferfish/pufferfish/flare/CustomCategories.java b/src/main/java/gg/pufferfish/pufferfish/flare/CustomCategories.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..401b42e29bccb5251684062f10b2e0f8b091bc95
+--- /dev/null
++++ b/src/main/java/gg/pufferfish/pufferfish/flare/CustomCategories.java
+@@ -0,0 +1,8 @@
++package gg.pufferfish.pufferfish.flare;
++
++import co.technove.flare.live.category.GraphCategory;
++
++public class CustomCategories {
++    public static final GraphCategory MC_PERF = new GraphCategory("MC Performance");
++    public static final GraphCategory ENTITIES_AND_CHUNKS = new GraphCategory("Entities & Chunks");
++}
+diff --git a/src/main/java/gg/pufferfish/pufferfish/flare/FlareCommand.java b/src/main/java/gg/pufferfish/pufferfish/flare/FlareCommand.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..f0f448ed34a25ac2d077c4958ffc45058208bc89
+--- /dev/null
++++ b/src/main/java/gg/pufferfish/pufferfish/flare/FlareCommand.java
+@@ -0,0 +1,133 @@
++package gg.pufferfish.pufferfish.flare;
++
++import co.technove.flare.exceptions.UserReportableException;
++import co.technove.flare.internal.profiling.ProfileType;
++import gg.pufferfish.pufferfish.PufferfishConfig;
++import io.papermc.paper.util.MCUtil;
++import net.kyori.adventure.text.Component;
++import net.kyori.adventure.text.event.ClickEvent;
++import net.kyori.adventure.text.format.NamedTextColor;
++import net.kyori.adventure.text.format.TextColor;
++import net.kyori.adventure.text.format.TextDecoration;
++import net.minecraft.server.MinecraftServer;
++import org.bukkit.command.Command;
++import org.bukkit.command.CommandSender;
++import org.bukkit.command.ConsoleCommandSender;
++import org.bukkit.util.StringUtil;
++import org.jetbrains.annotations.NotNull;
++
++import java.util.ArrayList;
++import java.util.Collections;
++import java.util.List;
++
++public class FlareCommand extends Command {
++
++    private static final String BASE_URL = "https://blog.airplane.gg/flare-tutorial/#setting-the-access-token";
++    private static final TextColor HEX = TextColor.fromHexString("#e3eaea");
++    private static final Component PREFIX = Component.text()
++            .append(Component.text("Flare ✈")
++                    .color(TextColor.fromHexString("#6a7eda"))
++                    .decoration(TextDecoration.BOLD, true)
++                    .append(Component.text(" ", HEX)
++                            .decoration(TextDecoration.BOLD, false)))
++            .asComponent();
++
++    public FlareCommand() {
++        super("flare", "Profile your server with Flare", "/flare", Collections.singletonList("profile"));
++        this.setPermission("airplane.flare");
++    }
++
++    @Override
++    public boolean execute(@NotNull CommandSender sender, @NotNull String commandLabel, String @NotNull [] args) {
++        if (!testPermission(sender)) return true;
++        if (PufferfishConfig.accessToken.isEmpty()) {
++            Component clickable = Component.text(BASE_URL, HEX, TextDecoration.UNDERLINED).clickEvent(ClickEvent.clickEvent(ClickEvent.Action.OPEN_URL, BASE_URL));
++
++            sender.sendMessage(PREFIX.append(Component.text("Flare currently requires an access token to use. To learn more, visit ").color(HEX).append(clickable)));
++            return true;
++        }
++
++        if (!FlareSetup.isSupported()) {
++            sender.sendMessage(PREFIX.append(
++                    Component.text("Profiling is not supported in this environment, check your startup logs for the error.", NamedTextColor.RED)));
++            return true;
++        }
++        if (ProfilingManager.isProfiling()) {
++            if (args.length == 1 && args[0].equalsIgnoreCase("status")) {
++                sender.sendMessage(PREFIX.append(Component.text("Current profile has been ran for " + ProfilingManager.getTimeRan().toString(), HEX)));
++                return true;
++            }
++            if (ProfilingManager.stop()) {
++                if (!(sender instanceof ConsoleCommandSender)) {
++                    sender.sendMessage(PREFIX.append(Component.text("Profiling has been stopped.", HEX)));
++                }
++            } else {
++                sender.sendMessage(PREFIX.append(Component.text("Profiling has already been stopped.", HEX)));
++            }
++        } else {
++            ProfileType profileType = ProfileType.ITIMER;
++            if (args.length > 0) {
++                try {
++                    profileType = ProfileType.valueOf(args[0].toUpperCase());
++                } catch (Exception e) {
++                    sender.sendMessage(PREFIX.append(Component
++                            .text("Invalid profile type ", HEX)
++                            .append(Component.text(args[0], HEX, TextDecoration.BOLD)
++                                    .append(Component.text("!", HEX)))
++                    ));
++                }
++            }
++            ProfileType finalProfileType = profileType;
++            MCUtil.scheduleAsyncTask(() -> {
++                try {
++                    if (ProfilingManager.start(finalProfileType)) {
++                        if (!(sender instanceof ConsoleCommandSender)) {
++                            sender.sendMessage(PREFIX.append(Component
++                                    .text("Flare has been started: " + ProfilingManager.getProfilingUri(), HEX)
++                                    .clickEvent(ClickEvent.openUrl(ProfilingManager.getProfilingUri()))
++                            ));
++                            sender.sendMessage(PREFIX.append(Component.text("  Run /" + commandLabel + " to stop the Flare.", HEX)));
++                        }
++                    } else {
++                        sender.sendMessage(PREFIX.append(Component
++                                .text("Flare has already been started: " + ProfilingManager.getProfilingUri(), HEX)
++                                .clickEvent(ClickEvent.openUrl(ProfilingManager.getProfilingUri()))
++                        ));
++                    }
++                } catch (UserReportableException e) {
++                    sender.sendMessage(Component.text("Flare failed to start: " + e.getUserError(), NamedTextColor.RED));
++                    if (e.getCause() != null) {
++                        MinecraftServer.LOGGER.warn("Flare failed to start", e);
++                    }
++                }
++            });
++        }
++        return true;
++    }
++
++    @Override
++    public @NotNull List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, String @NotNull [] args) throws IllegalArgumentException {
++        List<String> list = new ArrayList<>();
++        if (ProfilingManager.isProfiling()) {
++            if (args.length == 1) {
++                String lastWord = args[0];
++                if (StringUtil.startsWithIgnoreCase("status", lastWord)) {
++                    list.add("status");
++                }
++                if (StringUtil.startsWithIgnoreCase("stop", lastWord)) {
++                    list.add("stop");
++                }
++            }
++        } else {
++            if (args.length <= 1) {
++                String lastWord = args.length == 0 ? "" : args[0];
++                for (ProfileType value : ProfileType.values()) {
++                    if (StringUtil.startsWithIgnoreCase(value.getInternalName(), lastWord)) {
++                        list.add(value.name().toLowerCase());
++                    }
++                }
++            }
++        }
++        return list;
++    }
++}
+diff --git a/src/main/java/gg/pufferfish/pufferfish/flare/FlareSetup.java b/src/main/java/gg/pufferfish/pufferfish/flare/FlareSetup.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..f33380b330aba4aa37d558ea73b4025fd61519da
+--- /dev/null
++++ b/src/main/java/gg/pufferfish/pufferfish/flare/FlareSetup.java
+@@ -0,0 +1,32 @@
++package gg.pufferfish.pufferfish.flare;
++
++import co.technove.flare.FlareInitializer;
++import co.technove.flare.internal.profiling.InitializationException;
++import net.minecraft.server.MinecraftServer;
++
++public class FlareSetup {
++
++    private static boolean initialized = false;
++    private static boolean supported = false;
++
++    public static void init() {
++        if (initialized) {
++            return;
++        }
++
++        initialized = true;
++        try {
++            for (String warning : FlareInitializer.initialize()) {
++                MinecraftServer.LOGGER.warn("Flare warning: {}", warning);
++            }
++            supported = true;
++        } catch (InitializationException e) {
++            MinecraftServer.LOGGER.warn("Failed to enable Flare:", e);
++        }
++    }
++
++    public static boolean isSupported() {
++        return supported;
++    }
++
++}
+diff --git a/src/main/java/gg/pufferfish/pufferfish/flare/PluginLookup.java b/src/main/java/gg/pufferfish/pufferfish/flare/PluginLookup.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..74aab5eb4b54ffbaf19b8976ffb8ca4a64584006
+--- /dev/null
++++ b/src/main/java/gg/pufferfish/pufferfish/flare/PluginLookup.java
+@@ -0,0 +1,44 @@
++package gg.pufferfish.pufferfish.flare;
++
++import com.google.common.cache.Cache;
++import com.google.common.cache.CacheBuilder;
++import org.bukkit.Bukkit;
++import org.bukkit.plugin.Plugin;
++import org.bukkit.plugin.java.PluginClassLoader;
++
++import java.util.Optional;
++import java.util.concurrent.TimeUnit;
++
++public class PluginLookup {
++    private static final Cache<String, String> pluginNameCache = CacheBuilder.newBuilder()
++      .expireAfterAccess(1, TimeUnit.MINUTES)
++      .maximumSize(1024)
++      .build();
++
++    public static Optional<String> getPluginForClass(String name) {
++        if (name.startsWith("net.minecraft") || name.startsWith("java.") || name.startsWith("com.mojang") ||
++          name.startsWith("com.google") || name.startsWith("it.unimi") || name.startsWith("sun")) {
++            return Optional.empty();
++        }
++
++        String existing = pluginNameCache.getIfPresent(name);
++        if (existing != null) {
++            return Optional.ofNullable(existing.isEmpty() ? null : existing);
++        }
++
++        String newValue = "";
++
++        for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
++            ClassLoader classLoader = plugin.getClass().getClassLoader();
++            if (classLoader instanceof PluginClassLoader) {
++                if (((PluginClassLoader) classLoader)._airplane_hasClass(name)) {
++                    newValue = plugin.getName();
++                    break;
++                }
++            }
++        }
++
++        pluginNameCache.put(name, newValue);
++        return Optional.ofNullable(newValue.isEmpty() ? null : newValue);
++    }
++}
+diff --git a/src/main/java/gg/pufferfish/pufferfish/flare/ProfilingManager.java b/src/main/java/gg/pufferfish/pufferfish/flare/ProfilingManager.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..5a77205461714ad63aa56200450bc44f9f66608c
+--- /dev/null
++++ b/src/main/java/gg/pufferfish/pufferfish/flare/ProfilingManager.java
+@@ -0,0 +1,139 @@
++package gg.pufferfish.pufferfish.flare;
++
++import co.technove.flare.Flare;
++import co.technove.flare.FlareAuth;
++import co.technove.flare.FlareBuilder;
++import co.technove.flare.exceptions.UserReportableException;
++import co.technove.flare.internal.profiling.ProfileType;
++import gg.pufferfish.pufferfish.PufferfishConfig;
++import gg.pufferfish.pufferfish.PufferfishLogger;
++import gg.pufferfish.pufferfish.compat.ServerConfigurations;
++import gg.pufferfish.pufferfish.flare.collectors.GCEventCollector;
++import gg.pufferfish.pufferfish.flare.collectors.StatCollector;
++import gg.pufferfish.pufferfish.flare.collectors.TPSCollector;
++import gg.pufferfish.pufferfish.flare.collectors.WorldCountCollector;
++import org.bukkit.Bukkit;
++import oshi.SystemInfo;
++import oshi.hardware.CentralProcessor;
++import oshi.hardware.GlobalMemory;
++import oshi.hardware.HardwareAbstractionLayer;
++import oshi.hardware.VirtualMemory;
++import oshi.software.os.OperatingSystem;
++
++import java.io.IOException;
++import java.net.URI;
++import java.time.Duration;
++import java.util.Objects;
++import java.util.logging.Level;
++
++public class ProfilingManager {
++
++    private static Flare currentFlare;
++
++    public static synchronized boolean isProfiling() {
++        return currentFlare != null && currentFlare.isRunning();
++    }
++
++    public static synchronized String getProfilingUri() {
++        return Objects.requireNonNull(currentFlare).getURI().map(URI::toString).orElse("Flare is not running");
++    }
++
++    public static Duration getTimeRan() {
++        Flare flare = currentFlare; // copy reference so no need to sync
++        if (flare == null) {
++            return Duration.ofMillis(0);
++        }
++        return flare.getCurrentDuration();
++    }
++
++    public static synchronized boolean start(ProfileType profileType) throws UserReportableException {
++        if (currentFlare != null && !currentFlare.isRunning()) {
++            currentFlare = null; // errored out
++        }
++        if (isProfiling()) {
++            return false;
++        }
++        if (Bukkit.isPrimaryThread()) {
++            throw new UserReportableException("Profiles should be started off-thread");
++        }
++
++        try {
++            OperatingSystem os = new SystemInfo().getOperatingSystem();
++
++            SystemInfo systemInfo = new SystemInfo();
++            HardwareAbstractionLayer hardware = systemInfo.getHardware();
++
++            CentralProcessor processor = hardware.getProcessor();
++            CentralProcessor.ProcessorIdentifier processorIdentifier = processor.getProcessorIdentifier();
++
++            GlobalMemory memory = hardware.getMemory();
++            VirtualMemory virtualMemory = memory.getVirtualMemory();
++
++            FlareBuilder builder = new FlareBuilder()
++                    .withProfileType(profileType)
++                    .withMemoryProfiling(true)
++                    .withAuth(FlareAuth.fromTokenAndUrl(PufferfishConfig.accessToken, PufferfishConfig.profileWebUrl))
++
++                    .withFiles(ServerConfigurations.getCleanCopies())
++                    .withVersion("Primary Version", Bukkit.getVersion())
++                    .withVersion("Bukkit Version", Bukkit.getBukkitVersion())
++                    .withVersion("Minecraft Version", Bukkit.getMinecraftVersion())
++
++                    .withGraphCategories(CustomCategories.ENTITIES_AND_CHUNKS, CustomCategories.MC_PERF)
++                    .withCollectors(new TPSCollector(), new WorldCountCollector(), new GCEventCollector(), new StatCollector())
++                    .withClassIdentifier(PluginLookup::getPluginForClass)
++
++                    .withHardware(new FlareBuilder.HardwareBuilder()
++                            .setCoreCount(processor.getPhysicalProcessorCount())
++                            .setThreadCount(processor.getLogicalProcessorCount())
++                            .setCpuModel(processorIdentifier.getName())
++                            .setCpuFrequency(processor.getMaxFreq())
++
++                            .setTotalMemory(memory.getTotal())
++                            .setTotalSwap(virtualMemory.getSwapTotal())
++                            .setTotalVirtual(virtualMemory.getVirtualMax())
++                    )
++
++                    .withOperatingSystem(new FlareBuilder.OperatingSystemBuilder()
++                            .setManufacturer(os.getManufacturer())
++                            .setFamily(os.getFamily())
++                            .setVersion(os.getVersionInfo().toString())
++                            .setBitness(os.getBitness())
++                    );
++
++            currentFlare = builder.build();
++        } catch (IOException e) {
++            PufferfishLogger.LOGGER.log(Level.WARNING, "Failed to read configuration files:", e);
++            throw new UserReportableException("Failed to load configuration files, check logs for further details.");
++        }
++
++        try {
++            currentFlare.start();
++        } catch (IllegalStateException e) {
++            PufferfishLogger.LOGGER.log(Level.WARNING, "Error starting Flare:", e);
++            throw new UserReportableException("Failed to start Flare, check logs for further details.");
++        }
++
++        PufferfishLogger.LOGGER.log(Level.INFO, "Flare has been started: " + getProfilingUri());
++        return true;
++    }
++
++    public static synchronized boolean stop() {
++        if (!isProfiling()) {
++            return false;
++        }
++        if (!currentFlare.isRunning()) {
++            currentFlare = null;
++            return true;
++        }
++        PufferfishLogger.LOGGER.log(Level.INFO, "Flare has been stopped: " + getProfilingUri());
++        try {
++            currentFlare.stop();
++        } catch (IllegalStateException e) {
++            PufferfishLogger.LOGGER.log(Level.WARNING, "Error occurred stopping Flare", e);
++        }
++        currentFlare = null;
++        return true;
++    }
++
++}
+diff --git a/src/main/java/gg/pufferfish/pufferfish/flare/collectors/GCEventCollector.java b/src/main/java/gg/pufferfish/pufferfish/flare/collectors/GCEventCollector.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..344d0b5277cc9fd7262566d1fa1ec7a8ac900778
+--- /dev/null
++++ b/src/main/java/gg/pufferfish/pufferfish/flare/collectors/GCEventCollector.java
+@@ -0,0 +1,65 @@
++package gg.pufferfish.pufferfish.flare.collectors;
++
++import co.technove.flare.Flare;
++import co.technove.flare.live.CollectorData;
++import co.technove.flare.live.EventCollector;
++import co.technove.flare.live.LiveEvent;
++import co.technove.flare.live.category.GraphCategory;
++import co.technove.flare.live.formatter.DataFormatter;
++import com.google.common.collect.ImmutableMap;
++import com.sun.management.GarbageCollectionNotificationInfo;
++
++import javax.management.ListenerNotFoundException;
++import javax.management.Notification;
++import javax.management.NotificationEmitter;
++import javax.management.NotificationListener;
++import javax.management.openmbean.CompositeData;
++import java.lang.management.GarbageCollectorMXBean;
++import java.lang.management.ManagementFactory;
++
++public class GCEventCollector extends EventCollector implements NotificationListener {
++
++    private static final CollectorData MINOR_GC = new CollectorData("builtin:gc:minor", "Minor GC", "A small pause in the program to allow Garbage Collection to run.", DataFormatter.MILLISECONDS, GraphCategory.SYSTEM);
++    private static final CollectorData MAJOR_GC = new CollectorData("builtin:gc:major", "Major GC", "A large pause in the program to allow Garbage Collection to run.", DataFormatter.MILLISECONDS, GraphCategory.SYSTEM);
++    private static final CollectorData UNKNOWN_GC = new CollectorData("builtin:gc:generic", "Major GC", "A run of the Garbage Collection.", DataFormatter.MILLISECONDS, GraphCategory.SYSTEM);
++
++    public GCEventCollector() {
++        super(MINOR_GC, MAJOR_GC, UNKNOWN_GC);
++    }
++
++    private static CollectorData fromString(String string) {
++        if (string.endsWith("minor GC")) {
++            return MINOR_GC;
++        } else if (string.endsWith("major GC")) {
++            return MAJOR_GC;
++        }
++        return UNKNOWN_GC;
++    }
++
++    @Override
++    public void start(Flare flare) {
++        for (GarbageCollectorMXBean garbageCollectorBean : ManagementFactory.getGarbageCollectorMXBeans()) {
++            NotificationEmitter notificationEmitter = (NotificationEmitter) garbageCollectorBean;
++            notificationEmitter.addNotificationListener(this, null, null);
++        }
++    }
++
++    @Override
++    public void stop(Flare flare) {
++        for (GarbageCollectorMXBean garbageCollectorBean : ManagementFactory.getGarbageCollectorMXBeans()) {
++            NotificationEmitter notificationEmitter = (NotificationEmitter) garbageCollectorBean;
++            try {
++                notificationEmitter.removeNotificationListener(this);
++            } catch (ListenerNotFoundException e) {
++            }
++        }
++    }
++
++    @Override
++    public void handleNotification(Notification notification, Object o) {
++        if (notification.getType().equals(GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION)) {
++            GarbageCollectionNotificationInfo gcInfo = GarbageCollectionNotificationInfo.from((CompositeData) notification.getUserData());
++            reportEvent(new LiveEvent(fromString(gcInfo.getGcAction()), System.currentTimeMillis(), (int) gcInfo.getGcInfo().getDuration(), ImmutableMap.of()));
++        }
++    }
++}
+diff --git a/src/main/java/gg/pufferfish/pufferfish/flare/collectors/StatCollector.java b/src/main/java/gg/pufferfish/pufferfish/flare/collectors/StatCollector.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..a22c6dbae53667e4c72464fa27153aee30c7946e
+--- /dev/null
++++ b/src/main/java/gg/pufferfish/pufferfish/flare/collectors/StatCollector.java
+@@ -0,0 +1,41 @@
++package gg.pufferfish.pufferfish.flare.collectors;
++
++import co.technove.flare.live.CollectorData;
++import co.technove.flare.live.LiveCollector;
++import co.technove.flare.live.category.GraphCategory;
++import co.technove.flare.live.formatter.DataFormatter;
++import com.sun.management.OperatingSystemMXBean;
++import oshi.SystemInfo;
++import oshi.hardware.CentralProcessor;
++
++import java.lang.management.ManagementFactory;
++import java.time.Duration;
++
++public class StatCollector extends LiveCollector {
++
++    private static final CollectorData CPU = new CollectorData("builtin:stat:cpu", "CPU Load", "The total amount of CPU usage across all cores.", DataFormatter.PERCENT, GraphCategory.SYSTEM);
++    private static final CollectorData CPU_PROCESS = new CollectorData("builtin:stat:cpu_process", "Process CPU", "The amount of CPU being used by this process.", DataFormatter.PERCENT, GraphCategory.SYSTEM);
++    private static final CollectorData MEMORY = new CollectorData("builtin:stat:memory_used", "Memory", "The amount of memory being used currently.", DataFormatter.BYTES, GraphCategory.SYSTEM);
++    private static final CollectorData MEMORY_TOTAL = new CollectorData("builtin:stat:memory_total", "Memory Total", "The total amount of memory allocated.", DataFormatter.BYTES, GraphCategory.SYSTEM);
++
++    private final OperatingSystemMXBean bean;
++    private final CentralProcessor processor;
++
++    public StatCollector() {
++        super(CPU, CPU_PROCESS, MEMORY, MEMORY_TOTAL);
++        this.interval = Duration.ofSeconds(5);
++
++        this.bean = (OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean();
++        this.processor = new SystemInfo().getHardware().getProcessor();
++    }
++
++    @Override
++    public void run() {
++        Runtime runtime = Runtime.getRuntime();
++
++        this.report(CPU, this.processor.getSystemLoadAverage(1)[0] / 100); // percentage
++        this.report(CPU_PROCESS, this.bean.getProcessCpuLoad());
++        this.report(MEMORY, runtime.totalMemory() - runtime.freeMemory());
++        this.report(MEMORY_TOTAL, runtime.totalMemory());
++    }
++}
+diff --git a/src/main/java/gg/pufferfish/pufferfish/flare/collectors/TPSCollector.java b/src/main/java/gg/pufferfish/pufferfish/flare/collectors/TPSCollector.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..40447d00aefb5ffedb8a2ee87155a04088f0649f
+--- /dev/null
++++ b/src/main/java/gg/pufferfish/pufferfish/flare/collectors/TPSCollector.java
+@@ -0,0 +1,31 @@
++package gg.pufferfish.pufferfish.flare.collectors;
++
++import co.technove.flare.live.CollectorData;
++import co.technove.flare.live.LiveCollector;
++import co.technove.flare.live.formatter.SuffixFormatter;
++import gg.pufferfish.pufferfish.flare.CustomCategories;
++import net.minecraft.server.MinecraftServer;
++import org.bukkit.Bukkit;
++
++import java.time.Duration;
++import java.util.Arrays;
++
++public class TPSCollector extends LiveCollector {
++    private static final CollectorData TPS = new CollectorData("airplane:tps", "TPS", "Ticks per second, or how fast the server updates. For a smooth server this should be a constant 20TPS.", SuffixFormatter.of("TPS"), CustomCategories.MC_PERF);
++    private static final CollectorData MSPT = new CollectorData("airplane:mspt", "MSPT", "Milliseconds per tick, which can show how well your server is performing. This value should always be under 50mspt.", SuffixFormatter.of("mspt"), CustomCategories.MC_PERF);
++
++    public TPSCollector() {
++        super(TPS, MSPT);
++
++        this.interval = Duration.ofSeconds(5);
++    }
++
++    @Override
++    public void run() {
++        long[] times = MinecraftServer.getServer().tickTimes5s.getTimes();
++        double mspt = ((double) Arrays.stream(times).sum() / (double) times.length) * 1.0E-6D;
++
++        this.report(TPS, Math.min(20D, Math.round(Bukkit.getServer().getTPS()[0] * 100d) / 100d));
++        this.report(MSPT, (double) Math.round(mspt * 100d) / 100d);
++    }
++}
+diff --git a/src/main/java/gg/pufferfish/pufferfish/flare/collectors/WorldCountCollector.java b/src/main/java/gg/pufferfish/pufferfish/flare/collectors/WorldCountCollector.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..63947f177d13c0e2b357e5c40a398c3e9dc5ca2c
+--- /dev/null
++++ b/src/main/java/gg/pufferfish/pufferfish/flare/collectors/WorldCountCollector.java
+@@ -0,0 +1,44 @@
++package gg.pufferfish.pufferfish.flare.collectors;
++
++import co.technove.flare.live.CollectorData;
++import co.technove.flare.live.LiveCollector;
++import co.technove.flare.live.formatter.SuffixFormatter;
++import gg.pufferfish.pufferfish.flare.CustomCategories;
++import org.bukkit.Bukkit;
++import org.bukkit.World;
++
++import java.time.Duration;
++
++public class WorldCountCollector extends LiveCollector {
++
++    private static final CollectorData PLAYER_COUNT = new CollectorData("airplane:world:playercount", "Player Count", "The number of players currently on the server.", new SuffixFormatter(" Player", " Players"), CustomCategories.ENTITIES_AND_CHUNKS);
++    private static final CollectorData ENTITY_COUNT = new CollectorData("airplane:world:entitycount", "Entity Count", "The number of entities in all worlds", new SuffixFormatter(" Entity", " Entities"), CustomCategories.ENTITIES_AND_CHUNKS);
++    private static final CollectorData CHUNK_COUNT = new CollectorData("airplane:world:chunkcount", "Chunk Count", "The number of chunks currently loaded.", new SuffixFormatter(" Chunk", " Chunks"), CustomCategories.ENTITIES_AND_CHUNKS);
++    private static final CollectorData TILE_ENTITY_COUNT = new CollectorData("airplane:world:blockentitycount", "Block Entity Count", "The number of block entities currently loaded.", new SuffixFormatter(" Block Entity", " Block Entities"), CustomCategories.ENTITIES_AND_CHUNKS);
++
++    public WorldCountCollector() {
++        super(PLAYER_COUNT, ENTITY_COUNT, CHUNK_COUNT, TILE_ENTITY_COUNT);
++
++        this.interval = Duration.ofSeconds(5);
++    }
++
++    @Override
++    public void run() {
++        int entities = 0;
++        int chunkCount = 0;
++        int tileEntityCount = 0;
++
++        if (!Bukkit.isStopping()) {
++            for (World world : Bukkit.getWorlds()) {
++                entities += world.getEntityCount();
++                chunkCount += world.getChunkCount();
++                tileEntityCount += world.getTileEntityCount();
++            }
++        }
++
++        this.report(PLAYER_COUNT, Bukkit.getOnlinePlayers().size());
++        this.report(ENTITY_COUNT, entities);
++        this.report(CHUNK_COUNT, chunkCount);
++        this.report(TILE_ENTITY_COUNT, tileEntityCount);
++    }
++}
+diff --git a/src/main/java/gg/pufferfish/pufferfish/sentry/PufferfishSentryAppender.java b/src/main/java/gg/pufferfish/pufferfish/sentry/PufferfishSentryAppender.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..3cf3b91a0d5f9f909679e2e86ddd5705247762aa
+--- /dev/null
++++ b/src/main/java/gg/pufferfish/pufferfish/sentry/PufferfishSentryAppender.java
+@@ -0,0 +1,130 @@
++package gg.pufferfish.pufferfish.sentry;
++
++import com.google.common.reflect.TypeToken;
++import com.google.gson.Gson;
++import io.sentry.Breadcrumb;
++import io.sentry.Sentry;
++import io.sentry.SentryEvent;
++import io.sentry.SentryLevel;
++import io.sentry.protocol.Message;
++import io.sentry.protocol.User;
++import org.apache.logging.log4j.Level;
++import org.apache.logging.log4j.LogManager;
++import org.apache.logging.log4j.Marker;
++import org.apache.logging.log4j.core.LogEvent;
++import org.apache.logging.log4j.core.Logger;
++import org.apache.logging.log4j.core.appender.AbstractAppender;
++import org.apache.logging.log4j.core.filter.AbstractFilter;
++
++import java.util.Map;
++
++public class PufferfishSentryAppender extends AbstractAppender {
++
++    private static final org.apache.logging.log4j.Logger logger = LogManager.getLogger(PufferfishSentryAppender.class);
++    private static final Gson GSON = new Gson();
++
++    public PufferfishSentryAppender() {
++        super("PufferfishSentryAdapter", new SentryFilter(), null, false, null);
++    }
++
++    @Override
++    public void append(LogEvent logEvent) {
++        if (logEvent.getThrown() != null && logEvent.getLevel().isMoreSpecificThan(Level.WARN)) {
++            try {
++                logException(logEvent);
++            } catch (Exception e) {
++                logger.warn("Failed to log event with sentry", e);
++            }
++        } else {
++            try {
++                logBreadcrumb(logEvent);
++            } catch (Exception e) {
++                logger.warn("Failed to log event with sentry", e);
++            }
++        }
++    }
++
++    private void logException(LogEvent e) {
++        SentryEvent event = new SentryEvent(e.getThrown());
++
++        Message sentryMessage = new Message();
++        sentryMessage.setMessage(e.getMessage().getFormattedMessage());
++
++        event.setMessage(sentryMessage);
++        event.setThrowable(e.getThrown());
++        event.setLevel(getLevel(e.getLevel()));
++        event.setLogger(e.getLoggerName());
++        event.setTransaction(e.getLoggerName());
++        event.setExtra("thread_name", e.getThreadName());
++
++        boolean hasContext = e.getContextData() != null;
++
++        if (hasContext && e.getContextData().containsKey("pufferfishsentry_playerid")) {
++            User user = new User();
++            user.setId(e.getContextData().getValue("pufferfishsentry_playerid"));
++            user.setUsername(e.getContextData().getValue("pufferfishsentry_playername"));
++            event.setUser(user);
++        }
++
++        if (hasContext && e.getContextData().containsKey("pufferfishsentry_pluginname")) {
++            event.setExtra("plugin.name", e.getContextData().getValue("pufferfishsentry_pluginname"));
++            event.setExtra("plugin.version", e.getContextData().getValue("pufferfishsentry_pluginversion"));
++            event.setTransaction(e.getContextData().getValue("pufferfishsentry_pluginname"));
++        }
++
++        if (hasContext && e.getContextData().containsKey("pufferfishsentry_eventdata")) {
++            Map<String, String> eventFields = GSON.fromJson((String) e.getContextData().getValue("pufferfishsentry_eventdata"), new TypeToken<Map<String, String>>() {}.getType());
++            if (eventFields != null) {
++                event.setExtra("event", eventFields);
++            }
++        }
++
++        Sentry.captureEvent(event);
++    }
++
++    private void logBreadcrumb(LogEvent e) {
++        Breadcrumb breadcrumb = new Breadcrumb();
++
++        breadcrumb.setLevel(getLevel(e.getLevel()));
++        breadcrumb.setCategory(e.getLoggerName());
++        breadcrumb.setType(e.getLoggerName());
++        breadcrumb.setMessage(e.getMessage().getFormattedMessage());
++
++        Sentry.addBreadcrumb(breadcrumb);
++    }
++
++    private SentryLevel getLevel(Level level) {
++        return switch (level.getStandardLevel()) {
++            case TRACE, DEBUG -> SentryLevel.DEBUG;
++            case WARN -> SentryLevel.WARNING;
++            case ERROR -> SentryLevel.ERROR;
++            case FATAL -> SentryLevel.FATAL;
++            default -> SentryLevel.INFO;
++        };
++    }
++
++    private static class SentryFilter extends AbstractFilter {
++
++        @Override
++        public Result filter(Logger logger, org.apache.logging.log4j.Level level, Marker marker, String msg,
++                             Object... params) {
++            return this.filter(logger.getName());
++        }
++
++        @Override
++        public Result filter(Logger logger, org.apache.logging.log4j.Level level, Marker marker, Object msg, Throwable t) {
++            return this.filter(logger.getName());
++        }
++
++        @Override
++        public Result filter(LogEvent event) {
++            return this.filter(event == null ? null : event.getLoggerName());
++        }
++
++        private Result filter(String loggerName) {
++            return loggerName != null && loggerName.startsWith("gg.castaway.pufferfish.sentry") ? Result.DENY
++                    : Result.NEUTRAL;
++        }
++
++    }
++}
+diff --git a/src/main/java/gg/pufferfish/pufferfish/sentry/SentryManager.java b/src/main/java/gg/pufferfish/pufferfish/sentry/SentryManager.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..993de653e656255e102de7c1576fdd3f8e819776
+--- /dev/null
++++ b/src/main/java/gg/pufferfish/pufferfish/sentry/SentryManager.java
+@@ -0,0 +1,38 @@
++package gg.pufferfish.pufferfish.sentry;
++
++import gg.pufferfish.pufferfish.PufferfishConfig;
++import io.sentry.Sentry;
++import org.apache.logging.log4j.LogManager;
++import org.apache.logging.log4j.Logger;
++
++public final class SentryManager {
++
++    private static final Logger LOGGER = LogManager.getLogger(SentryManager.class);
++
++    private SentryManager() {
++    }
++
++    private static boolean initialized = false;
++
++    public static synchronized void init() {
++        if (initialized) {
++            return;
++        }
++        try {
++            initialized = true;
++
++            Sentry.init(options -> {
++                options.setDsn(PufferfishConfig.sentryDsn);
++                options.setMaxBreadcrumbs(100);
++            });
++
++            PufferfishSentryAppender appender = new PufferfishSentryAppender();
++            appender.start();
++            ((org.apache.logging.log4j.core.Logger) LogManager.getRootLogger()).addAppender(appender);
++            LOGGER.info("Sentry logging successfully started");
++        } catch (Throwable throwable) {
++            LOGGER.warn("Failed to initialize sentry", throwable);
++            initialized = false;
++        }
++    }
++}
+diff --git a/src/main/java/gg/pufferfish/pufferfish/util/AsyncExecutor.java b/src/main/java/gg/pufferfish/pufferfish/util/AsyncExecutor.java
+new file mode 100644
+index 0000000000000000000000000000000000000000..8e5323d5d9af25c8a85c4b34a6be76cfc54384cf
+--- /dev/null
++++ b/src/main/java/gg/pufferfish/pufferfish/util/AsyncExecutor.java
+@@ -0,0 +1,73 @@
++package gg.pufferfish.pufferfish.util;
++
++import com.google.common.collect.Queues;
++import gg.pufferfish.pufferfish.PufferfishLogger;
++import java.util.Queue;
++import java.util.concurrent.locks.Condition;
++import java.util.concurrent.locks.Lock;
++import java.util.concurrent.locks.ReentrantLock;
++import java.util.logging.Level;
++
++public class AsyncExecutor implements Runnable {
++	
++	private final Queue<Runnable> jobs = Queues.newArrayDeque();
++	private final Lock mutex = new ReentrantLock();
++	private final Condition cond = mutex.newCondition();
++	private final Thread thread;
++	private volatile boolean killswitch = false;
++	
++	public AsyncExecutor(String threadName) {
++		this.thread = new Thread(this, threadName);
++	}
++	
++	public void start() {
++		thread.start();
++	}
++	
++	public void kill() {
++		killswitch = true;
++		cond.signalAll();
++	}
++	
++	public void submit(Runnable runnable) {
++		mutex.lock();
++		try {
++			jobs.offer(runnable);
++			cond.signalAll();
++		} finally {
++			mutex.unlock();
++		}
++	}
++	
++	@Override
++	public void run() {
++		while (!killswitch) {
++			try {
++				Runnable runnable = takeRunnable();
++				if (runnable != null) {
++					runnable.run();
++				}
++			} catch (InterruptedException e) {
++				Thread.currentThread().interrupt();
++			} catch (Exception e) {
++				PufferfishLogger.LOGGER.log(Level.SEVERE, e, () -> "Failed to execute async job for thread " + thread.getName());
++			}
++		}
++	}
++	
++	private Runnable takeRunnable() throws InterruptedException {
++		mutex.lock();
++		try {
++			while (jobs.isEmpty() && !killswitch) {
++				cond.await();
++			}
++			
++			if (jobs.isEmpty()) return null; // We've set killswitch
++			
++			return jobs.remove();
++		} finally {
++			mutex.unlock();
++		}
++	}
++	
++}
+diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+index dfce118ec8b91eae219855a0b01392ef20b7d50c..7b59bdb422dad797f3bdeaaf86fda7ffac88c25d 100644
+--- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
++++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
+@@ -1181,7 +1181,7 @@ public final class CraftServer implements Server {
+                 plugin.getPluginMeta().getDisplayName(),
+                 "This plugin is not properly shutting down its async tasks when it is being shut down. This task may throw errors during the final shutdown logs and might not complete before process dies."
+             ));
+-            if (console.isDebugging()) io.papermc.paper.util.TraceUtil.dumpTraceForThread(worker.getThread(), "still running"); // Paper - Debugging
++            if (true || console.isDebugging()) io.papermc.paper.util.TraceUtil.dumpTraceForThread(worker.getThread(), "still running"); // Paper - Debugging // Pufferfish
+         }
+     }
+     // Paper end - Wait for Async Tasks during shutdown
+diff --git a/src/main/java/org/bukkit/craftbukkit/util/ServerShutdownThread.java b/src/main/java/org/bukkit/craftbukkit/util/ServerShutdownThread.java
+index e8e93538dfd71de86515d9405f728db1631e949a..3dff02fd97f001508e2f81192817bf1b0ef92446 100644
+--- a/src/main/java/org/bukkit/craftbukkit/util/ServerShutdownThread.java
++++ b/src/main/java/org/bukkit/craftbukkit/util/ServerShutdownThread.java
+@@ -11,6 +11,7 @@ public class ServerShutdownThread extends Thread {
+ 
+     @Override
+     public void run() {
++        try { gg.pufferfish.pufferfish.flare.ProfilingManager.stop(); } catch (Throwable t) {} // Pufferfish - shut down Flare if it's running
+         try {
+             // Paper start - try to shutdown on main
+             server.safeShutdown(false, false);
