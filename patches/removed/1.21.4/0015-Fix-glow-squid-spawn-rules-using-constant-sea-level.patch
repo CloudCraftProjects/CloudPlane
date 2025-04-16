@@ -5,6 +5,8 @@ Subject: [PATCH] Fix glow squid spawn rules using constant sea level
 
 This now gets the sea level from the noise settings which can be customized
 
+REMOVED: This has been fixed in vanilla with 1.21.2
+
 diff --git a/src/main/java/net/minecraft/world/entity/GlowSquid.java b/src/main/java/net/minecraft/world/entity/GlowSquid.java
 index 09fdea983772612ef3fff6b2da3cf469a34e4ec0..18b1cb5c547fd37288bfb5cf52ab0eef3737bd35 100644
 --- a/src/main/java/net/minecraft/world/entity/GlowSquid.java

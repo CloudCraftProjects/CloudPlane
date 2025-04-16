@@ -6,24 +6,11 @@ Subject: [PATCH] Fix attributes not being able to be hidden if no patch got
 
 This now re-applies the prototype attributes (if present) to actually make the tag work
 
-diff --git a/src/main/java/net/minecraft/core/component/PatchedDataComponentMap.java b/src/main/java/net/minecraft/core/component/PatchedDataComponentMap.java
-index c026a6edf497c86be3b3f1b511bb285701173a88..fbf6f19979555292da1e99547dde5329ab956e44 100644
---- a/src/main/java/net/minecraft/core/component/PatchedDataComponentMap.java
-+++ b/src/main/java/net/minecraft/core/component/PatchedDataComponentMap.java
-@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
- import javax.annotation.Nullable;
- 
- public final class PatchedDataComponentMap implements DataComponentMap {
--    private final DataComponentMap prototype;
-+    public final DataComponentMap prototype; // CloudPlane - private-f -> public-f
-     public Reference2ObjectMap<DataComponentType<?>, Optional<?>> patch; // CloudPlane - private -> public
-     private boolean copyOnWrite;
- 
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
-index 6081c588c61406d0d21a15e8e6140d5d5240f0a8..348c43f4c0ea99c189fd3f4af42f83d1aa1bf8f4 100644
+index d3dc1f7fe238ca0229b7c05ed04be481e4613ef8..9361f850ca5e9e81ffa71114d80aba6267cd39be 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftItemStack.java
-@@ -372,6 +372,7 @@ public final class CraftItemStack extends ItemStack {
+@@ -410,6 +410,7 @@ public final class CraftItemStack extends ItemStack {
                  itemStack.set(DataComponents.PROFILE, profile);
              }
          };
@@ -31,7 +18,7 @@ index 6081c588c61406d0d21a15e8e6140d5d5240f0a8..348c43f4c0ea99c189fd3f4af42f83d1
          // Paper end - support updating profile after resolving it
          ((CraftMetaItem) itemMeta).applyToItem(tag);
          itemStack.applyComponents(tag.build());
-@@ -429,6 +430,7 @@ public final class CraftItemStack extends ItemStack {
+@@ -467,6 +468,7 @@ public final class CraftItemStack extends ItemStack {
              };
              // Paper end - support updating profile after resolving it
  
@@ -52,10 +39,10 @@ index d688339a57f0b4f12588ced0f7860a0d77eae728..32e514f568abf5e8ef9f960fa74ee73b
          patchedMap.applyPatch(applicator.build());
          blockEntity.applyComponents(nmsBlockState.getBlock().asItem().components(), patchedMap.asPatch());
 diff --git a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-index 60ec9b228518de0521b12f3f4ef26cb30260315a..b992e621b4d11010b15321da2b0044d5e3bf82df 100644
+index 7d85c554e4e5df49d4965dbed9c112b86cd70727..168a1de02cb994d577b51e44efd7a33be3ab2a93 100644
 --- a/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
 +++ b/src/main/java/org/bukkit/craftbukkit/inventory/CraftMetaItem.java
-@@ -184,6 +184,8 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -203,6 +203,8 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
  
      static abstract class Applicator { // Paper - support updating profile after resolving it
  
@@ -64,7 +51,7 @@ index 60ec9b228518de0521b12f3f4ef26cb30260315a..b992e621b4d11010b15321da2b0044d5
          final DataComponentPatch.Builder builder = DataComponentPatch.builder(); // Paper - private -> package-private
          void skullCallback(net.minecraft.world.item.component.ResolvableProfile resolvableProfile) {} // Paper - support updating profile after resolving it
  
-@@ -976,6 +978,13 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
+@@ -1118,6 +1120,13 @@ class CraftMetaItem implements ItemMeta, Damageable, Repairable, BlockDataMeta {
      void applyModifiers(Multimap<Attribute, AttributeModifier> modifiers, CraftMetaItem.Applicator tag) {
          if (modifiers == null/* || modifiers.isEmpty()*/) { // Paper - empty modifiers has a specific meaning, they should still be saved
              // Paper - don't save ItemFlag if the underlying data isn't present

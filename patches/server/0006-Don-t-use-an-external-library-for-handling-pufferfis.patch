@@ -3,29 +3,11 @@ From: booky10 <boooky10@gmail.com>
 Date: Wed, 26 Jul 2023 02:23:25 +0200
 Subject: [PATCH] Don't use an external library for handling pufferfish config
 
-The config was copied from Airplane, which used it for comment support. Comment support is now in bukkit's yaml configuration api, but pufferfish didn't switch to it yet.
+The config system was copied from Airplane, which used it for comment support.
+Comment support is now in bukkit's yaml configuration api, but pufferfish didn't switch to it yet.
 
-diff --git a/build.gradle.kts b/build.gradle.kts
-index 72c5ebef2210dd870c9ce0b25dae6669ef3d5c35..7ffc2951613e2ee019b625a37503e3742ccb81a5 100644
---- a/build.gradle.kts
-+++ b/build.gradle.kts
-@@ -48,10 +48,10 @@ dependencies {
-     runtimeOnly("org.apache.maven.resolver:maven-resolver-transport-http:1.9.18")
- 
-     // Pufferfish start
--    implementation("me.carleslc.Simple-YAML:Simple-Yaml:1.8.4") {
--        // exclude to prioritize version in api
--        exclude(group="org.yaml", module="snakeyaml")
--    }
-+    // implementation("me.carleslc.Simple-YAML:Simple-Yaml:1.8.4") { // CloudPlane
-+    //     // exclude to prioritize version in api // CloudPlane
-+    //     exclude(group="org.yaml", module="snakeyaml") // CloudPlane
-+    // } // CloudPlane
-     // Pufferfish end
-     implementation("com.github.technove:Flare:34637f3f87") // Pufferfish - flare
- 
 diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
-index 728349b7381718cb2416d1bad5203017f5e2c23b..20855fd21b00ff610b969ffbb6867732b4c8c9b5 100644
+index d2717b8d33ccd46afa3c86455e3b11e79f9ea8a0..fa30e51340cccd3e96eb4374290658905f58ec50 100644
 --- a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
 +++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
 @@ -9,9 +9,9 @@ import org.bukkit.command.SimpleCommandMap;

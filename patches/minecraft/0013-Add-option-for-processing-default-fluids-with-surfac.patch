@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Sun, 14 Jul 2024 17:26:25 +0200
+Subject: [PATCH] Add option for processing default fluids with surface rules
+
+This may seem a bit out of place, but it is needed to e.g. add
+a bedrock roof and floor in a dimension made out of water
+without relying on doing everything with surface rules - which
+are really slow when combined with fluids
+
+diff --git a/net/minecraft/world/level/levelgen/SurfaceSystem.java b/net/minecraft/world/level/levelgen/SurfaceSystem.java
+index 23effd5cfe9e074b6bacd4f42c8088f0c4edd292..e62b9c1b47bd63900e12bcc9b0e3513c48ba61d6 100644
+--- a/net/minecraft/world/level/levelgen/SurfaceSystem.java
++++ b/net/minecraft/world/level/levelgen/SurfaceSystem.java
+@@ -126,7 +126,8 @@ public class SurfaceSystem {
+                     if (block.isAir()) {
+                         i6 = 0;
+                         i7 = Integer.MIN_VALUE;
+-                    } else if (!block.getFluidState().isEmpty()) {
++                    } else if (!block.getFluidState().isEmpty() // CloudPlane - allow processing fluids through surface rules
++                            && (!dev.booky.cloudplane.CloudPlaneConfig.srPlaceInDefaultFluid || block != this.defaultBlock)) { // CloudPlane - allow processing fluids through surface rules
+                         if (i7 == Integer.MIN_VALUE) {
+                             i7 = i9 + 1;
+                         }
