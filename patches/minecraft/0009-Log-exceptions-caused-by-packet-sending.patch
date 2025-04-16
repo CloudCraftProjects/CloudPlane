@@ -1,0 +1,28 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Sun, 5 Jun 2022 17:07:27 +0200
+Subject: [PATCH] Log exceptions caused by packet sending
+
+
+diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
+index 0ea3db162831c538a10d1a4996c666f440c2d14c..f7e6f625daca552c26f9acd3fc183abb23bf8874 100644
+--- a/net/minecraft/network/Connection.java
++++ b/net/minecraft/network/Connection.java
+@@ -226,7 +226,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+ 
+                     if (player != null) player.quitReason = org.bukkit.event.player.PlayerQuitEvent.QuitReason.ERRONEOUS_STATE; // Paper - Add API for quit reason
+                     if (flag) {
+-                        LOGGER.debug("Failed to sent packet", exception);
++                        LOGGER.error("Failed to sent packet", exception); // CloudPlane - always log errors
+                         boolean doesDisconnectExist = this.packetListener.protocol() != ConnectionProtocol.STATUS && this.packetListener.protocol() != ConnectionProtocol.HANDSHAKING; // Paper
+                         if (this.getSending() == PacketFlow.CLIENTBOUND && doesDisconnectExist) { // Paper
+                             Packet<?> packet = (Packet<?>)(this.sendLoginDisconnect
+@@ -239,7 +239,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+ 
+                         this.setReadOnly();
+                     } else {
+-                        LOGGER.debug("Double fault", exception);
++                        LOGGER.error("Double fault", exception); // CloudPlane - always log errors
+                         this.disconnect(disconnectionDetails);
+                     }
+                 }
