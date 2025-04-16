@@ -82,7 +82,7 @@ configure<PaperweightPatcherExtension> {
             upstreamPath = "paper-server"
             patchesDir = file("patches/buildscript")
             featurePatchDir = patchesDir.dir(".")
-            outputDir = file("cloudplane-server-setup/buildscript")
+            outputDir = file("setup/buildscript")
             // the relevant part is just the buildscript
             excludes = setOf("src", "patches")
         }

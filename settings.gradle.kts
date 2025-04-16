@@ -12,6 +12,6 @@ include(
 )
 
 // only include setup project if buildscript can be resolved
-if (file("cloudplane-server-setup/buildscript").exists()) {
-    include("cloudplane-server-setup")
+if (file("setup/buildscript").exists()) {
+    include("setup")
 }
