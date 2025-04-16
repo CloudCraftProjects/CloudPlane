@@ -1,6 +1,8 @@
+import io.papermc.paperweight.patcher.upstream.PaperRepoPatcherUpstream
+
 plugins {
     id("java-library")
-    id("io.papermc.paperweight.patcher") version "1.7.3"
+    id("io.papermc.paperweight.patcher") version "1.7.7"
 }
 
 repositories {
@@ -50,7 +52,10 @@ paperweight {
     remapRepo.set("https://maven.fabricmc.net/")
     decompileRepo.set("https://files.minecraftforge.net/maven/")
 
-    usePaperUpstream(providers.gradleProperty("paperRef")) {
+    upstreams.register<PaperRepoPatcherUpstream>("paper") {
+        url.set(github("PaperMC", "Paper-archive"))
+        ref.set(providers.gradleProperty("paperRef"))
+
         withPaperPatcher {
             apiPatchDir.set(layout.projectDirectory.dir("patches${File.separator}api"))
             serverPatchDir.set(layout.projectDirectory.dir("patches${File.separator}server"))
