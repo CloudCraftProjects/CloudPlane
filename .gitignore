@@ -411,7 +411,7 @@ gradle-app.setting
 # End of https://www.toptal.com/developers/gitignore/api/linux,windows,macos,eclipse,visualstudiocode,jetbrains+all,maven,gradle,node
 
 # Other stuff
-CloudPlane-Server/
-CloudPlane-API/
+cloudplane-server/
+cloudplane-api/
 run/
 paper-api-generator/

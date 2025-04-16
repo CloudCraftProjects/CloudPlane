@@ -1,28 +1,18 @@
-import io.papermc.paperweight.patcher.upstream.PaperRepoPatcherUpstream
+import io.papermc.paperweight.patcher.extension.PaperweightPatcherExtension
+import io.papermc.paperweight.tasks.RebuildGitPatches
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
 
 plugins {
     id("java-library")
-    id("io.papermc.paperweight.patcher") version "1.7.7"
-}
-
-repositories {
-    mavenCentral()
-    maven("https://repo.papermc.io/repository/maven-public/") {
-        content { onlyForConfigurations("paperclip") }
-    }
-}
-
-dependencies {
-    remapper("net.fabricmc:tiny-remapper:0.10.3:fat")
-    decompiler("org.vineflower:vineflower:1.10.1")
-    paperclip("io.papermc:paperclip:3.0.3")
+    id("io.papermc.paperweight.patcher") version "2.0.0-beta.16"
 }
 
 subprojects {
     apply<JavaLibraryPlugin>()
     apply<MavenPublishPlugin>()
 
-    java {
+    configure<JavaPluginExtension> {
         withSourcesJar()
 
         sourceCompatibility = JavaVersion.VERSION_21
@@ -34,9 +24,35 @@ subprojects {
         }
     }
 
+    if (!file(".notest").exists()) {
+        dependencies {
+            "testRuntimeOnly"("org.junit.platform:junit-platform-launcher")
+        }
+    }
+
+    tasks.withType<AbstractArchiveTask> {
+        isPreserveFileTimestamps = false
+        isReproducibleFileOrder = true
+    }
     tasks.withType<JavaCompile> {
+        // if I activate forking (like done in paper + paperweight example),
+        // compiling stalls indefinitely on my PC
         options.encoding = Charsets.UTF_8.name()
         options.release = 21
+        options.isIncremental = true
+    }
+    tasks.withType<Javadoc> {
+        options.encoding = Charsets.UTF_8.name()
+    }
+    tasks.withType<ProcessResources> {
+        filteringCharset = Charsets.UTF_8.name()
+    }
+    tasks.withType<Test> {
+        testLogging {
+            showStackTraces = true
+            exceptionFormat = TestExceptionFormat.FULL
+            events(TestLogEvent.STANDARD_OUT)
+        }
     }
 
     repositories {
@@ -46,28 +62,36 @@ subprojects {
     }
 }
 
-paperweight {
-    serverProject.set(project(":CloudPlane-Server"))
+configure<PaperweightPatcherExtension> {
+    upstreams.paper {
+        ref = providers.gradleProperty("paperRef")
 
-    remapRepo.set("https://maven.fabricmc.net/")
-    decompileRepo.set("https://files.minecraftforge.net/maven/")
-
-    upstreams.register<PaperRepoPatcherUpstream>("paper") {
-        url.set(github("PaperMC", "Paper-archive"))
-        ref.set(providers.gradleProperty("paperRef"))
-
-        withPaperPatcher {
-            apiPatchDir.set(layout.projectDirectory.dir("patches${File.separator}api"))
-            serverPatchDir.set(layout.projectDirectory.dir("patches${File.separator}server"))
-
-            apiOutputDir.set(layout.projectDirectory.dir("CloudPlane-API"))
-            serverOutputDir.set(layout.projectDirectory.dir("CloudPlane-Server"))
+        // api patching
+        patchDir("paperApi") {
+            upstreamPath = "paper-api"
+            patchesDir = file("patches/api")
+            featurePatchDir = patchesDir.dir(".")
+            outputDir = file("cloudplane-api")
         }
-        patchTasks.register("generatedApi") {
-            isBareDirectory = true
-            upstreamDirPath = "paper-api-generator/generated"
-            patchDir = layout.projectDirectory.dir("patches/generatedApi")
-            outputDir = layout.projectDirectory.dir("paper-api-generator/generated")
+        // server patching - paper's example project uses a single file patch,
+        // but I hate file patches as they are horrible to apply if
+        // they fail once - and my IDE doesn't highlight changes properly;
+        // so create a patch dir and use a symbolic link to place the buildscript
+        // at the proper location
+        patchDir("paperBuildscript") {
+            upstreamPath = "paper-server"
+            patchesDir = file("patches/buildscript")
+            featurePatchDir = patchesDir.dir(".")
+            outputDir = file("cloudplane-server-setup/buildscript")
+            // the relevant part is just the buildscript
+            excludes = setOf("src", "patches")
         }
+    }
+}
+
+// see gradle.properties
+if (providers.gradleProperty("updatingMinecraft").getOrElse("false").toBoolean()) {
+    tasks.withType<RebuildGitPatches> {
+        filterPatches = false
     }
 }

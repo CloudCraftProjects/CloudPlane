@@ -1,0 +1,81 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Sat, 1 Mar 2025 01:45:59 +0100
+Subject: [PATCH] Setup paperweight fork changes
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index b3a223e1522e8667896f147d7c1a7da8686f8394..6d647ac64be926d07e86b8233da161bbeb54239b 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -21,6 +21,25 @@ paperweight {
+     // macheOldPath = file("F:\\Projects\\PaperTooling\\mache\\versions\\1.21.4\\src\\main\\java")
+     // gitFilePatches = true
+ 
++    // CloudPlane start - setup paperweight fork
++    val cloudplane = forks.register("cloudplane") {
++        serverPatchesDir = rootDirectory.dir("patches/minecraft")
++        featurePatchDir = serverPatchesDir.dir(".")
++        upstream.patchDir("paperServer") {
++            upstreamPath = "paper-server"
++            excludes = setOf("src/minecraft", "patches", "build.gradle.kts")
++            patchesDir = rootDirectory.dir("patches/server")
++            featurePatchDir = patchesDir.dir(".")
++            outputDir = rootDirectory.dir("cloudplane-server")
++        }
++    }
++    activeFork = cloudplane
++
++    paper {
++        paperServerDir = upstreamsDirectory().map { it.dir("paper/paper-server") } // CloudPlane - setup paperweight fork
++    }
++    // CloudPlane end - setup paperweight fork
++
+     spigot {
+         buildDataRef = "3edaf46ec1eed4115ce1b18d2846cded42577e42"
+         packageVersion = "v1_21_R3" // also needs to be updated in MappingEnvironment
+@@ -101,7 +120,21 @@ if (project.providers.gradleProperty("publishDevBundle").isPresent) {
+     }
+ }
+ 
+-val log4jPlugins = sourceSets.create("log4jPlugins")
++// CloudPlane start - configure actual server sources
++sourceSets {
++    main {
++        java { srcDir("../cloudplane-server/src/main/java") }
++        resources { srcDir("../cloudplane-server/src/main/resources") }
++    }
++    test {
++        java { srcDir("../cloudplane-server/src/test/java") }
++        resources { srcDir("../cloudplane-server/src/test/resources") }
++    }
++}
++val log4jPlugins = sourceSets.create("log4jPlugins") {
++    java { srcDir("../cloudplane-server/src/log4jPlugins/java") }
++}
++// CloudPlane end - configure actual server sources
+ configurations.named(log4jPlugins.compileClasspathConfigurationName) {
+     extendsFrom(configurations.compileClasspath.get())
+ }
+@@ -119,7 +152,7 @@ abstract class MockitoAgentProvider : CommandLineArgumentProvider {
+ }
+ 
+ dependencies {
+-    implementation(project(":paper-api"))
++    implementation(projects.cloudplaneApi) // CloudPlane - update to own api
+     implementation("ca.spottedleaf:concurrentutil:0.0.3")
+     implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
+     implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
+@@ -327,3 +360,12 @@ tasks.registerRunTask("runReobfPaperclip") {
+     classpath(tasks.createReobfPaperclipJar.flatMap { it.outputZip })
+     mainClass.set(null as String?)
+ }
++
++// CloudPlane start - work around strange paperweight madness
++afterEvaluate {
++    if (tasks.names.contains("importCloudplaneLibraryFiles")) {
++        tasks["importCloudplaneLibraryFiles"].mustRunAfter(tasks["rebuildMinecraftResourcePatches"])
++        tasks["collectCloudplaneATsFromPatches"].mustRunAfter(tasks["rebuildMinecraftResourcePatches"])
++    }
++}
++// CloudPlane end - work around strange paperweight madness

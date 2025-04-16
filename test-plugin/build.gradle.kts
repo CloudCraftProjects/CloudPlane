@@ -1,4 +1,3 @@
-group = "dev.booky"
 version = "1.0.0"
 
 repositories {
@@ -6,7 +5,7 @@ repositories {
 }
 
 dependencies {
-    implementation(project(":CloudPlane-API"))
+    implementation(projects.cloudplaneApi)
 }
 
 tasks.processResources {

@@ -1,7 +1,17 @@
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 rootProject.name = "CloudPlane"
 
 plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "0.8.0"
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.10.0"
 }
 
-include("CloudPlane-API", "CloudPlane-Server", "test-plugin")
+include(
+    "cloudplane-api",
+    "test-plugin",
+)
+
+// only include setup project if buildscript can be resolved
+if (file("cloudplane-server-setup/buildscript").exists()) {
+    include("cloudplane-server-setup")
+}
