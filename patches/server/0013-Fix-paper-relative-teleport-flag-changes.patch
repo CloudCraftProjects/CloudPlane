@@ -1,0 +1,82 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Mon, 27 Jan 2025 21:48:37 +0100
+Subject: [PATCH] Fix paper relative teleport flag changes
+
+
+diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+index 340eb7f6cf38f873178e0f12b334480d74d2c45a..7173c1e5190707bddf3ac26a7681c88476ec1700 100644
+--- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
++++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
+@@ -1388,6 +1388,32 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+         this.getHandle().lookAt(toNmsAnchor(playerAnchor), ((CraftEntity) entity).getHandle(), toNmsAnchor(entityAnchor));
+     }
+ 
++    // CloudPlane start - fix paper relative teleport flag changes
++    public static void deltaRelativeToNMS(io.papermc.paper.entity.TeleportFlag.Relative apiFlag, Set<net.minecraft.world.entity.Relative> nmsFlags) {
++        switch (apiFlag) {
++            case VELOCITY_X -> {
++                nmsFlags.add(net.minecraft.world.entity.Relative.X);
++                nmsFlags.add(net.minecraft.world.entity.Relative.DELTA_X);
++            }
++            case VELOCITY_Y -> {
++                nmsFlags.add(net.minecraft.world.entity.Relative.Y);
++                nmsFlags.add(net.minecraft.world.entity.Relative.DELTA_Y);
++            }
++            case VELOCITY_Z -> {
++                nmsFlags.add(net.minecraft.world.entity.Relative.Z);
++                nmsFlags.add(net.minecraft.world.entity.Relative.DELTA_Z);
++            }
++            case VELOCITY_ROTATION -> {
++                nmsFlags.add(net.minecraft.world.entity.Relative.X_ROT);
++                nmsFlags.add(net.minecraft.world.entity.Relative.Y_ROT);
++                nmsFlags.add(net.minecraft.world.entity.Relative.ROTATE_DELTA);
++            }
++        }
++    }
++
++    @io.papermc.paper.annotation.DoNotUse
++    @Deprecated
++    // CloudPlane end - fix paper relative teleport flag changes
+     public static net.minecraft.world.entity.Relative deltaRelativeToNMS(io.papermc.paper.entity.TeleportFlag.Relative apiFlag) {
+         return switch (apiFlag) {
+             case VELOCITY_X -> net.minecraft.world.entity.Relative.DELTA_X;
+@@ -1399,10 +1425,12 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+ 
+     public static @org.jetbrains.annotations.Nullable io.papermc.paper.entity.TeleportFlag.Relative deltaRelativeToAPI(net.minecraft.world.entity.Relative nmsFlag) {
+         return switch (nmsFlag) {
+-            case DELTA_X -> io.papermc.paper.entity.TeleportFlag.Relative.VELOCITY_X;
+-            case DELTA_Y -> io.papermc.paper.entity.TeleportFlag.Relative.VELOCITY_Y;
+-            case DELTA_Z -> io.papermc.paper.entity.TeleportFlag.Relative.VELOCITY_Z;
+-            case ROTATE_DELTA -> io.papermc.paper.entity.TeleportFlag.Relative.VELOCITY_ROTATION;
++            // CloudPlane start - fix paper relative teleport flag changes
++            case X, DELTA_X -> io.papermc.paper.entity.TeleportFlag.Relative.VELOCITY_X;
++            case Y, DELTA_Y -> io.papermc.paper.entity.TeleportFlag.Relative.VELOCITY_Y;
++            case Z, DELTA_Z -> io.papermc.paper.entity.TeleportFlag.Relative.VELOCITY_Z;
++            case Y_ROT, X_ROT, ROTATE_DELTA -> io.papermc.paper.entity.TeleportFlag.Relative.VELOCITY_ROTATION;
++            // CloudPlane end - fix paper relative teleport flag changes
+             default -> null;
+         };
+     }
+@@ -1495,11 +1523,19 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+             // Paper start - Teleport API
+             final Set<net.minecraft.world.entity.Relative> nms = java.util.EnumSet.noneOf(net.minecraft.world.entity.Relative.class);
+             for (final io.papermc.paper.entity.TeleportFlag.Relative bukkit : relativeArguments) {
+-                nms.add(deltaRelativeToNMS(bukkit));
++                // CloudPlane start - fix paper relative teleport flag changes
++                deltaRelativeToNMS(bukkit, nms);
+             }
+             entity.connection.internalTeleport(new net.minecraft.world.entity.PositionMoveRotation(
+-                io.papermc.paper.util.MCUtil.toVec3(to), net.minecraft.world.phys.Vec3.ZERO, to.getYaw(), to.getPitch()
++                    new net.minecraft.world.phys.Vec3(
++                            nms.contains(net.minecraft.world.entity.Relative.X) ? location.getX() - this.getX() : location.getX(),
++                            nms.contains(net.minecraft.world.entity.Relative.Y) ? location.getY() - this.getY() : location.getY(),
++                            nms.contains(net.minecraft.world.entity.Relative.Z) ? location.getZ() - this.getZ() : location.getZ()
++                    ), net.minecraft.world.phys.Vec3.ZERO,
++                    nms.contains(net.minecraft.world.entity.Relative.Y_ROT) ? to.getYaw() - this.getYaw() : to.getYaw(),
++                    nms.contains(net.minecraft.world.entity.Relative.X_ROT) ? to.getPitch() - this.getPitch() : to.getPitch()
+             ), nms);
++            // CloudPlane end - fix paper relative teleport flag changes
+             // Paper end - Teleport API
+         } else {
+             entity.portalProcess = null; // SPIGOT-7785: there is no need to carry this over as it contains the old world/location and we might run into trouble if there is a portal in the same spot in both worlds

@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Tue, 13 Aug 2024 05:30:10 +0200
+Subject: [PATCH] Don't adjust spawn location if no chunks are loaded
+
+
+diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
+index 9c7996f111b1d235c082bcdd6a5bb6c0c0f652d1..fb1da8cb715e4925bf81bdc61c4bebe096d17676 100644
+--- a/net/minecraft/server/level/ServerPlayer.java
++++ b/net/minecraft/server/level/ServerPlayer.java
+@@ -501,6 +501,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+             blockPos = pos;
+         }
+ 
++        if (level.hasChunkAt(blockPos)) { // CloudPlane - don't adjust spawn location if no chunks are loaded
+         while (!this.noCollisionNoLiquid(level, aabb.move(blockPos.getBottomCenter())) && blockPos.getY() < level.getMaxY()) {
+             blockPos = blockPos.above();
+         }
+@@ -508,6 +509,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+         while (this.noCollisionNoLiquid(level, aabb.move(blockPos.below().getBottomCenter())) && blockPos.getY() > level.getMinY() + 1) {
+             blockPos = blockPos.below();
+         }
++        } // CloudPlane - don't adjust spawn location if no chunks are loaded
+ 
+         return blockPos;
+     }

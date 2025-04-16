@@ -1,0 +1,67 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Fri, 20 Sep 2024 01:13:04 +0200
+Subject: [PATCH] Further improve Player#canSee performance
+
+
+diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
+index 01b6e4521dfb4ad43ad6dfe8dfd3c8e16b49028c..981e76cdb98bc10a97745d2726470e81774239f1 100644
+--- a/net/minecraft/world/entity/Entity.java
++++ b/net/minecraft/world/entity/Entity.java
+@@ -291,6 +291,15 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+     private boolean invulnerable;
+     protected UUID uuid = Mth.createInsecureUUID(this.random);
+     protected String stringUUID = this.uuid.toString();
++    // CloudPlane start - further improve Player#canSee performance;
++    // combine UUID to single value to allow for easier hashmap lookups
++    // and allow using fastutil number sets
++    // this is less "secure" than using a full UUID, but should still not cause
++    // any collisions on this non-distributed system
++    // there may be a slight chance for collision, but this chance
++    // is way too small to actually account for
++    public long longUUID;
++    // CloudPlane end - further improve Player#canSee performance
+     private boolean hasGlowingTag;
+     private final Set<String> tags = new io.papermc.paper.util.SizeLimitedSet<>(new it.unimi.dsi.fastutil.objects.ObjectOpenHashSet<>(), MAX_ENTITY_TAG_COUNT); // Paper - fully limit tag size - replace set impl
+     private final double[] pistonDeltas = new double[]{0.0, 0.0, 0.0};
+@@ -534,6 +543,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+         this.position = Vec3.ZERO;
+         this.blockPosition = BlockPos.ZERO;
+         this.chunkPosition = ChunkPos.ZERO;
++        this.setUUID(this.uuid); // CloudPlane - further improve Player#canSee performance; call common setter
+         // Paper start - EAR 2
+         if (level != null) {
+             this.defaultActivationState = io.papermc.paper.entity.activation.ActivationRange.initializeEntityActivationState(this, level.spigotConfig);
+@@ -2568,8 +2578,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+             this.invulnerable = compound.getBoolean("Invulnerable");
+             this.portalCooldown = compound.getInt("PortalCooldown");
+             if (compound.hasUUID("UUID")) {
+-                this.uuid = compound.getUUID("UUID");
+-                this.stringUUID = this.uuid.toString();
++                this.setUUID(compound.getUUID("UUID")); // CloudPlane - further improve Player#canSee performance; call common setter
+             }
+ 
+             if (!Double.isFinite(this.getX()) || !Double.isFinite(this.getY()) || !Double.isFinite(this.getZ())) {
+@@ -4009,6 +4018,9 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+     public void setUUID(UUID uniqueId) {
+         this.uuid = uniqueId;
+         this.stringUUID = this.uuid.toString();
++        // CloudPlane start - further improve Player#canSee performance
++        this.longUUID = this.uuid.getMostSignificantBits() ^ this.uuid.getLeastSignificantBits();
++        // CloudPlane end - further improve Player#canSee performance
+     }
+ 
+     @Override
+@@ -4020,6 +4032,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+         return this.stringUUID;
+     }
+ 
++    // CloudPlane start - further improve Player#canSee performance
++    public final long getLongUUID() {
++        return this.longUUID;
++    }
++    // CloudPlane end - further improve Player#canSee performance
++
+     @Override
+     public String getScoreboardName() {
+         return this.stringUUID;

@@ -1,0 +1,71 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Sun, 5 Jan 2025 20:48:30 +0100
+Subject: [PATCH] Convert spawn category limits and ticks to array
+
+
+diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
+index 341d7234445e050ca524668387c9055c1c0fb358..a8c13090fc2aceef80683c720ed2a7952b0d4c7c 100644
+--- a/net/minecraft/server/level/ServerChunkCache.java
++++ b/net/minecraft/server/level/ServerChunkCache.java
+@@ -616,7 +616,10 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+                 entityPlayer.playerNaturallySpawnedEvent.callEvent();
+             }
+             // Paper end - PlayerNaturallySpawnCreaturesEvent
+-            boolean flag = this.level.ticksPerSpawnCategory.getLong(org.bukkit.entity.SpawnCategory.ANIMAL) != 0L && this.level.getLevelData().getGameTime() % this.level.ticksPerSpawnCategory.getLong(org.bukkit.entity.SpawnCategory.ANIMAL) == 0L; // CraftBukkit
++            // CloudPlane start - convert spawn category ticks to array
++            final long ticks = this.level.ticksPerSpawnCategory[org.bukkit.entity.SpawnCategory.ANIMAL.ordinal()];
++            boolean flag = ticks != 0L && this.level.getLevelData().getGameTime() % ticks == 0L; // CraftBukkit
++            // CloudPlane end - convert spawn category ticks to array
+             filteredSpawningCategories = NaturalSpawner.getFilteredSpawningCategories(spawnState, this.spawnFriendlies, this.spawnEnemies, flag, this.level); // CraftBukkit
+         } else {
+             filteredSpawningCategories = List.of();
+diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
+index 7b9fafacd21c30e535d3dc012b7361a9088f490d..21e7855f6a25cd0f6fd0233eefa4300029546a6e 100644
+--- a/net/minecraft/world/level/Level.java
++++ b/net/minecraft/world/level/Level.java
+@@ -153,7 +153,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+     public Map<BlockPos, org.bukkit.craftbukkit.block.CraftBlockState> capturedBlockStates = new java.util.LinkedHashMap<>(); // Paper
+     public Map<BlockPos, BlockEntity> capturedTileEntities = new java.util.LinkedHashMap<>(); // Paper - Retain block place order when capturing blockstates
+     public List<net.minecraft.world.entity.item.ItemEntity> captureDrops;
+-    public final it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap<SpawnCategory> ticksPerSpawnCategory = new it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap<>();
++    public final long[] ticksPerSpawnCategory = new long[SpawnCategory.values().length]; // CloudPlane - convert spawn category ticks to array
+     // Paper start
+     public int wakeupInactiveRemainingAnimals;
+     public int wakeupInactiveRemainingFlying;
+@@ -862,7 +862,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+         // CraftBukkit Ticks things
+         for (SpawnCategory spawnCategory : SpawnCategory.values()) {
+             if (CraftSpawnCategory.isValidForLimits(spawnCategory)) {
+-                this.ticksPerSpawnCategory.put(spawnCategory, this.getTicksPerSpawn(spawnCategory)); // Paper
++                this.ticksPerSpawnCategory[spawnCategory.ordinal()] = this.getTicksPerSpawn(spawnCategory); // Paper // CloudPlane - convert spawn category ticks to array
+             }
+         }
+ 
+diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
+index d917bc1f978a5adee8fdfad82fedca9e649cadfc..1cc3db3cd8a67af5b9a935b956b3d50f49fd266f 100644
+--- a/net/minecraft/world/level/NaturalSpawner.java
++++ b/net/minecraft/world/level/NaturalSpawner.java
+@@ -137,8 +137,11 @@ public final class NaturalSpawner {
+             int limit = mobCategory.getMaxInstancesPerChunk();
+             SpawnCategory spawnCategory = CraftSpawnCategory.toBukkit(mobCategory);
+             if (CraftSpawnCategory.isValidForLimits(spawnCategory)) {
+-                spawnThisTick = level.ticksPerSpawnCategory.getLong(spawnCategory) != 0 && worlddata.getGameTime() % level.ticksPerSpawnCategory.getLong(spawnCategory) == 0;
+-                limit = level.getWorld().getSpawnLimit(spawnCategory);
++                // CloudPlane start - convert spawn category ticks to array
++                final long ticks = level.ticksPerSpawnCategory[spawnCategory.ordinal()];
++                spawnThisTick = ticks != 0 && worlddata.getGameTime() % ticks == 0;
++                // CloudPlane end - convert spawn category ticks to array
++                limit = level.getWorld().getSpawnLimitUnsafe(spawnCategory); // CloudPlane - convert spawn category limits to array; use internal getter
+             }
+ 
+             if (!spawnThisTick || limit == 0) {
+@@ -170,7 +173,7 @@ public final class NaturalSpawner {
+                 int limit = mobCategory.getMaxInstancesPerChunk();
+                 SpawnCategory spawnCategory = CraftSpawnCategory.toBukkit(mobCategory);
+                 if (CraftSpawnCategory.isValidForLimits(spawnCategory)) {
+-                    limit = level.getWorld().getSpawnLimit(spawnCategory);
++                    limit = level.getWorld().getSpawnLimitUnsafe(spawnCategory); // CloudPlane - convert spawn category limits to array; use internal getter
+                 }
+ 
+                 // Apply per-player limit

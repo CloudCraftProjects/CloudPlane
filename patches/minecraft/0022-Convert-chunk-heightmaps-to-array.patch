@@ -1,0 +1,203 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Sun, 5 Jan 2025 21:28:12 +0100
+Subject: [PATCH] Convert chunk heightmaps to array
+
+
+diff --git a/net/minecraft/network/protocol/game/ClientboundLevelChunkPacketData.java b/net/minecraft/network/protocol/game/ClientboundLevelChunkPacketData.java
+index 9e321ef1c3d5803519b243685f4ee598dc0cf640..ac6c7b09229851820b465ca382a9d33ec202e708 100644
+--- a/net/minecraft/network/protocol/game/ClientboundLevelChunkPacketData.java
++++ b/net/minecraft/network/protocol/game/ClientboundLevelChunkPacketData.java
+@@ -23,6 +23,13 @@ import net.minecraft.world.level.chunk.LevelChunkSection;
+ import net.minecraft.world.level.levelgen.Heightmap;
+ 
+ public class ClientboundLevelChunkPacketData {
++
++    // CloudPlane start - convert heightmaps to array
++    public static final Heightmap.Types[] SENDABLE_HEIGHTMAP_TYPES = java.util.Arrays.stream(Heightmap.Types.values())
++            .filter(Heightmap.Types::sendToClient).toArray(Heightmap.Types[]::new);
++    public static final int SENDABLE_HEIGHTMAP_TYPES_LEN = SENDABLE_HEIGHTMAP_TYPES.length;
++    // CloudPlane end - convert heightmaps to array
++
+     private static final int TWO_MEGABYTES = 2097152;
+     private final CompoundTag heightmaps;
+     private final byte[] buffer;
+@@ -45,11 +52,15 @@ public class ClientboundLevelChunkPacketData {
+         // Paper end
+         this.heightmaps = new CompoundTag();
+ 
+-        for (Entry<Heightmap.Types, Heightmap> entry : levelChunk.getHeightmaps()) {
+-            if (entry.getKey().sendToClient()) {
+-                this.heightmaps.put(entry.getKey().getSerializationKey(), new LongArrayTag(entry.getValue().getRawData()));
++        // CloudPlane start - convert heightmaps to array
++        for (int i = 0; i < SENDABLE_HEIGHTMAP_TYPES_LEN; ++i) {
++            final Heightmap.Types type = SENDABLE_HEIGHTMAP_TYPES[i];
++            final Heightmap heightmap = levelChunk.heightmaps[type.ordinal()];
++            if (heightmap != null) {
++                this.heightmaps.put(type.getSerializationKey(), new LongArrayTag(heightmap.getRawData()));
+             }
+         }
++        // CloudPlane end - convert heightmaps to array
+ 
+         this.buffer = new byte[calculateChunkSize(levelChunk)];
+         // Paper start - Anti-Xray - Add chunk packet info
+diff --git a/net/minecraft/world/level/chunk/ChunkAccess.java b/net/minecraft/world/level/chunk/ChunkAccess.java
+index 6d565b52552534ce9cacfc35ad1bf4adcb69eac3..a27d62d31ecb460b99af7e2ca989d11ce56f929f 100644
+--- a/net/minecraft/world/level/chunk/ChunkAccess.java
++++ b/net/minecraft/world/level/chunk/ChunkAccess.java
+@@ -74,7 +74,7 @@ public abstract class ChunkAccess implements BiomeManager.NoiseBiomeSource, Ligh
+     protected final UpgradeData upgradeData;
+     @Nullable
+     protected BlendingData blendingData;
+-    public final Map<Heightmap.Types, Heightmap> heightmaps = Maps.newEnumMap(Heightmap.Types.class);
++    public final @org.jspecify.annotations.Nullable Heightmap[] heightmaps = new Heightmap[Heightmap.Types.values().length]; // CloudPlane - convert heightmaps to array
+     // Paper - rewrite chunk system
+     private final Map<Structure, StructureStart> structureStarts = Maps.newHashMap();
+     private final Map<Structure, LongSet> structuresRefences = Maps.newHashMap();
+@@ -234,31 +234,42 @@ public abstract class ChunkAccess implements BiomeManager.NoiseBiomeSource, Ligh
+         return this.getSections()[index];
+     }
+ 
++    // CloudPlane start - convert heightmaps to array
++    @io.papermc.paper.annotation.DoNotUse
++    @Deprecated
+     public Collection<Entry<Heightmap.Types, Heightmap>> getHeightmaps() {
+-        return Collections.unmodifiableSet(this.heightmaps.entrySet());
++        throw new UnsupportedOperationException();
+     }
++    // CloudPlane end - convert heightmaps to array
+ 
+     public void setHeightmap(Heightmap.Types type, long[] data) {
+         this.getOrCreateHeightmapUnprimed(type).setRawData(this, type, data);
+     }
+ 
+     public Heightmap getOrCreateHeightmapUnprimed(Heightmap.Types type) {
+-        return this.heightmaps.computeIfAbsent(type, absentType -> new Heightmap(this, absentType));
++        // CloudPlane start - convert heightmaps to array
++        Heightmap heightmap = this.heightmaps[type.ordinal()];
++        if (heightmap == null) {
++            heightmap = new Heightmap(this, type);
++            this.heightmaps[type.ordinal()] = heightmap;
++        }
++        return heightmap;
++        // CloudPlane end - convert heightmaps to array
+     }
+ 
+     public boolean hasPrimedHeightmap(Heightmap.Types type) {
+-        return this.heightmaps.get(type) != null;
++        return this.heightmaps[type.ordinal()] != null; // CloudPlane - convert heightmaps to array
+     }
+ 
+     public int getHeight(Heightmap.Types type, int x, int z) {
+-        Heightmap heightmap = this.heightmaps.get(type);
++        Heightmap heightmap = this.heightmaps[type.ordinal()]; // CloudPlane - convert heightmaps to array
+         if (heightmap == null) {
+             if (SharedConstants.IS_RUNNING_IN_IDE && this instanceof LevelChunk) {
+                 LOGGER.error("Unprimed heightmap: " + type + " " + x + " " + z);
+             }
+ 
+             Heightmap.primeHeightmaps(this, EnumSet.of(type));
+-            heightmap = this.heightmaps.get(type);
++            heightmap = this.heightmaps[type.ordinal()]; // CloudPlane - convert heightmaps to array
+         }
+ 
+         return heightmap.getFirstAvailable(x & 15, z & 15) - 1;
+diff --git a/net/minecraft/world/level/chunk/LevelChunk.java b/net/minecraft/world/level/chunk/LevelChunk.java
+index 9d28067610099bfcabdb6014616a8c75d15ed53d..9479ca0ca57c31385f75d6ddaa513c53bf3d42dc 100644
+--- a/net/minecraft/world/level/chunk/LevelChunk.java
++++ b/net/minecraft/world/level/chunk/LevelChunk.java
+@@ -159,11 +159,11 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+         this.level = (ServerLevel) level; // CraftBukkit - type
+         this.gameEventListenerRegistrySections = new Int2ObjectOpenHashMap<>();
+ 
+-        for (Heightmap.Types types : Heightmap.Types.values()) {
+-            if (ChunkStatus.FULL.heightmapsAfter().contains(types)) {
+-                this.heightmaps.put(types, new Heightmap(this, types));
+-            }
++        // CloudPlane start - convert heightmaps to array
++        for (Heightmap.Types types : ChunkStatus.FULL.heightmapsAfter()) {
++            this.heightmaps[types.ordinal()] = new Heightmap(this, types);
+         }
++        // CloudPlane end - convert heightmaps to array
+ 
+         this.postLoad = postLoad;
+         this.blockTicks = blockTicks;
+@@ -209,11 +209,14 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+         this.setAllStarts(chunk.getAllStarts());
+         this.setAllReferences(chunk.getAllReferences());
+ 
+-        for (Entry<Heightmap.Types, Heightmap> entry : chunk.getHeightmaps()) {
+-            if (ChunkStatus.FULL.heightmapsAfter().contains(entry.getKey())) {
+-                this.setHeightmap(entry.getKey(), entry.getValue().getRawData());
++        // CloudPlane start - convert heightmaps to array
++        for (Heightmap.Types type : ChunkStatus.FULL.heightmapsAfter()) {
++            Heightmap heightmap = chunk.heightmaps[type.ordinal()];
++            if (heightmap != null) {
++                this.setHeightmap(type, heightmap.getRawData());
+             }
+         }
++        // CloudPlane end - convert heightmaps to array
+ 
+         // Paper - rewrite chunk system
+         this.setLightCorrect(chunk.isLightCorrect());
+@@ -390,10 +393,10 @@ public class LevelChunk extends ChunkAccess implements ca.spottedleaf.moonrise.p
+                 return null;
+             } else {
+                 Block block = state.getBlock();
+-                this.heightmaps.get(Heightmap.Types.MOTION_BLOCKING).update(i, y, i2, state);
+-                this.heightmaps.get(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES).update(i, y, i2, state);
+-                this.heightmaps.get(Heightmap.Types.OCEAN_FLOOR).update(i, y, i2, state);
+-                this.heightmaps.get(Heightmap.Types.WORLD_SURFACE).update(i, y, i2, state);
++                this.heightmaps[Heightmap.Types.MOTION_BLOCKING.ordinal()].update(i, y, i2, state); // CloudPlane - convert heightmaps to array
++                this.heightmaps[Heightmap.Types.MOTION_BLOCKING_NO_LEAVES.ordinal()].update(i, y, i2, state); // CloudPlane - convert heightmaps to array
++                this.heightmaps[Heightmap.Types.OCEAN_FLOOR.ordinal()].update(i, y, i2, state); // CloudPlane - convert heightmaps to array
++                this.heightmaps[Heightmap.Types.WORLD_SURFACE.ordinal()].update(i, y, i2, state); // CloudPlane - convert heightmaps to array
+                 boolean hasOnlyAir1 = section.hasOnlyAir();
+                 if (hasOnlyAir != hasOnlyAir1) {
+                     this.level.getChunkSource().getLightEngine().updateSectionStatus(pos, hasOnlyAir1);
+diff --git a/net/minecraft/world/level/chunk/ProtoChunk.java b/net/minecraft/world/level/chunk/ProtoChunk.java
+index e66239e2da91bd3ddf358d239be796719c0da327..7a0d550650731a33494144c610874a13579566af 100644
+--- a/net/minecraft/world/level/chunk/ProtoChunk.java
++++ b/net/minecraft/world/level/chunk/ProtoChunk.java
+@@ -160,7 +160,7 @@ public class ProtoChunk extends ChunkAccess {
+                 EnumSet<Heightmap.Types> set1 = null;
+ 
+                 for (Heightmap.Types types : set) {
+-                    Heightmap heightmap = this.heightmaps.get(types);
++                    Heightmap heightmap = this.heightmaps[types.ordinal()]; // CloudPlane - convert heightmaps to array
+                     if (heightmap == null) {
+                         if (set1 == null) {
+                             set1 = EnumSet.noneOf(Heightmap.Types.class);
+@@ -175,7 +175,7 @@ public class ProtoChunk extends ChunkAccess {
+                 }
+ 
+                 for (Heightmap.Types typesx : set) {
+-                    this.heightmaps.get(typesx).update(relativeBlockPosX, y, relativeBlockPosZ, state);
++                    this.heightmaps[typesx.ordinal()].update(relativeBlockPosX, y, relativeBlockPosZ, state); // CloudPlane - convert heightmaps to array
+                 }
+ 
+                 return blockState;
+diff --git a/net/minecraft/world/level/chunk/storage/SerializableChunkData.java b/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
+index 6b6aaeca14178b5b709e20ae13552d42217f15c0..0d2d168ca690735a16e23f7e5c40323d17777bd4 100644
+--- a/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
++++ b/net/minecraft/world/level/chunk/storage/SerializableChunkData.java
+@@ -567,12 +567,15 @@ public record SerializableChunkData(
+ 
+             Map<Heightmap.Types, long[]> map = new EnumMap<>(Heightmap.Types.class);
+ 
+-            for (Entry<Heightmap.Types, Heightmap> entry : chunk.getHeightmaps()) {
+-                if (chunk.getPersistedStatus().heightmapsAfter().contains(entry.getKey())) {
+-                    long[] rawData = entry.getValue().getRawData();
+-                    map.put(entry.getKey(), (long[])rawData.clone());
++            // CloudPlane start - convert heightmaps to array
++            for (Heightmap.Types type : chunk.getPersistedStatus().heightmapsAfter()) {
++                Heightmap heightmap = chunk.heightmaps[type.ordinal()];
++                if (heightmap != null) {
++                    long[] rawData = heightmap.getRawData();
++                    map.put(type, (long[])rawData.clone());
+                 }
+             }
++            // CloudPlane end - convert heightmaps to array
+ 
+             ChunkAccess.PackedTicks ticksForSerialization = chunk.getTicksForSerialization(level.getGameTime());
+             ShortList[] lists = Arrays.stream(chunk.getPostProcessing())

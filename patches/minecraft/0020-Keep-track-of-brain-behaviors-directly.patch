@@ -1,0 +1,185 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Sat, 7 Dec 2024 17:28:39 +0100
+Subject: [PATCH] Keep track of brain behaviors directly
+
+Replaces the cost of iterating over nested hash sets by iterating over linear lists which need to be sorted upon update
+
+diff --git a/net/minecraft/world/entity/ai/Brain.java b/net/minecraft/world/entity/ai/Brain.java
+index 450396468b23fd90cb8036dbbdd0927051f907af..b7df5933bc3244f5f88df26b98a935163836958d 100644
+--- a/net/minecraft/world/entity/ai/Brain.java
++++ b/net/minecraft/world/entity/ai/Brain.java
+@@ -47,14 +47,22 @@ public class Brain<E extends LivingEntity> {
+     private static final int SCHEDULE_UPDATE_DELAY = 20;
+     private final Map<MemoryModuleType<?>, Optional<? extends ExpirableValue<?>>> memories = Maps.newHashMap();
+     private final Map<SensorType<? extends Sensor<? super E>>, Sensor<? super E>> sensors = Maps.newLinkedHashMap();
+-    private final Map<Integer, Map<Activity, Set<BehaviorControl<? super E>>>> availableBehaviorsByPriority = Maps.newTreeMap();
++    private final Map<Activity, List<BehaviorControl<? super E>>> activityBehaviorMap = Maps.newHashMap(); // CloudPlane - keep track of behaviors directly
++    private final List<BehaviorControl<? super E>> allBehaviors = new java.util.concurrent.CopyOnWriteArrayList<>(); // CloudPlane - keep track of behaviors directly
+     private Schedule schedule = Schedule.EMPTY;
+     private final Map<Activity, Set<Pair<MemoryModuleType<?>, MemoryStatus>>> activityRequirements = Maps.newHashMap();
+     private final Map<Activity, Set<MemoryModuleType<?>>> activityMemoriesToEraseWhenStopped = Maps.newHashMap();
+-    private Set<Activity> coreActivities = Sets.newHashSet();
++    private Set<Activity> coreActivities = Set.of(); // CloudPlane - keep track of behaviors directly
++    private List<BehaviorControl<? super E>> coreBehaviors = new java.util.ArrayList<>(); // CloudPlane - keep track of behaviors directly
+     private final Set<Activity> activeActivities = Sets.newHashSet();
++    private final List<BehaviorControl<? super E>> activeBehaviors = new java.util.concurrent.CopyOnWriteArrayList<>(); // CloudPlane - keep track of behaviors directly
+     private Activity defaultActivity = Activity.IDLE;
+     private long lastScheduleUpdate = -9999L;
++    // CloudPlane start - keep track of behaviors directly
++    private final Map<BehaviorControl<? super E>, Integer> behaviorPriorityMap = new java.util.WeakHashMap<>();
++    private final java.util.Comparator<BehaviorControl<? super E>> behaviorPriorityComparator = (b1, b2) ->
++            Integer.compare(this.behaviorPriorityMap.get(b1), this.behaviorPriorityMap.get(b2));
++    // CloudPlane end - keep track of behaviors directly
+ 
+     public static <E extends LivingEntity> Brain.Provider<E> provider(
+         Collection<? extends MemoryModuleType<?>> memoryTypes, Collection<? extends SensorType<? extends Sensor<? super E>>> sensorTypes
+@@ -240,6 +248,13 @@ public class Brain<E extends LivingEntity> {
+ 
+     public void setCoreActivities(Set<Activity> newActivities) {
+         this.coreActivities = newActivities;
++        // CloudPlane start - keep track of behaviors directly
++        this.coreBehaviors = new java.util.ArrayList<>();
++        for (Activity activity : coreActivities) {
++            this.addBehaviors(this.coreBehaviors, activity);
++        }
++        this.coreBehaviors.sort(this.behaviorPriorityComparator);
++        // CloudPlane end - keep track of behaviors directly
+     }
+ 
+     @Deprecated
+@@ -253,15 +268,15 @@ public class Brain<E extends LivingEntity> {
+     public List<BehaviorControl<? super E>> getRunningBehaviors() {
+         List<BehaviorControl<? super E>> list = new ObjectArrayList<>();
+ 
+-        for (Map<Activity, Set<BehaviorControl<? super E>>> map : this.availableBehaviorsByPriority.values()) {
+-            for (Set<BehaviorControl<? super E>> set : map.values()) {
+-                for (BehaviorControl<? super E> behaviorControl : set) {
++        // CloudPlane start - keep track of behaviors directly
++        List<BehaviorControl<? super E>> behaviors = this.allBehaviors;
++        for (int i = 0, len = behaviors.size(); i < len; ++i) {
++            BehaviorControl<? super E> behaviorControl = behaviors.get(i);
+                     if (behaviorControl.getStatus() == Behavior.Status.RUNNING) {
+                         list.add(behaviorControl);
+                     }
+-                }
+-            }
+         }
++        // CloudPlane end - keep track of behaviors directly
+ 
+         return list;
+     }
+@@ -294,9 +309,24 @@ public class Brain<E extends LivingEntity> {
+             this.activeActivities.clear();
+             this.activeActivities.addAll(this.coreActivities);
+             this.activeActivities.add(activity);
++            // CloudPlane start - keep track of behaviors directly
++            this.activeBehaviors.clear();
++            this.activeBehaviors.addAll(this.coreBehaviors);
++            this.addBehaviors(this.activeBehaviors, activity);
++            this.activeBehaviors.sort(this.behaviorPriorityComparator);
++            // CloudPlane end - keep track of behaviors directly
+         }
+     }
+ 
++    // CloudPlane start - keep track of behaviors directly
++    private void addBehaviors(List<BehaviorControl<? super E>> behaviors, Activity activity) {
++        List<BehaviorControl<? super E>> activityBehaviors = this.activityBehaviorMap.get(activity);
++        if (activityBehaviors != null) {
++            behaviors.addAll(activityBehaviors);
++        }
++    }
++    // CloudPlane end - keep track of behaviors directly
++
+     private void eraseMemoriesForOtherActivitesThan(Activity activity) {
+         for (Activity activity1 : this.activeActivities) {
+             if (activity1 != activity) {
+@@ -368,17 +398,48 @@ public class Brain<E extends LivingEntity> {
+             this.activityMemoriesToEraseWhenStopped.put(activity, memoryTypes);
+         }
+ 
++        // CloudPlane start - keep track of behaviors directly
++        if (tasks.isEmpty()) {
++            return;
++        }
++
++        boolean coreMut = false;
++        boolean activeMut = false;
+         for (Pair<Integer, ? extends BehaviorControl<? super E>> pair : tasks) {
+-            this.availableBehaviorsByPriority
+-                .computeIfAbsent(pair.getFirst(), integer -> Maps.newHashMap())
+-                .computeIfAbsent(activity, activity1 -> Sets.newLinkedHashSet())
+-                .add((BehaviorControl<? super E>)pair.getSecond());
++            Integer existingPriority = this.behaviorPriorityMap.putIfAbsent(pair.getSecond(), pair.getFirst());
++            if (existingPriority != null) {
++                throw new IllegalStateException("Can't add duplicate behavior " + pair.getSecond() + " for activity " + activity);
++            }
++            this.activityBehaviorMap.computeIfAbsent(activity, $ -> new java.util.ArrayList<>()).add(pair.getSecond());
++            if (this.coreActivities.contains(activity)) {
++                this.coreBehaviors.add(pair.getSecond());
++                coreMut = true;
++            }
++            if (this.activeActivities.contains(activity)) {
++                this.activeBehaviors.add(pair.getSecond());
++                activeMut = true;
++            }
++            this.allBehaviors.add(pair.getSecond());
++        }
++        if (coreMut) {
++            this.coreBehaviors.sort(this.behaviorPriorityComparator);
+         }
++        if (activeMut) {
++            this.activeBehaviors.sort(this.behaviorPriorityComparator);
++        }
++        this.allBehaviors.sort(this.behaviorPriorityComparator);
++        // CloudPlane end - keep track of behaviors directly
+     }
+ 
+     @VisibleForTesting
+     public void removeAllBehaviors() {
+-        this.availableBehaviorsByPriority.clear();
++        // CloudPlane start - keep track of behaviors directly
++        this.activityBehaviorMap.clear();
++        this.coreBehaviors.clear();
++        this.activeBehaviors.clear();
++        this.allBehaviors.clear();
++        this.behaviorPriorityMap.clear();
++        // CloudPlane end - keep track of behaviors directly
+     }
+ 
+     public boolean isActive(Activity activity) {
+@@ -435,26 +496,25 @@ public class Brain<E extends LivingEntity> {
+     private void startEachNonRunningBehavior(ServerLevel level, E entity) {
+         long gameTime = level.getGameTime();
+ 
+-        for (Map<Activity, Set<BehaviorControl<? super E>>> map : this.availableBehaviorsByPriority.values()) {
+-            for (Entry<Activity, Set<BehaviorControl<? super E>>> entry : map.entrySet()) {
+-                Activity activity = entry.getKey();
+-                if (this.activeActivities.contains(activity)) {
+-                    for (BehaviorControl<? super E> behaviorControl : entry.getValue()) {
++        // CloudPlane start - keep track of behaviors directly
++        for (BehaviorControl<? super E> behaviorControl : this.activeBehaviors) {
+                         if (behaviorControl.getStatus() == Behavior.Status.STOPPED) {
+                             behaviorControl.tryStart(level, entity, gameTime);
+                         }
+-                    }
+-                }
+-            }
+         }
++        // CloudPlane end - keep track of behaviors directly
+     }
+ 
+     private void tickEachRunningBehavior(ServerLevel level, E entity) {
+         long gameTime = level.getGameTime();
+ 
+-        for (BehaviorControl<? super E> behaviorControl : this.getRunningBehaviors()) {
++        // CloudPlane start - keep track of behaviors directly
++        for (BehaviorControl<? super E> behaviorControl : this.allBehaviors) {
++            if (behaviorControl.getStatus() == Behavior.Status.RUNNING) {
+             behaviorControl.tickOrStop(level, entity, gameTime);
++            }
+         }
++        // CloudPlane end - keep track of behaviors directly
+     }
+ 
+     private boolean activityRequirementsAreMet(Activity activity) {

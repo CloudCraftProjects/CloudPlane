@@ -1,0 +1,19 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Fri, 20 Sep 2024 00:59:44 +0200
+Subject: [PATCH] Improve Player#canSee performance
+
+
+diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
+index 381f250f2c2f1d90123eb61fce762f0e6aaf5f65..8c78798346f7c4e5bd92c6cbf4bfc6b0ad99d514 100644
+--- a/net/minecraft/server/level/ChunkMap.java
++++ b/net/minecraft/server/level/ChunkMap.java
+@@ -1232,7 +1232,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+                 flag = flag && this.entity.broadcastToPlayer(player) && ChunkMap.this.isChunkTracked(player, this.entity.chunkPosition().x, this.entity.chunkPosition().z);
+                 // Paper end - Configurable entity tracking range by Y
+                 // CraftBukkit start - respect vanish API
+-                if (flag && !player.getBukkitEntity().canSee(this.entity.getBukkitEntity())) { // Paper - only consider hits
++                if (flag && !player.getBukkitEntity().canSee(this.entity)) { // Paper - only consider hits // CloudPlane - improve Player#canSee performance
+                     flag = false;
+                 }
+                 // CraftBukkit end
