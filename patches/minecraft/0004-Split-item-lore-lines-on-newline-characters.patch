@@ -1,0 +1,51 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Sun, 22 Aug 2021 20:30:16 +0200
+Subject: [PATCH] Split item lore lines on newline characters
+
+The client doesn't respect newlines, so
+this has to be done at the network level
+
+diff --git a/net/minecraft/core/component/DataComponents.java b/net/minecraft/core/component/DataComponents.java
+index c346028a112a2d115ca3575d8f65d6dfc58dc3d1..137c5242774e2dc8d98bc5d99f53d23eea722602 100644
+--- a/net/minecraft/core/component/DataComponents.java
++++ b/net/minecraft/core/component/DataComponents.java
+@@ -90,7 +90,7 @@ public class DataComponents {
+         "item_model", builder -> builder.persistent(ResourceLocation.CODEC).networkSynchronized(ResourceLocation.STREAM_CODEC).cacheEncoding()
+     );
+     public static final DataComponentType<ItemLore> LORE = register(
+-        "lore", builder -> builder.persistent(ItemLore.CODEC).networkSynchronized(ItemLore.STREAM_CODEC).cacheEncoding()
++        "lore", builder -> builder.persistent(ItemLore.CODEC).networkSynchronized(ItemLore.SPLITTING_STREAM_CODEC).cacheEncoding() // CloudPlane - split lore lines
+     );
+     public static final DataComponentType<Rarity> RARITY = register(
+         "rarity", builder -> builder.persistent(Rarity.CODEC).networkSynchronized(Rarity.STREAM_CODEC)
+diff --git a/net/minecraft/world/item/component/ItemLore.java b/net/minecraft/world/item/component/ItemLore.java
+index b6fe6d0325edd7fd8ea052b583d1334a768e28e6..59a1acea4133f633dce1901522d5e7c75cf8ad55 100644
+--- a/net/minecraft/world/item/component/ItemLore.java
++++ b/net/minecraft/world/item/component/ItemLore.java
+@@ -25,6 +25,25 @@ public record ItemLore(List<Component> lines, List<Component> styledLines) imple
+         .apply(ByteBufCodecs.list(256))
+         .map(ItemLore::new, ItemLore::lines);
+ 
++    // CloudPlane start - split lore lines
++    public static final StreamCodec<RegistryFriendlyByteBuf, ItemLore> SPLITTING_STREAM_CODEC = ComponentSerialization.STREAM_CODEC
++            .apply(ByteBufCodecs.list(256))
++            .map(java.util.function.Function.identity(), lines -> {
++                if (lines.isEmpty()) {
++                    return lines;
++                }
++                List<Component> realLines = new java.util.ArrayList<>(lines.size() * 2);
++                for (Component line : lines) {
++                    net.kyori.adventure.text.Component advLine = io.papermc.paper.adventure.PaperAdventure.asAdventure(line);
++                    for (net.kyori.adventure.text.Component realLine : dev.booky.cloudplane.ItemUtil.getLines(advLine)) {
++                        realLines.add(io.papermc.paper.adventure.PaperAdventure.asVanilla(realLine));
++                    }
++                }
++                return realLines;
++            })
++            .map(ItemLore::new, ItemLore::lines);
++    // CloudPlane end - split lore lines
++
+     public ItemLore(List<Component> lines) {
+         this(lines, Lists.transform(lines, component -> ComponentUtils.mergeStyles(component.copy(), LORE_STYLE)));
+     }

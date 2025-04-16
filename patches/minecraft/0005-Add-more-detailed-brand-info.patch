@@ -1,0 +1,24 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Tue, 24 Aug 2021 20:43:57 +0200
+Subject: [PATCH] Add more detailed brand info
+
+Sends version info to player in brand packet
+
+diff --git a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
+index 2e9eb04c7c4342393c05339906c267bca9ff29b1..6ac8a70496f7c88cc2b02661289228654c8eb74d 100644
+--- a/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
++++ b/net/minecraft/server/network/ServerConfigurationPacketListenerImpl.java
+@@ -78,7 +78,11 @@ public class ServerConfigurationPacketListenerImpl extends ServerCommonPacketLis
+     }
+ 
+     public void startConfiguration() {
+-        this.send(new ClientboundCustomPayloadPacket(new BrandPayload(this.server.getServerModName())));
++        // CloudPlane start - detailed brand info
++        String serverBrand = !dev.booky.cloudplane.CloudPlaneConfig.detailedBrand ? this.server.getServerModName() :
++                this.server.getServerModName() + ' ' + io.papermc.paper.ServerBuildInfo.buildInfo().asString(io.papermc.paper.ServerBuildInfo.StringRepresentation.VERSION_SIMPLE);
++        this.send(new ClientboundCustomPayloadPacket(new BrandPayload(serverBrand)));
++        // CloudPlane end - detailed brand info
+         ServerLinks serverLinks = this.server.serverLinks();
+         // CraftBukkit start
+         org.bukkit.craftbukkit.CraftServerLinks wrapper = new org.bukkit.craftbukkit.CraftServerLinks(serverLinks);
