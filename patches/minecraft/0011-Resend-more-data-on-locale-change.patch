@@ -1,0 +1,75 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Mon, 17 Jul 2023 20:11:44 +0200
+Subject: [PATCH] Resend more data on locale change
+
+Includes advancements, inventories, entity custom names, text display texts and item frame items
+
+diff --git a/net/minecraft/server/PlayerAdvancements.java b/net/minecraft/server/PlayerAdvancements.java
+index 2a60512bcf922e1356d7de0e4fce337c46d1315b..3fccd10c6cd350261490129ba56d9c44eeed72de 100644
+--- a/net/minecraft/server/PlayerAdvancements.java
++++ b/net/minecraft/server/PlayerAdvancements.java
+@@ -72,6 +72,16 @@ public class PlayerAdvancements {
+         this.load(manager);
+     }
+ 
++    // CloudPlane start - refresh data on locale change; advancement refreshing
++    public void refreshAll() {
++        this.isFirstPacket = true;
++        for (AdvancementHolder advancement : this.visible) {
++            this.markForVisibilityUpdate(advancement);
++        }
++        this.visible.clear();
++    }
++    // CloudPlane end - refresh data on locale change; advancement refreshing
++
+     public void setPlayer(ServerPlayer player) {
+         this.player = player;
+     }
+diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
+index 448f6176392d8922d7655c5a1be717375d73c1b2..9c7996f111b1d235c082bcdd6a5bb6c0c0f652d1 100644
+--- a/net/minecraft/server/level/ServerPlayer.java
++++ b/net/minecraft/server/level/ServerPlayer.java
+@@ -431,6 +431,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+     }
+     // Paper end - rewrite chunk system
+ 
++    private long lastLocaleChange = 0L; // CloudPlane - refresh data on locale change; throttling
++
+     public ServerPlayer(MinecraftServer server, ServerLevel level, GameProfile gameProfile, ClientInformation clientInformation) {
+         super(level, level.getSharedSpawnPos(), level.getSharedSpawnAngle(), gameProfile);
+         this.textFilter = server.createTextFilterForPlayer(this);
+@@ -2317,6 +2319,33 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+                 clientInformation.language()
+             );
+             this.server.server.getPluginManager().callEvent(event);
++
++            // CloudPlane start - refresh data on locale change
++            if (this.lastLocaleChange + 1000L < System.currentTimeMillis()) {
++                this.lastLocaleChange = System.currentTimeMillis();
++                this.advancements.refreshAll();
++                this.inventoryMenu.sendAllDataToRemote();
++                if (this.containerMenu != this.inventoryMenu) {
++                    this.containerMenu.sendAllDataToRemote();
++                }
++
++                for (Entity entity : this.serverLevel().getEntities().getAll()) {
++                    if (!entity.moonrise$getTrackedEntity().seenBy.contains(this.connection)) {
++                        continue;
++                    }
++
++                    if (entity.hasCustomName()) {
++                        entity.getEntityData().markDirty(Entity.DATA_CUSTOM_NAME);
++                    }
++                    if (entity instanceof net.minecraft.world.entity.Display.TextDisplay) {
++                        entity.getEntityData().markDirty(net.minecraft.world.entity.Display.TextDisplay.DATA_TEXT_ID);
++                    } else if (entity instanceof net.minecraft.world.entity.decoration.ItemFrame
++                            && !((net.minecraft.world.entity.decoration.ItemFrame) entity).getItem().isEmpty()) {
++                        entity.getEntityData().markDirty(net.minecraft.world.entity.decoration.ItemFrame.DATA_ITEM);
++                    }
++                }
++            }
++            // CloudPlane end - refresh data on locale change
+         }
+         // CraftBukkit end
+         // Paper start - don't call options events on login
