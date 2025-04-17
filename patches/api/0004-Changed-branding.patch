@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Fri, 25 Jun 2021 20:37:53 +0200
+Subject: [PATCH] Changed branding
+
+
+diff --git a/src/main/java/io/papermc/paper/ServerBuildInfo.java b/src/main/java/io/papermc/paper/ServerBuildInfo.java
+index 652ff54e7c50412503725d628bfe72ed03059790..0e2ec18d15d9766c5146ed1fb343614da5a49ee5 100644
+--- a/src/main/java/io/papermc/paper/ServerBuildInfo.java
++++ b/src/main/java/io/papermc/paper/ServerBuildInfo.java
+@@ -18,6 +18,12 @@ public interface ServerBuildInfo {
+      * The brand id for Paper.
+      */
+     Key BRAND_PAPER_ID = Key.key("papermc", "paper");
++    // CloudPlane start - branding
++    /**
++     * The brand id for CloudPlane.
++     */
++    Key BRAND_CLOUDPLANE_ID = Key.key("cloudcraft", "cloudplane");
++    // CloudPlane end - branding
+ 
+     /**
+      * Gets the {@code ServerBuildInfo}.
