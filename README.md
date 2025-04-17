@@ -22,6 +22,6 @@ https://dl.cloudcraftmc.de/cloudplane
 _Building on Windows is untested and not recommended! Please use WSL instead._
 
 Clone this repository using git, _don't_ download the ZIP. After cloning,
-apply the patches using `./gradlew applyPatches`. This will take some time.
+apply the patches using `./gradlew applyAllPatches`. This will take some time.
 
 The runnable paperclip jar can be compiled using `./gradlew createMojmapPaperclipJar`.
