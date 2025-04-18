@@ -5,7 +5,7 @@ Subject: [PATCH] Fix paper relative teleport flag changes
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 340eb7f6cf38f873178e0f12b334480d74d2c45a..7173c1e5190707bddf3ac26a7681c88476ec1700 100644
+index eac065f16cfcb443e8dc94464c814c3ba26dc5d5..f25d2c24dc0481bb8063ebf1f89babd863e2b8f6 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -1388,6 +1388,32 @@ public class CraftPlayer extends CraftHumanEntity implements Player {

@@ -4,34 +4,6 @@ Date: Sun, 12 Sep 2021 12:50:09 +0200
 Subject: [PATCH] Add start argument for changing pufferfish config location
 
 
-diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishCommand.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishCommand.java
-index 020368da69b9a492155f6de6297f74732f4ab6ea..cd3de70d4878a12c815cb345c855ca2c8c261f87 100644
---- a/src/main/java/gg/pufferfish/pufferfish/PufferfishCommand.java
-+++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishCommand.java
-@@ -50,7 +50,7 @@ public class PufferfishCommand extends Command {
-         if (args[0].equalsIgnoreCase("reload")) {
-             MinecraftServer console = MinecraftServer.getServer();
-             try {
--                PufferfishConfig.load();
-+                PufferfishConfig.load((java.io.File) console.options.valueOf("pufferfish-settings")); // CloudPlane - configurable pufferfish config location
-             } catch (IOException e) {
-                 sender.sendMessage(Component.text("Failed to reload.", NamedTextColor.RED));
-                 e.printStackTrace();
-diff --git a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
-index 5020189d7f1814930f80edf4d81bcfe93445d0b8..d2717b8d33ccd46afa3c86455e3b11e79f9ea8a0 100644
---- a/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
-+++ b/src/main/java/gg/pufferfish/pufferfish/PufferfishConfig.java
-@@ -48,8 +48,8 @@ public class PufferfishConfig {
- 		return updates;
- 	}
- 
--	public static void load() throws IOException {
--		File configFile = new File("pufferfish.yml");
-+	public static void load(File configFile) throws IOException { // CloudPlane - configurable pufferfish config location
-+		// File configFile = new File("pufferfish.yml"); // CloudPlane - configurable pufferfish config location
- 
- 		if (configFile.exists()) {
- 			try {
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
 index 8a7c45c2c17575a674bf2a9af390042ff82e95b5..95a3dc5c1cdffe7e1395f7fc0addd44ab4eab312 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java

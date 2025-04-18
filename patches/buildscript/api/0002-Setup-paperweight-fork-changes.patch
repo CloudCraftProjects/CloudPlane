@@ -5,7 +5,7 @@ Subject: [PATCH] Setup paperweight fork changes
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 8c89084e08c2c0f19048427ddf73b00336a7b7a2..9ca4de2a8c7bad16802de219d3b315a9672a21bc 100644
+index e1eec4f081bb73bb7b35501397fd8dd063b53ebf..b3035dc64e4fda2a927f7a891d8a3610fcfc9321 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -95,7 +95,7 @@ dependencies {
@@ -17,10 +17,10 @@ index 8c89084e08c2c0f19048427ddf73b00336a7b7a2..9ca4de2a8c7bad16802de219d3b315a9
  idea {
      module {
          generatedSourceDirs.add(generatedApiPath.toFile())
-@@ -105,8 +105,16 @@ sourceSets {
-     main {
+@@ -106,8 +106,16 @@ sourceSets {
          java {
              srcDir(generatedApiPath)
+             srcDir("src/main/pufferfish") // Pufferfish
 +            // CloudPlane start - setup paperweight fork
 +            srcDir("../paper-api/src/main/java")
          }
@@ -34,7 +34,7 @@ index 8c89084e08c2c0f19048427ddf73b00336a7b7a2..9ca4de2a8c7bad16802de219d3b315a9
  }
  
  val outgoingVariants = arrayOf("runtimeElements", "apiElements", "sourcesElements", "javadocElements")
-@@ -178,7 +186,7 @@ val services = objects.newInstance<Services>()
+@@ -179,7 +187,7 @@ val services = objects.newInstance<Services>()
  tasks.withType<Javadoc> {
      val options = options as StandardJavadocDocletOptions
      options.addStringOption("-add-modules", "jdk.incubator.vector") // Pufferfish
@@ -43,7 +43,7 @@ index 8c89084e08c2c0f19048427ddf73b00336a7b7a2..9ca4de2a8c7bad16802de219d3b315a9
      options.use()
      options.isDocFilesSubDirs = true
      options.links(
-@@ -211,11 +219,11 @@ tasks.withType<Javadoc> {
+@@ -212,11 +220,11 @@ tasks.withType<Javadoc> {
      }
  
      // workaround for https://github.com/gradle/gradle/issues/4046

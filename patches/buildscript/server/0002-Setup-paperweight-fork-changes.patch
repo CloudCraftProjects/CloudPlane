@@ -5,7 +5,7 @@ Subject: [PATCH] Setup paperweight fork changes
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index a8367a787752a294874028c84a74917b5807ded8..a8f8ece4af41f5159bd6f53fc327f0001f06b832 100644
+index b4613454ddaef035f134b299e1a5877f1c67065d..6769dc78ea4c5c1584cc902562198726fafd1099 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -21,6 +21,25 @@ paperweight {
@@ -34,22 +34,25 @@ index a8367a787752a294874028c84a74917b5807ded8..a8f8ece4af41f5159bd6f53fc327f000
      spigot {
          buildDataRef = "3edaf46ec1eed4115ce1b18d2846cded42577e42"
          packageVersion = "v1_21_R3" // also needs to be updated in MappingEnvironment
-@@ -101,7 +120,21 @@ if (project.providers.gradleProperty("publishDevBundle").isPresent) {
-     }
- }
- 
--val log4jPlugins = sourceSets.create("log4jPlugins")
-+// CloudPlane start - configure actual server sources
-+sourceSets {
-+    main {
-+        java { srcDir("../paper-server/src/main/java") }
+@@ -106,12 +125,24 @@ sourceSets {
+     main {
+         java {
+             srcDir("src/main/pufferfish")
++            // CloudPlane start - configure actual server sources
++            srcDir("../paper-server/src/main/java")
+         }
 +        resources { srcDir("../paper-server/src/main/resources") }
 +    }
 +    test {
 +        java { srcDir("../paper-server/src/test/java") }
 +        resources { srcDir("../paper-server/src/test/resources") }
-+    }
-+}
++        // CloudPlane end - configure actual server sources
+     }
+ }
+ // Pufferfish end
+ 
+-val log4jPlugins = sourceSets.create("log4jPlugins")
++// CloudPlane start - configure actual server sources
 +val log4jPlugins = sourceSets.create("log4jPlugins") {
 +    java { srcDir("../paper-server/src/log4jPlugins/java") }
 +}
@@ -57,7 +60,7 @@ index a8367a787752a294874028c84a74917b5807ded8..a8f8ece4af41f5159bd6f53fc327f000
  configurations.named(log4jPlugins.compileClasspathConfigurationName) {
      extendsFrom(configurations.compileClasspath.get())
  }
-@@ -119,7 +152,7 @@ abstract class MockitoAgentProvider : CommandLineArgumentProvider {
+@@ -129,7 +160,7 @@ abstract class MockitoAgentProvider : CommandLineArgumentProvider {
  }
  
  dependencies {
@@ -66,7 +69,7 @@ index a8367a787752a294874028c84a74917b5807ded8..a8f8ece4af41f5159bd6f53fc327f000
      implementation("ca.spottedleaf:concurrentutil:0.0.3")
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
      implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
-@@ -336,3 +369,12 @@ tasks.registerRunTask("runReobfPaperclip") {
+@@ -346,3 +377,12 @@ tasks.registerRunTask("runReobfPaperclip") {
      classpath(tasks.createReobfPaperclipJar.flatMap { it.outputZip })
      mainClass.set(null as String?)
  }
