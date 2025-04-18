@@ -5,7 +5,7 @@ Subject: [PATCH] Changed branding
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 4c2d7a6ea092f8e253b203f10c22c46682979aa9..9acc54598f8072d29c589b6fea9a1c9d7dc01110 100644
+index a8f8ece4af41f5159bd6f53fc327f0001f06b832..3af43b603c7c949685800ef7409185a833f5835d 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -231,14 +231,14 @@ tasks.jar {

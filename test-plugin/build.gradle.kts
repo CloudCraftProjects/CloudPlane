@@ -5,7 +5,7 @@ repositories {
 }
 
 dependencies {
-    implementation(projects.cloudplaneApi)
+    findProject(":cloudplane-api")?.also { implementation(it) }
 }
 
 tasks.processResources {

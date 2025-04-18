@@ -6,12 +6,11 @@ plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.10.0"
 }
 
-include(
-    "cloudplane-api",
-    "test-plugin",
-)
+include("test-plugin")
 
-// only include setup project if buildscript can be resolved
-if (file("setup/buildscript").exists()) {
-    include("setup")
+listOf("api", "server").forEach {
+    // only include subprojects if buildscript can be resolved
+    if (file("cloudplane-$it/buildscript").exists()) {
+        include("cloudplane-$it")
+    }
 }

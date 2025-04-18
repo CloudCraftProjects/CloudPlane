@@ -1,0 +1,59 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: booky10 <boooky10@gmail.com>
+Date: Sat, 1 Mar 2025 01:45:59 +0100
+Subject: [PATCH] Setup paperweight fork changes
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index 8c89084e08c2c0f19048427ddf73b00336a7b7a2..9ca4de2a8c7bad16802de219d3b315a9672a21bc 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -95,7 +95,7 @@ dependencies {
+     api("io.sentry:sentry:7.15.0") // Pufferfish
+ }
+ 
+-val generatedApiPath: java.nio.file.Path = layout.projectDirectory.dir("src/generated/java").asFile.toPath()
++val generatedApiPath: java.nio.file.Path = layout.projectDirectory.dir("../paper-api/src/generated/java").asFile.toPath() // CloudPlane - setup paperweight fork
+ idea {
+     module {
+         generatedSourceDirs.add(generatedApiPath.toFile())
+@@ -105,8 +105,16 @@ sourceSets {
+     main {
+         java {
+             srcDir(generatedApiPath)
++            // CloudPlane start - setup paperweight fork
++            srcDir("../paper-api/src/main/java")
+         }
++        resources { srcDir("../paper-api/src/main/resources") }
+     }
++    test {
++        java { srcDir("../paper-api/src/test/java") }
++        resources { srcDir("../paper-api/src/test/resources") }
++    }
++    // CloudPlane end - setup paperweight fork
+ }
+ 
+ val outgoingVariants = arrayOf("runtimeElements", "apiElements", "sourcesElements", "javadocElements")
+@@ -178,7 +186,7 @@ val services = objects.newInstance<Services>()
+ tasks.withType<Javadoc> {
+     val options = options as StandardJavadocDocletOptions
+     options.addStringOption("-add-modules", "jdk.incubator.vector") // Pufferfish
+-    options.overview = "src/main/javadoc/overview.html"
++    options.overview = "../paper-api/src/main/javadoc/overview.html" // CloudPlane - setup paperweight fork
+     options.use()
+     options.isDocFilesSubDirs = true
+     options.links(
+@@ -211,11 +219,11 @@ tasks.withType<Javadoc> {
+     }
+ 
+     // workaround for https://github.com/gradle/gradle/issues/4046
+-    inputs.dir("src/main/javadoc").withPropertyName("javadoc-sourceset")
++    inputs.dir("../paper-api/src/main/javadoc").withPropertyName("javadoc-sourceset") // CloudPlane - setup paperweight fork
+     val fsOps = services.fileSystemOperations
+     doLast {
+         fsOps.copy {
+-            from("src/main/javadoc") {
++            from("../paper-api/src/main/javadoc") { // CloudPlane - setup paperweight fork
+                 include("**/doc-files/**")
+             }
+             into("build/docs/javadoc")

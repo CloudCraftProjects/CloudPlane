@@ -66,25 +66,28 @@ configure<PaperweightPatcherExtension> {
     upstreams.paper {
         ref = providers.gradleProperty("paperRef")
 
+        // paper's example project uses single file patches for buildscripts,
+        // but I hate file patches as they are horrible to apply if
+        // they fail once; so create a patch dir and use a symbolic
+        // link to place the buildscript at the proper location
+        listOf("api", "server").forEach { part ->
+            val capitalizedPart = part.replaceFirstChar { it.titlecaseChar() }
+            patchDir("paper${capitalizedPart}Buildscript") {
+                upstreamPath = "paper-$part"
+                patchesDir = file("patches/buildscript/$part")
+                featurePatchDir = patchesDir.dir(".")
+                outputDir = file("cloudplane-$part/buildscript")
+                // the relevant part is just the buildscript
+                excludes = setOf("src", "patches")
+            }
+        }
         // api patching
         patchDir("paperApi") {
             upstreamPath = "paper-api"
             patchesDir = file("patches/api")
             featurePatchDir = patchesDir.dir(".")
-            outputDir = file("cloudplane-api")
-        }
-        // server patching - paper's example project uses a single file patch,
-        // but I hate file patches as they are horrible to apply if
-        // they fail once - and my IDE doesn't highlight changes properly;
-        // so create a patch dir and use a symbolic link to place the buildscript
-        // at the proper location
-        patchDir("paperBuildscript") {
-            upstreamPath = "paper-server"
-            patchesDir = file("patches/buildscript")
-            featurePatchDir = patchesDir.dir(".")
-            outputDir = file("setup/buildscript")
-            // the relevant part is just the buildscript
-            excludes = setOf("src", "patches")
+            outputDir = file("paper-api")
+            excludes = setOf("build.gradle.kts")
         }
     }
 }

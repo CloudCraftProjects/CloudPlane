@@ -1,0 +1,40 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Kevin Raneri <kevin.raneri@gmail.com>
+Date: Tue, 9 Nov 2021 23:36:56 -0500
+Subject: [PATCH] Pufferfish API Buildscript Patches
+
+
+diff --git a/build.gradle.kts b/build.gradle.kts
+index f6ca099256c196851114ad2e2dbac3209caa7f57..8c89084e08c2c0f19048427ddf73b00336a7b7a2 100644
+--- a/build.gradle.kts
++++ b/build.gradle.kts
+@@ -91,6 +91,8 @@ dependencies {
+     testImplementation("org.ow2.asm:asm-tree:9.7.1")
+     mockitoAgent("org.mockito:mockito-core:5.14.1") { isTransitive = false } // configure mockito agent that is needed in newer java versions
+     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
++
++    api("io.sentry:sentry:7.15.0") // Pufferfish
+ }
+ 
+ val generatedApiPath: java.nio.file.Path = layout.projectDirectory.dir("src/generated/java").asFile.toPath()
+@@ -150,6 +152,12 @@ val generateApiVersioningFile by tasks.registering {
+     }
+ }
+ 
++// Pufferfish start
++tasks.withType<JavaCompile> {
++    options.compilerArgs.add("--add-modules=jdk.incubator.vector")
++}
++// Pufferfish end
++
+ tasks.jar {
+     from(generateApiVersioningFile.map { it.outputs.files.singleFile }) {
+         into("META-INF/maven/${project.group}/${project.name}")
+@@ -169,6 +177,7 @@ val services = objects.newInstance<Services>()
+ 
+ tasks.withType<Javadoc> {
+     val options = options as StandardJavadocDocletOptions
++    options.addStringOption("-add-modules", "jdk.incubator.vector") // Pufferfish
+     options.overview = "src/main/javadoc/overview.html"
+     options.use()
+     options.isDocFilesSubDirs = true
