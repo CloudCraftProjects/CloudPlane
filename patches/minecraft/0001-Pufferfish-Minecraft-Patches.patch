@@ -333,10 +333,10 @@ index d3c50acc5ca30b608825d4baff4b7e09a9e0f586..ff536b73f81231f794254224ee355321
              }
          }
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 3de65c4025be91d938a350c884975cb6edc234d3..448f6176392d8922d7655c5a1be717375d73c1b2 100644
+index dece7eb69603ffc8e50e8096cb07c02a897bf49e..24b216327682a00d451b6958a21eec563c90bb31 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1418,6 +1418,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1419,6 +1419,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  this.connection.internalTeleport(PositionMoveRotation.of(teleportTransition), teleportTransition.relatives());
                  // CraftBukkit end
                  this.connection.resetPosition();
@@ -344,7 +344,7 @@ index 3de65c4025be91d938a350c884975cb6edc234d3..448f6176392d8922d7655c5a1be71737
                  teleportTransition.postTeleportTransition().onTransition(this);
                  return this;
              } else {
-@@ -1456,6 +1457,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1457,6 +1458,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  this.setServerLevel(level);
                  this.connection.internalTeleport(PositionMoveRotation.of(teleportTransition), teleportTransition.relatives()); // CraftBukkit - use internal teleport without event
                  this.connection.resetPosition();
@@ -352,7 +352,7 @@ index 3de65c4025be91d938a350c884975cb6edc234d3..448f6176392d8922d7655c5a1be71737
                  level.addDuringTeleport(this);
                  profilerFiller.pop();
                  this.triggerDimensionChangeTriggers(serverLevel);
-@@ -2159,6 +2161,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2160,6 +2162,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      public void moveTo(double x, double y, double z) {
          super.moveTo(x, y, z);
          this.connection.resetPosition();
@@ -360,7 +360,7 @@ index 3de65c4025be91d938a350c884975cb6edc234d3..448f6176392d8922d7655c5a1be71737
      }
  
      @Override
-@@ -2433,6 +2436,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2434,6 +2437,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
  
              this.connection.send(new ClientboundSetCameraPacket(this.camera));
              this.connection.resetPosition();
@@ -368,7 +368,7 @@ index 3de65c4025be91d938a350c884975cb6edc234d3..448f6176392d8922d7655c5a1be71737
          }
      }
  
-@@ -3031,6 +3035,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -3032,6 +3036,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      public void forceSetPositionRotation(double x, double y, double z, float yaw, float pitch) {
          this.moveTo(x, y, z, yaw, pitch);
          this.connection.resetPosition();
@@ -504,7 +504,7 @@ index 2d3721e311851c1801b090e99d4f9d0daf4e5f99..0712175fc8a9210be1e0b42fb28196f5
  
      boolean isEmpty();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index b2b61203438bb1fad1ee807729781718d2467155..15d9ae611797e5da61045ec39a1f01eb5912d858 100644
+index b1f92d7fea9a8e700b47726720fef4b699bc6ea9..73e98e9d0a85d01a3740f1f70579b2ae56ebbad0 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -227,7 +227,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
