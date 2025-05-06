@@ -5,7 +5,7 @@ Subject: [PATCH] Setup paperweight fork changes
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index e1eec4f081bb73bb7b35501397fd8dd063b53ebf..b3035dc64e4fda2a927f7a891d8a3610fcfc9321 100644
+index e1eec4f081bb73bb7b35501397fd8dd063b53ebf..0ac65c4dc59f3a122aceb5242780fb6b24f7b243 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -95,7 +95,7 @@ dependencies {
@@ -17,24 +17,30 @@ index e1eec4f081bb73bb7b35501397fd8dd063b53ebf..b3035dc64e4fda2a927f7a891d8a3610
  idea {
      module {
          generatedSourceDirs.add(generatedApiPath.toFile())
-@@ -106,8 +106,16 @@ sourceSets {
+@@ -106,8 +106,22 @@ sourceSets {
          java {
              srcDir(generatedApiPath)
              srcDir("src/main/pufferfish") // Pufferfish
 +            // CloudPlane start - setup paperweight fork
 +            srcDir("../paper-api/src/main/java")
-         }
-+        resources { srcDir("../paper-api/src/main/resources") }
-     }
-+    test {
-+        java { srcDir("../paper-api/src/test/java") }
-+        resources { srcDir("../paper-api/src/test/resources") }
++        }
++        resources {
++            srcDir("../paper-api/src/main/resources")
++        }
 +    }
++    test {
++        java {
++            srcDir("../paper-api/src/test/java")
++        }
++        resources {
++            srcDir("../paper-api/src/test/resources")
+         }
+     }
 +    // CloudPlane end - setup paperweight fork
  }
  
  val outgoingVariants = arrayOf("runtimeElements", "apiElements", "sourcesElements", "javadocElements")
-@@ -179,7 +187,7 @@ val services = objects.newInstance<Services>()
+@@ -179,7 +193,7 @@ val services = objects.newInstance<Services>()
  tasks.withType<Javadoc> {
      val options = options as StandardJavadocDocletOptions
      options.addStringOption("-add-modules", "jdk.incubator.vector") // Pufferfish
@@ -43,7 +49,7 @@ index e1eec4f081bb73bb7b35501397fd8dd063b53ebf..b3035dc64e4fda2a927f7a891d8a3610
      options.use()
      options.isDocFilesSubDirs = true
      options.links(
-@@ -212,11 +220,11 @@ tasks.withType<Javadoc> {
+@@ -212,11 +226,11 @@ tasks.withType<Javadoc> {
      }
  
      // workaround for https://github.com/gradle/gradle/issues/4046
