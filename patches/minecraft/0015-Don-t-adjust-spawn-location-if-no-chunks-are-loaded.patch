@@ -5,10 +5,10 @@ Subject: [PATCH] Don't adjust spawn location if no chunks are loaded
 
 
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 9c7996f111b1d235c082bcdd6a5bb6c0c0f652d1..fb1da8cb715e4925bf81bdc61c4bebe096d17676 100644
+index e14f239f49deac016a27bbdba63df533e66e720f..fc448ecf977e1d3353773f474d5a459b4a2657b0 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -501,6 +501,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -494,6 +494,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
              blockPos = pos;
          }
  
@@ -16,7 +16,7 @@ index 9c7996f111b1d235c082bcdd6a5bb6c0c0f652d1..fb1da8cb715e4925bf81bdc61c4bebe0
          while (!this.noCollisionNoLiquid(level, aabb.move(blockPos.getBottomCenter())) && blockPos.getY() < level.getMaxY()) {
              blockPos = blockPos.above();
          }
-@@ -508,6 +509,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -501,6 +502,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
          while (this.noCollisionNoLiquid(level, aabb.move(blockPos.below().getBottomCenter())) && blockPos.getY() > level.getMinY() + 1) {
              blockPos = blockPos.below();
          }

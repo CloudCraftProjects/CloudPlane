@@ -5,7 +5,7 @@ Subject: [PATCH] Further improve Player#canSee performance
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index dcc26793997d945bb62417327e6192ea47062184..eac065f16cfcb443e8dc94464c814c3ba26dc5d5 100644
+index 01276d78447d4b52afcdfb7fc8acd07b4a809986..25ad600630cf50fd2e01e2e9b8f636d5ee73dd8d 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 @@ -210,6 +210,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
@@ -16,7 +16,7 @@ index dcc26793997d945bb62417327e6192ea47062184..eac065f16cfcb443e8dc94464c814c3b
      private final Map<UUID, Set<WeakReference<Plugin>>> invertedVisibilityEntities = new HashMap<>();
      private final Set<UUID> unlistedEntities = new HashSet<>(); // Paper - Add Listing API for Player
      private static final WeakHashMap<Plugin, WeakReference<Plugin>> pluginWeakReferences = new WeakHashMap<>();
-@@ -2057,6 +2058,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2056,6 +2057,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          invertedPlugins = new HashSet<>();
          invertedPlugins.add(CraftPlayer.getPluginWeakReference(plugin));
          this.invertedVisibilityEntities.put(entity.getUniqueId(), invertedPlugins);
@@ -24,7 +24,7 @@ index dcc26793997d945bb62417327e6192ea47062184..eac065f16cfcb443e8dc94464c814c3b
  
          return true;
      }
-@@ -2095,6 +2097,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2094,6 +2096,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          if (this.invertedVisibilityEntities.remove(entity.getUniqueId()) == null) {
              this.untrackAndHideEntity(entity);
          }
@@ -32,7 +32,7 @@ index dcc26793997d945bb62417327e6192ea47062184..eac065f16cfcb443e8dc94464c814c3b
      }
  
      @Override
-@@ -2143,6 +2146,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2142,6 +2145,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
              return false; // Some other plugins still want the entity inverted
          }
          this.invertedVisibilityEntities.remove(entity.getUniqueId());
@@ -40,7 +40,7 @@ index dcc26793997d945bb62417327e6192ea47062184..eac065f16cfcb443e8dc94464c814c3b
  
          return true;
      }
-@@ -2219,6 +2223,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2218,6 +2222,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
          if (this.invertedVisibilityEntities.remove(entity.getUniqueId()) == null) {
              this.trackAndShowEntity(entity);
          }
@@ -48,7 +48,7 @@ index dcc26793997d945bb62417327e6192ea47062184..eac065f16cfcb443e8dc94464c814c3b
      }
      // Paper start
      public com.destroystokyo.paper.profile.PlayerProfile getPlayerProfile() {
-@@ -2251,6 +2256,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2250,6 +2255,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
      public void onEntityRemove(Entity entity) {
          this.invertedVisibilityEntities.remove(entity.getUUID());
@@ -56,7 +56,7 @@ index dcc26793997d945bb62417327e6192ea47062184..eac065f16cfcb443e8dc94464c814c3b
      }
  
      @Override
-@@ -2266,7 +2272,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2265,7 +2271,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
      public boolean canSee(Entity entity) {
          return this.entity == entity // SPIGOT-7312: Can always see self

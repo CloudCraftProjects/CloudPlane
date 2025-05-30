@@ -27,10 +27,10 @@ index 2a60512bcf922e1356d7de0e4fce337c46d1315b..3fccd10c6cd350261490129ba56d9c44
          this.player = player;
      }
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 24b216327682a00d451b6958a21eec563c90bb31..0540452f1668c8d2a889279f62bdfa25ee6aeb39 100644
+index 12c897be3ea76aa966518f93ad2895cfdde5a0ad..e14f239f49deac016a27bbdba63df533e66e720f 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -431,6 +431,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -424,6 +424,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      }
      // Paper end - rewrite chunk system
  
@@ -39,7 +39,7 @@ index 24b216327682a00d451b6958a21eec563c90bb31..0540452f1668c8d2a889279f62bdfa25
      public ServerPlayer(MinecraftServer server, ServerLevel level, GameProfile gameProfile, ClientInformation clientInformation) {
          super(level, level.getSharedSpawnPos(), level.getSharedSpawnAngle(), gameProfile);
          this.textFilter = server.createTextFilterForPlayer(this);
-@@ -2318,6 +2320,33 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2311,6 +2313,33 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  clientInformation.language()
              );
              this.server.server.getPluginManager().callEvent(event);
