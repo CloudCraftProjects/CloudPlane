@@ -5,10 +5,10 @@ Subject: [PATCH] Improve Player#canSee performance
 
 
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
-index 381f250f2c2f1d90123eb61fce762f0e6aaf5f65..8c78798346f7c4e5bd92c6cbf4bfc6b0ad99d514 100644
+index b03b25bb55dee9ac13c472501665bf4b17d62c3c..ab017f7348496b3202e3e498b86e7125a155a347 100644
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
-@@ -1232,7 +1232,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -1302,7 +1302,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
                  flag = flag && this.entity.broadcastToPlayer(player) && ChunkMap.this.isChunkTracked(player, this.entity.chunkPosition().x, this.entity.chunkPosition().z);
                  // Paper end - Configurable entity tracking range by Y
                  // CraftBukkit start - respect vanish API

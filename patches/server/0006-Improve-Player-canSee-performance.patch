@@ -5,10 +5,10 @@ Subject: [PATCH] Improve Player#canSee performance
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 9f195c498a12de07e1581ab13ffe60e77f22a22c..01276d78447d4b52afcdfb7fc8acd07b4a809986 100644
+index 1db6276ae7a547860cf2c6f85b37ec4d6b33655a..0fa04c3b8688655151ee7b37d8ae99dca8791442 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -2259,7 +2259,14 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
+@@ -2262,7 +2262,14 @@ public class CraftPlayer extends CraftHumanEntity implements Player {
  
      @Override
      public boolean canSee(org.bukkit.entity.Entity entity) {

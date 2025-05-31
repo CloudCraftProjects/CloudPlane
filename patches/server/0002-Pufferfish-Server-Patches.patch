@@ -5,10 +5,10 @@ Subject: [PATCH] Pufferfish Server Patches
 
 
 diff --git a/src/main/java/ca/spottedleaf/moonrise/common/list/IteratorSafeOrderedReferenceSet.java b/src/main/java/ca/spottedleaf/moonrise/common/list/IteratorSafeOrderedReferenceSet.java
-index c21e00812f1aaa1279834a0562d360d6b89e146c..877d2095a066854939f260ca4b0b8c7b5abb620f 100644
+index ece6db7b9a0dfd535141c0c756947c4898140503..adb643a87ad754052c6097aeefc701e7b73f9cbb 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/common/list/IteratorSafeOrderedReferenceSet.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/common/list/IteratorSafeOrderedReferenceSet.java
-@@ -18,7 +18,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+@@ -19,7 +19,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
  
      private final double maxFragFactor;
  
@@ -16,17 +16,17 @@ index c21e00812f1aaa1279834a0562d360d6b89e146c..877d2095a066854939f260ca4b0b8c7b
 +    private final java.util.concurrent.atomic.AtomicInteger iteratorCount = new java.util.concurrent.atomic.AtomicInteger(); // Pufferfish - async mob spawning
  
      public IteratorSafeOrderedReferenceSet() {
-         this(16, 0.75f, 16, 0.2);
-@@ -79,7 +79,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+         this(Object.class);
+@@ -99,7 +99,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
      }
  
      public int createRawIterator() {
 -        ++this.iteratorCount;
 +        this.iteratorCount.incrementAndGet(); // Pufferfish - async mob spawning
          if (this.indexMap.isEmpty()) {
-             return -1;
+             return Integer.MAX_VALUE;
          } else {
-@@ -100,7 +100,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+@@ -120,7 +120,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
      }
  
      public void finishRawIterator() {
@@ -35,7 +35,7 @@ index c21e00812f1aaa1279834a0562d360d6b89e146c..877d2095a066854939f260ca4b0b8c7b
              if (this.getFragFactor() >= this.maxFragFactor) {
                  this.defrag();
              }
-@@ -117,7 +117,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+@@ -137,7 +137,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
                  throw new IllegalStateException();
              }
              this.listElements[index] = null;
@@ -44,7 +44,7 @@ index c21e00812f1aaa1279834a0562d360d6b89e146c..877d2095a066854939f260ca4b0b8c7b
                  this.defrag();
              }
              //this.check();
-@@ -219,7 +219,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
+@@ -235,7 +235,7 @@ public final class IteratorSafeOrderedReferenceSet<E> {
      }
  
      public IteratorSafeOrderedReferenceSet.Iterator<E> iterator(final int flags) {
@@ -67,10 +67,10 @@ index 31b92bd48828cbea25b44a9f0f96886347aa1ae6..5f4238c6cf4bc78542826f3fd4d2cbc4
  
      public static long getChunkKey(final ChunkPos pos) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 1fb98caf0101fcbf3f045c0725c89fcbff4e7a7e..6168fa6231baf858baf4841682d0cf05e7c164b5 100644
+index 1da86b25e3b89c79d4f3920c8d2ef10ee2757f65..8201466eb28951cd8e9d6ae406f5d16cc0ab944f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1182,7 +1182,7 @@ public final class CraftServer implements Server {
+@@ -1166,7 +1166,7 @@ public final class CraftServer implements Server {
                  plugin.getPluginMeta().getDisplayName(),
                  "This plugin is not properly shutting down its async tasks when it is being shut down. This task may throw errors during the final shutdown logs and might not complete before process dies."
              ));
@@ -80,7 +80,7 @@ index 1fb98caf0101fcbf3f045c0725c89fcbff4e7a7e..6168fa6231baf858baf4841682d0cf05
      }
      // Paper end - Wait for Async Tasks during shutdown
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/ServerShutdownThread.java b/src/main/java/org/bukkit/craftbukkit/util/ServerShutdownThread.java
-index e8e93538dfd71de86515d9405f728db1631e949a..3dff02fd97f001508e2f81192817bf1b0ef92446 100644
+index 54f0703f00caed6b8f10f55fe746e5a41242b48b..dda8051c987a8db237f6312c4ebcf41e028d466f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/ServerShutdownThread.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/ServerShutdownThread.java
 @@ -11,6 +11,7 @@ public class ServerShutdownThread extends Thread {

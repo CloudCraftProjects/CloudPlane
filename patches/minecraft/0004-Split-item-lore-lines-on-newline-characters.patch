@@ -7,10 +7,10 @@ The client doesn't respect newlines, so
 this has to be done at the network level
 
 diff --git a/net/minecraft/core/component/DataComponents.java b/net/minecraft/core/component/DataComponents.java
-index c346028a112a2d115ca3575d8f65d6dfc58dc3d1..137c5242774e2dc8d98bc5d99f53d23eea722602 100644
+index 3c97531a7bbcd84b80d4704aaa27b913652f4019..f680303923f61d931ae1c1f49f43f2ee33508cbe 100644
 --- a/net/minecraft/core/component/DataComponents.java
 +++ b/net/minecraft/core/component/DataComponents.java
-@@ -90,7 +90,7 @@ public class DataComponents {
+@@ -114,7 +114,7 @@ public class DataComponents {
          "item_model", builder -> builder.persistent(ResourceLocation.CODEC).networkSynchronized(ResourceLocation.STREAM_CODEC).cacheEncoding()
      );
      public static final DataComponentType<ItemLore> LORE = register(
@@ -20,10 +20,10 @@ index c346028a112a2d115ca3575d8f65d6dfc58dc3d1..137c5242774e2dc8d98bc5d99f53d23e
      public static final DataComponentType<Rarity> RARITY = register(
          "rarity", builder -> builder.persistent(Rarity.CODEC).networkSynchronized(Rarity.STREAM_CODEC)
 diff --git a/net/minecraft/world/item/component/ItemLore.java b/net/minecraft/world/item/component/ItemLore.java
-index b6fe6d0325edd7fd8ea052b583d1334a768e28e6..59a1acea4133f633dce1901522d5e7c75cf8ad55 100644
+index 750f2f5171a8f744bafdd86da2511a3333624df0..a26a2902b900b58e2ec861dfec9745a1dbc7a6be 100644
 --- a/net/minecraft/world/item/component/ItemLore.java
 +++ b/net/minecraft/world/item/component/ItemLore.java
-@@ -25,6 +25,25 @@ public record ItemLore(List<Component> lines, List<Component> styledLines) imple
+@@ -26,6 +26,25 @@ public record ItemLore(List<Component> lines, List<Component> styledLines) imple
          .apply(ByteBufCodecs.list(256))
          .map(ItemLore::new, ItemLore::lines);
  

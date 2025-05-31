@@ -5,7 +5,7 @@ Subject: [PATCH] Pufferfish api patches
 
 
 diff --git a/src/main/java/org/bukkit/map/MapPalette.java b/src/main/java/org/bukkit/map/MapPalette.java
-index 6995f9cc08d162e3adcd3a28f6bfa6d329661999..b9edb96fc5bac8793477657dbb45ccf98ab17f27 100644
+index fc9728342de7605da69813fb44b008c1343124c0..e5a987dc07a8fb350383c4e90fa4b35324a4020f 100644
 --- a/src/main/java/org/bukkit/map/MapPalette.java
 +++ b/src/main/java/org/bukkit/map/MapPalette.java
 @@ -1,6 +1,7 @@
@@ -16,16 +16,16 @@ index 6995f9cc08d162e3adcd3a28f6bfa6d329661999..b9edb96fc5bac8793477657dbb45ccf9
  import java.awt.Color;
  import java.awt.Graphics2D;
  import java.awt.Image;
-@@ -45,7 +46,7 @@ public final class MapPalette {
+@@ -35,7 +36,7 @@ public final class MapPalette {
      }
  
      @NotNull
 -    static final Color[] colors = {
-+    public static final Color[] colors = { // Pufferfish - public access
-         c(0, 0, 0, 0), c(0, 0, 0, 0), c(0, 0, 0, 0), c(0, 0, 0, 0),
-         c(89, 125, 39), c(109, 153, 48), c(127, 178, 56), c(67, 94, 29),
-         c(174, 164, 115), c(213, 201, 140), c(247, 233, 163), c(130, 123, 86),
-@@ -216,9 +217,15 @@ public final class MapPalette {
++    public static final Color[] colors = { // Pufferfish - package-private-f -> public-f
+         // Start generate - MapPalette#colors
+         // @GeneratedFrom 1.21.5
+         new Color(0x00000000, true),
+@@ -395,9 +396,15 @@ public final class MapPalette {
          temp.getRGB(0, 0, temp.getWidth(), temp.getHeight(), pixels, 0, temp.getWidth());
  
          byte[] result = new byte[temp.getWidth() * temp.getHeight()];
@@ -68,10 +68,10 @@ index 001465eedafa51ac027a4db51cba6223edfe1171..2e6d62c4f3687e299c34e876c503b400
                      callEvent(new com.destroystokyo.paper.event.server.ServerExceptionEvent(new com.destroystokyo.paper.exception.ServerEventException(msg, ex, registration.getPlugin(), registration.getListener(), event)));
                  }
 diff --git a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-index b412aaf08901d169ac9fc89b36f9d6ccb95c53d3..8a1e1582120a26c1ae432c2e9af6d5fdc82b560b 100644
+index 163e9a0e179dc88be93614ff66ee2be3eccc694f..d2f3e99aec1fc292fc63c2171ee55cd0ea573b55 100644
 --- a/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/JavaPluginLoader.java
-@@ -336,7 +336,9 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -329,7 +329,9 @@ public final class JavaPluginLoader implements PluginLoader {
              try {
                  jPlugin.setEnabled(true);
              } catch (Throwable ex) {
@@ -81,7 +81,7 @@ index b412aaf08901d169ac9fc89b36f9d6ccb95c53d3..8a1e1582120a26c1ae432c2e9af6d5fd
              }
  
              // Perhaps abort here, rather than continue going, but as it stands,
-@@ -361,7 +363,9 @@ public final class JavaPluginLoader implements PluginLoader {
+@@ -354,7 +356,9 @@ public final class JavaPluginLoader implements PluginLoader {
              try {
                  jPlugin.setEnabled(false);
              } catch (Throwable ex) {
@@ -92,7 +92,7 @@ index b412aaf08901d169ac9fc89b36f9d6ccb95c53d3..8a1e1582120a26c1ae432c2e9af6d5fd
  
              if (cloader instanceof PluginClassLoader) {
 diff --git a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
-index 7e4f7cb2afbc145e532285c793573ad107bc3033..12449e18180d604e9cbbc744da74a8b222a18e1f 100644
+index 37827b19e681b8fdab1803fc18a46ea90b5f57c4..d800de01aa23cf78bbea04fdda2387ab48f126ce 100644
 --- a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
 @@ -50,6 +50,8 @@ public final class PluginClassLoader extends URLClassLoader implements io.paperm
@@ -119,9 +119,9 @@ index 7e4f7cb2afbc145e532285c793573ad107bc3033..12449e18180d604e9cbbc744da74a8b2
 -        if (result == null) {
 +        if (result == null && !this.closed) { // Pufferfish
              String path = name.replace('.', '/').concat(".class");
-             JarEntry entry = jar.getJarEntry(path);
- 
-@@ -251,6 +254,7 @@ public final class PluginClassLoader extends URLClassLoader implements io.paperm
+             // Add details to zip file errors - help debug classloading
+             JarEntry entry;
+@@ -260,6 +263,7 @@ public final class PluginClassLoader extends URLClassLoader implements io.paperm
              this.setClass(name, result); // Paper
          }
  
@@ -129,7 +129,7 @@ index 7e4f7cb2afbc145e532285c793573ad107bc3033..12449e18180d604e9cbbc744da74a8b2
          return result;
      }
  
-@@ -265,6 +269,7 @@ public final class PluginClassLoader extends URLClassLoader implements io.paperm
+@@ -274,6 +278,7 @@ public final class PluginClassLoader extends URLClassLoader implements io.paperm
              // Paper end
              super.close();
          } finally {

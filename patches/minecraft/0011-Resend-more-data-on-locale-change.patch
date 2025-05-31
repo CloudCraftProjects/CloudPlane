@@ -6,7 +6,7 @@ Subject: [PATCH] Resend more data on locale change
 Includes advancements, inventories, entity custom names, text display texts and item frame items
 
 diff --git a/net/minecraft/server/PlayerAdvancements.java b/net/minecraft/server/PlayerAdvancements.java
-index 2a60512bcf922e1356d7de0e4fce337c46d1315b..3fccd10c6cd350261490129ba56d9c44eeed72de 100644
+index 52e0ae233a7b1c88bfbbc27707ef5f18453ec865..7ddc2e9f1d71476212eaf4bc0a8213ce6cde07ba 100644
 --- a/net/minecraft/server/PlayerAdvancements.java
 +++ b/net/minecraft/server/PlayerAdvancements.java
 @@ -72,6 +72,16 @@ public class PlayerAdvancements {
@@ -27,10 +27,10 @@ index 2a60512bcf922e1356d7de0e4fce337c46d1315b..3fccd10c6cd350261490129ba56d9c44
          this.player = player;
      }
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 12c897be3ea76aa966518f93ad2895cfdde5a0ad..e14f239f49deac016a27bbdba63df533e66e720f 100644
+index b73c2e4d419ed75f4b8188786330ceb99df40b09..e2b85907f6ddcf902eb970aeae5f43f04e1ab6d1 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -424,6 +424,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -451,6 +451,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      }
      // Paper end - rewrite chunk system
  
@@ -39,7 +39,7 @@ index 12c897be3ea76aa966518f93ad2895cfdde5a0ad..e14f239f49deac016a27bbdba63df533
      public ServerPlayer(MinecraftServer server, ServerLevel level, GameProfile gameProfile, ClientInformation clientInformation) {
          super(level, level.getSharedSpawnPos(), level.getSharedSpawnAngle(), gameProfile);
          this.textFilter = server.createTextFilterForPlayer(this);
-@@ -2311,6 +2313,33 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2235,6 +2237,33 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  clientInformation.language()
              );
              this.server.server.getPluginManager().callEvent(event);

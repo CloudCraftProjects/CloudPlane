@@ -6,15 +6,15 @@ Subject: [PATCH] Use weak hash map for debug sample subscriptions
 Prevents potential memory leak of player objects
 
 diff --git a/net/minecraft/util/debugchart/DebugSampleSubscriptionTracker.java b/net/minecraft/util/debugchart/DebugSampleSubscriptionTracker.java
-index 15de39fa82c7aea18298509fe9587d027c30cc15..337f782a6ff8699eb098ad9559f9451ea8fe3498 100644
+index a18240418a19a95147341a634527d774f3d5bb92..27c17d8d4ae65346e4c4a2fef51e84b04aea46f2 100644
 --- a/net/minecraft/util/debugchart/DebugSampleSubscriptionTracker.java
 +++ b/net/minecraft/util/debugchart/DebugSampleSubscriptionTracker.java
-@@ -22,7 +22,7 @@ public class DebugSampleSubscriptionTracker {
-         this.subscriptions = new EnumMap<>(RemoteDebugSampleType.class);
+@@ -18,7 +18,7 @@ public class DebugSampleSubscriptionTracker {
  
-         for (RemoteDebugSampleType remoteDebugSampleType : RemoteDebugSampleType.values()) {
--            this.subscriptions.put(remoteDebugSampleType, Maps.newHashMap());
-+            this.subscriptions.put(remoteDebugSampleType, new java.util.WeakHashMap<>()); // CloudPlane - prevent player memory leaks on debug sample subscription
-         }
+     public DebugSampleSubscriptionTracker(PlayerList playerList) {
+         this.playerList = playerList;
+-        this.subscriptions = Util.makeEnumMap(RemoteDebugSampleType.class, remoteDebugSampleType -> Maps.newHashMap());
++        this.subscriptions = Util.makeEnumMap(RemoteDebugSampleType.class, remoteDebugSampleType -> new java.util.WeakHashMap<>()); // CloudPlane - prevent player memory leaks on debug sample subscription
      }
  
+     public boolean shouldLogSamples(RemoteDebugSampleType sampleType) {

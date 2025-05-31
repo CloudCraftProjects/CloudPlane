@@ -5,10 +5,10 @@ Subject: [PATCH] Add start argument for changing pufferfish config location
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index 8a7c45c2c17575a674bf2a9af390042ff82e95b5..95a3dc5c1cdffe7e1395f7fc0addd44ab4eab312 100644
+index cd3d317a556da033371c42bcee151e6842ccfca0..de6e91b4a7e32e4dc97fb673d0c6f5fda1efca94 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
-@@ -184,6 +184,14 @@ public class Main {
+@@ -173,6 +173,14 @@ public class Main {
                          .describedAs("Yml file");
                  // CloudPlane end - config
  
@@ -20,6 +20,6 @@ index 8a7c45c2c17575a674bf2a9af390042ff82e95b5..95a3dc5c1cdffe7e1395f7fc0addd44a
 +                        .describedAs("Yml file");
 +                // CloudPlane end - configurable pufferfish config location
 +
-                 // Paper start
                  acceptsAll(asList("server-name"), "Name of the server")
                          .withRequiredArg()
+                         .ofType(String.class)

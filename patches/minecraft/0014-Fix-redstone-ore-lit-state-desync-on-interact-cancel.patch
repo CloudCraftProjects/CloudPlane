@@ -5,7 +5,7 @@ Subject: [PATCH] Fix redstone ore lit state desync on interact cancel
 
 
 diff --git a/net/minecraft/world/level/block/RedStoneOreBlock.java b/net/minecraft/world/level/block/RedStoneOreBlock.java
-index b0eab490be31a528f59e1ee717611494376ffaa5..b678b1e293de11bce38373bdec09d813fd054f77 100644
+index 334cdfc4ec0fa2bc44c437f263a38ecb45cf602d..fc00dc7d56a853754eeb66b298bea42c10bb82a4 100644
 --- a/net/minecraft/world/level/block/RedStoneOreBlock.java
 +++ b/net/minecraft/world/level/block/RedStoneOreBlock.java
 @@ -49,6 +49,8 @@ public class RedStoneOreBlock extends Block {
@@ -16,4 +16,4 @@ index b0eab490be31a528f59e1ee717611494376ffaa5..b678b1e293de11bce38373bdec09d813
 +                    serverPlayer.connection.send(new net.minecraft.network.protocol.game.ClientboundBlockUpdatePacket(level, pos)); // CloudPlane - fix desync on cancel
                  }
              } else {
-                 org.bukkit.event.entity.EntityInteractEvent event = new org.bukkit.event.entity.EntityInteractEvent(entity.getBukkitEntity(), level.getWorld().getBlockAt(pos.getX(), pos.getY(), pos.getZ()));
+                 org.bukkit.event.entity.EntityInteractEvent event = new org.bukkit.event.entity.EntityInteractEvent(entity.getBukkitEntity(), org.bukkit.craftbukkit.block.CraftBlock.at(level, pos));

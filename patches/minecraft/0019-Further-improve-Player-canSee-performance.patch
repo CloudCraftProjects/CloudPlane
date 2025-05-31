@@ -5,10 +5,10 @@ Subject: [PATCH] Further improve Player#canSee performance
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 01b6e4521dfb4ad43ad6dfe8dfd3c8e16b49028c..981e76cdb98bc10a97745d2726470e81774239f1 100644
+index 78a169a0106583b63bdfba2436b230ef4aac55b3..028ffeba7eb2381e8ca8fba72d54168a18064e15 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -291,6 +291,15 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -297,6 +297,15 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      private boolean invulnerable;
      protected UUID uuid = Mth.createInsecureUUID(this.random);
      protected String stringUUID = this.uuid.toString();
@@ -19,12 +19,12 @@ index 01b6e4521dfb4ad43ad6dfe8dfd3c8e16b49028c..981e76cdb98bc10a97745d2726470e81
 +    // any collisions on this non-distributed system
 +    // there may be a slight chance for collision, but this chance
 +    // is way too small to actually account for
-+    public long longUUID;
++    public long longUUID = this.uuid.getMostSignificantBits() ^ this.uuid.getLeastSignificantBits();
 +    // CloudPlane end - further improve Player#canSee performance
      private boolean hasGlowingTag;
      private final Set<String> tags = new io.papermc.paper.util.SizeLimitedSet<>(new it.unimi.dsi.fastutil.objects.ObjectOpenHashSet<>(), MAX_ENTITY_TAG_COUNT); // Paper - fully limit tag size - replace set impl
      private final double[] pistonDeltas = new double[]{0.0, 0.0, 0.0};
-@@ -534,6 +543,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -522,6 +531,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          this.position = Vec3.ZERO;
          this.blockPosition = BlockPos.ZERO;
          this.chunkPosition = ChunkPos.ZERO;
@@ -32,17 +32,17 @@ index 01b6e4521dfb4ad43ad6dfe8dfd3c8e16b49028c..981e76cdb98bc10a97745d2726470e81
          // Paper start - EAR 2
          if (level != null) {
              this.defaultActivationState = io.papermc.paper.entity.activation.ActivationRange.initializeEntityActivationState(this, level.spigotConfig);
-@@ -2568,8 +2578,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
-             this.invulnerable = compound.getBoolean("Invulnerable");
-             this.portalCooldown = compound.getInt("PortalCooldown");
-             if (compound.hasUUID("UUID")) {
--                this.uuid = compound.getUUID("UUID");
+@@ -2549,8 +2559,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+             this.invulnerable = compound.getBooleanOr("Invulnerable", false);
+             this.portalCooldown = compound.getIntOr("PortalCooldown", 0);
+             compound.read("UUID", UUIDUtil.CODEC).ifPresent(uuid -> {
+-                this.uuid = uuid;
 -                this.stringUUID = this.uuid.toString();
-+                this.setUUID(compound.getUUID("UUID")); // CloudPlane - further improve Player#canSee performance; call common setter
-             }
- 
++                this.setUUID(uuid); // CloudPlane - further improve Player#canSee performance; call common setter
+             });
              if (!Double.isFinite(this.getX()) || !Double.isFinite(this.getY()) || !Double.isFinite(this.getZ())) {
-@@ -4009,6 +4018,9 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+                 throw new IllegalStateException("Entity has invalid position");
+@@ -3989,6 +3998,9 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      public void setUUID(UUID uniqueId) {
          this.uuid = uniqueId;
          this.stringUUID = this.uuid.toString();
@@ -52,7 +52,7 @@ index 01b6e4521dfb4ad43ad6dfe8dfd3c8e16b49028c..981e76cdb98bc10a97745d2726470e81
      }
  
      @Override
-@@ -4020,6 +4032,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4000,6 +4012,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return this.stringUUID;
      }
  

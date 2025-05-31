@@ -1,16 +1,16 @@
 package gg.airplane.structs;
 
+import com.google.common.base.Preconditions;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
-import org.apache.commons.lang.Validate;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.AbstractList;
 import java.util.Arrays;
 import java.util.List;
 
 public class ItemListWithBitset extends AbstractList<ItemStack> {
+
     public static ItemListWithBitset fromList(List<ItemStack> list) {
         if (list instanceof ItemListWithBitset ours) {
             return ours;
@@ -46,7 +46,7 @@ public class ItemListWithBitset extends AbstractList<ItemStack> {
     }
 
     public ItemListWithBitset(int size) {
-        Validate.isTrue(size < Long.BYTES * 8, "size is too large");
+        Preconditions.checkArgument(size < Long.BYTES * 8, "size is too large");
 
         this.items = createArray(size);
         this.allBits = ((1L << size) - 1);
@@ -105,10 +105,10 @@ public class ItemListWithBitset extends AbstractList<ItemStack> {
     @Override
     public String toString() {
         return "ItemListWithBitset{" +
-          "items=" + Arrays.toString(items) +
-          ", bitSet=" + Long.toString(bitSet, 2) +
-          ", allBits=" + Long.toString(allBits, 2) +
-          ", size=" + this.items.length +
-          '}';
+                "items=" + Arrays.toString(items) +
+                ", bitSet=" + Long.toString(bitSet, 2) +
+                ", allBits=" + Long.toString(allBits, 2) +
+                ", size=" + this.items.length +
+                '}';
     }
 }

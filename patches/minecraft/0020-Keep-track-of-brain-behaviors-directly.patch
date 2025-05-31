@@ -6,7 +6,7 @@ Subject: [PATCH] Keep track of brain behaviors directly
 Replaces the cost of iterating over nested hash sets by iterating over linear lists which need to be sorted upon update
 
 diff --git a/net/minecraft/world/entity/ai/Brain.java b/net/minecraft/world/entity/ai/Brain.java
-index 450396468b23fd90cb8036dbbdd0927051f907af..b7df5933bc3244f5f88df26b98a935163836958d 100644
+index 98652c2c549bd7657a606d25ba4fe3cffa0548da..acf25f1d43576932703c251e57a5610473535cec 100644
 --- a/net/minecraft/world/entity/ai/Brain.java
 +++ b/net/minecraft/world/entity/ai/Brain.java
 @@ -47,14 +47,22 @@ public class Brain<E extends LivingEntity> {
@@ -94,7 +94,7 @@ index 450396468b23fd90cb8036dbbdd0927051f907af..b7df5933bc3244f5f88df26b98a93516
      private void eraseMemoriesForOtherActivitesThan(Activity activity) {
          for (Activity activity1 : this.activeActivities) {
              if (activity1 != activity) {
-@@ -368,17 +398,48 @@ public class Brain<E extends LivingEntity> {
+@@ -377,17 +407,48 @@ public class Brain<E extends LivingEntity> {
              this.activityMemoriesToEraseWhenStopped.put(activity, memoryTypes);
          }
  
@@ -148,7 +148,7 @@ index 450396468b23fd90cb8036dbbdd0927051f907af..b7df5933bc3244f5f88df26b98a93516
      }
  
      public boolean isActive(Activity activity) {
-@@ -435,26 +496,25 @@ public class Brain<E extends LivingEntity> {
+@@ -444,26 +505,25 @@ public class Brain<E extends LivingEntity> {
      private void startEachNonRunningBehavior(ServerLevel level, E entity) {
          long gameTime = level.getGameTime();
  

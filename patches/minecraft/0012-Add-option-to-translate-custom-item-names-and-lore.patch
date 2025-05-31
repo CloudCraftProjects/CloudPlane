@@ -5,55 +5,55 @@ Subject: [PATCH] Add option to translate custom item names and lore
 
 
 diff --git a/net/minecraft/world/item/ItemStack.java b/net/minecraft/world/item/ItemStack.java
-index f012ea0b1bbadfdbd828dd1118f2b2272553d37c..e0df05efb492b1bf4bf1bc0042eb1b6e3a313f3a 100644
+index 5fd62682287f48a1f5cf72653d8b63e3aab9d858..485bf58f14437a31721f65878eb85771d6c3c49e 100644
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -141,6 +141,11 @@ public final class ItemStack implements DataComponentHolder {
-                 if (false && !dataComponentPatch.isEmpty()) { // Paper - This is no longer needed with raw NBT being handled in metadata
-                     org.bukkit.craftbukkit.inventory.CraftItemStack.setItemMeta(stack, org.bukkit.craftbukkit.inventory.CraftItemStack.getItemMeta(stack));
-                 }
-+                // CloudPlane start - item localization
-+                if (dev.booky.cloudplane.CloudPlaneConfig.localizeItems) {
-+                    dev.booky.cloudplane.ItemUtil.unpackPatchSaves(stack);
-+                }
-+                // CloudPlane end - item localization
-                 return stack;
-                 // CraftBukkit end
-             }
-@@ -153,18 +158,26 @@ public final class ItemStack implements DataComponentHolder {
-             } else {
-                 buffer.writeVarInt(io.papermc.paper.util.ItemComponentSanitizer.sanitizeCount(io.papermc.paper.util.ItemObfuscationSession.currentSession(), value, value.getCount())); // Paper - potentially sanitize count
-                 ITEM_STREAM_CODEC.encode(buffer, value.getItemHolder());
-+                // CloudPlane start - item localization
-+                if (dev.booky.cloudplane.CloudPlaneConfig.localizeItems && buffer.adventure$locale != null) {
-+                    try (final io.papermc.paper.util.SafeAutoClosable ignored = io.papermc.paper.util.ItemObfuscationSession.withContext(c -> c.itemStack(value))) { // pass the itemstack as context to the obfuscation session
-+                        DataComponentPatch.STREAM_CODEC.encode(buffer, dev.booky.cloudplane.ItemUtil.packPatchSaves(value));
+@@ -192,7 +192,13 @@ public final class ItemStack implements DataComponentHolder {
+                 } else {
+                     Holder<Item> holder = Item.STREAM_CODEC.decode(buffer);
+                     DataComponentPatch dataComponentPatch = codec.decode(buffer);
+-                    return new ItemStack(holder, varInt, dataComponentPatch);
++                    // CloudPlane start - item localization
++                    ItemStack stack = new ItemStack(holder, varInt, dataComponentPatch);
++                    if (dev.booky.cloudplane.CloudPlaneConfig.localizeItems) {
++                        dev.booky.cloudplane.ItemUtil.unpackPatchSaves(stack);
 +                    }
-+                } else {
++                    return stack;
 +                    // CloudPlane end - item localization
-                 // Spigot start - filter
-                 // value = value.copy();
-                 // CraftItemStack.setItemMeta(value, CraftItemStack.getItemMeta(value)); // Paper - This is no longer with raw NBT being handled in metadata
-                 // Paper start - adventure; conditionally render translatable components
-                 boolean prev = net.minecraft.network.chat.ComponentSerialization.DONT_RENDER_TRANSLATABLES.get();
--                try (final io.papermc.paper.util.SafeAutoClosable ignored = io.papermc.paper.util.ItemObfuscationSession.withContext(c -> c.itemStack(value))) { // pass the itemstack as context to the obfuscation session
-+                try (final io.papermc.paper.util.SafeAutoClosable ignored = io.papermc.paper.util.ItemObfuscationSession.withContext(c -> c.itemStack(value))) { // pass the itemstack as context to the obfuscation session // CloudPlane - item localization; diff on change
-                     net.minecraft.network.chat.ComponentSerialization.DONT_RENDER_TRANSLATABLES.set(true);
--                DataComponentPatch.STREAM_CODEC.encode(buffer, value.components.asPatch());
-+                DataComponentPatch.STREAM_CODEC.encode(buffer, value.components.asPatch()); // CloudPlane - item localization; diff on change
-                 } finally {
-                     net.minecraft.network.chat.ComponentSerialization.DONT_RENDER_TRANSLATABLES.set(prev);
                  }
-                 // Paper end - adventure; conditionally render translatable components
-+                } // CloudPlane - item localization
              }
-         }
-     };
+ 
+@@ -203,15 +209,23 @@ public final class ItemStack implements DataComponentHolder {
+                 } else {
+                     buffer.writeVarInt(io.papermc.paper.util.sanitizer.ItemComponentSanitizer.sanitizeCount(io.papermc.paper.util.sanitizer.ItemObfuscationSession.currentSession(), value, value.getCount())); // Paper - potentially sanitize count
+                     Item.STREAM_CODEC.encode(buffer, value.getItemHolder());
++                    // CloudPlane start - item localization
++                    if (dev.booky.cloudplane.CloudPlaneConfig.localizeItems && buffer.adventure$locale != null) {
++                        try (final io.papermc.paper.util.SafeAutoClosable ignored = io.papermc.paper.util.sanitizer.ItemObfuscationSession.withContext(c -> c.itemStack(value))) { // pass the itemstack as context to the obfuscation session
++                            codec.encode(buffer, dev.booky.cloudplane.ItemUtil.packPatchSaves(value));
++                        }
++                    } else {
++                        // CloudPlane end - item localization
+                     // Paper start - adventure; conditionally render translatable components
+                     boolean prev = net.minecraft.network.chat.ComponentSerialization.DONT_RENDER_TRANSLATABLES.get();
+-                    try (final io.papermc.paper.util.SafeAutoClosable ignored = io.papermc.paper.util.sanitizer.ItemObfuscationSession.withContext(c -> c.itemStack(value))) { // pass the itemstack as context to the obfuscation session
++                    try (final io.papermc.paper.util.SafeAutoClosable ignored = io.papermc.paper.util.sanitizer.ItemObfuscationSession.withContext(c -> c.itemStack(value))) { // pass the itemstack as context to the obfuscation session // CloudPlane - item localization; diff on change
+                         net.minecraft.network.chat.ComponentSerialization.DONT_RENDER_TRANSLATABLES.set(true);
+-                    codec.encode(buffer, value.components.asPatch());
++                    codec.encode(buffer, value.components.asPatch()); // CloudPlane - item localization; diff on change
+                     } finally {
+                         net.minecraft.network.chat.ComponentSerialization.DONT_RENDER_TRANSLATABLES.set(prev);
+                     }
+                     // Paper end - adventure; conditionally render translatable components
++                    } // CloudPlane - item localization
+                 }
+             }
+         };
 diff --git a/net/minecraft/world/item/component/ItemLore.java b/net/minecraft/world/item/component/ItemLore.java
-index 59a1acea4133f633dce1901522d5e7c75cf8ad55..560bbd809c82e0f4f4b8ce55818c26177aabb993 100644
+index a26a2902b900b58e2ec861dfec9745a1dbc7a6be..23bcc7f96bc7a7f41eee5abd99678d8522d13484 100644
 --- a/net/minecraft/world/item/component/ItemLore.java
 +++ b/net/minecraft/world/item/component/ItemLore.java
-@@ -41,6 +41,36 @@ public record ItemLore(List<Component> lines, List<Component> styledLines) imple
+@@ -42,6 +42,36 @@ public record ItemLore(List<Component> lines, List<Component> styledLines) imple
                  }
                  return realLines;
              })
@@ -91,11 +91,11 @@ index 59a1acea4133f633dce1901522d5e7c75cf8ad55..560bbd809c82e0f4f4b8ce55818c2617
      // CloudPlane end - split lore lines
  
 diff --git a/net/minecraft/world/item/trading/ItemCost.java b/net/minecraft/world/item/trading/ItemCost.java
-index d88002dad6bc443d592dcb891f9ee5e04e043a11..6bdea27ab3167e15d1479fc82509c7679aba4fe4 100644
+index 02cc7a23a0fb6a9e4ed88578606c40d5d2301ae1..fe41f833d72cdfd9de7329c72a7497b22d9b5db2 100644
 --- a/net/minecraft/world/item/trading/ItemCost.java
 +++ b/net/minecraft/world/item/trading/ItemCost.java
-@@ -33,7 +33,7 @@ public record ItemCost(Holder<Item> item, int count, DataComponentPredicate comp
-         DataComponentPredicate.STREAM_CODEC,
+@@ -32,7 +32,7 @@ public record ItemCost(Holder<Item> item, int count, DataComponentExactPredicate
+         DataComponentExactPredicate.STREAM_CODEC,
          ItemCost::components,
          ItemCost::new
 -    );

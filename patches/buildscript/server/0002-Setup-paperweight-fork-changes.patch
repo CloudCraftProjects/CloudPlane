@@ -5,12 +5,12 @@ Subject: [PATCH] Setup paperweight fork changes
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index b4613454ddaef035f134b299e1a5877f1c67065d..b0ec94e2a6d16ecfa38d7163898fb769a9b3ee7e 100644
+index 875f1433bc5885a081522fdd73e2760a9fcf2577..500d28c4fc8f40d9cfc66e5e899e294ebbd2e49f 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -21,6 +21,25 @@ paperweight {
-     // macheOldPath = file("F:\\Projects\\PaperTooling\\mache\\versions\\1.21.4\\src\\main\\java")
-     // gitFilePatches = true
+@@ -28,6 +28,25 @@ paperweight {
+     //    oldPaperCommit = "f4f275519f7c1fbe9db173b7144a4fe81440e365"
+     //}
  
 +    // CloudPlane start - setup paperweight fork
 +    val cloudplane = forks.register("cloudplane") {
@@ -32,9 +32,9 @@ index b4613454ddaef035f134b299e1a5877f1c67065d..b0ec94e2a6d16ecfa38d7163898fb769
 +    // CloudPlane end - setup paperweight fork
 +
      spigot {
-         buildDataRef = "3edaf46ec1eed4115ce1b18d2846cded42577e42"
-         packageVersion = "v1_21_R3" // also needs to be updated in MappingEnvironment
-@@ -106,12 +125,30 @@ sourceSets {
+         buildDataRef = "702e1a0a5072b2c4082371d5228cb30525687efc"
+         packageVersion = "v1_21_R4" // also needs to be updated in MappingEnvironment
+@@ -113,12 +132,30 @@ sourceSets {
      main {
          java {
              srcDir("src/main/pufferfish")
@@ -66,7 +66,7 @@ index b4613454ddaef035f134b299e1a5877f1c67065d..b0ec94e2a6d16ecfa38d7163898fb769
  configurations.named(log4jPlugins.compileClasspathConfigurationName) {
      extendsFrom(configurations.compileClasspath.get())
  }
-@@ -129,7 +166,7 @@ abstract class MockitoAgentProvider : CommandLineArgumentProvider {
+@@ -140,7 +177,7 @@ abstract class MockitoAgentProvider : CommandLineArgumentProvider {
  }
  
  dependencies {
@@ -75,7 +75,16 @@ index b4613454ddaef035f134b299e1a5877f1c67065d..b0ec94e2a6d16ecfa38d7163898fb769
      implementation("ca.spottedleaf:concurrentutil:0.0.3")
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
      implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
-@@ -346,3 +383,12 @@ tasks.registerRunTask("runReobfPaperclip") {
+@@ -286,7 +323,7 @@ tasks.test {
+     jvmArgumentProviders.add(provider)
+ }
+ 
+-val generatedDir: java.nio.file.Path = layout.projectDirectory.dir("src/generated/java").asFile.toPath()
++val generatedDir: java.nio.file.Path = layout.projectDirectory.dir("../paper-server/src/generated/java").asFile.toPath()
+ idea {
+     module {
+         generatedSourceDirs.add(generatedDir.toFile())
+@@ -389,3 +426,12 @@ tasks.registerRunTask("runReobfPaperclip") {
      classpath(tasks.createReobfPaperclipJar.flatMap { it.outputZip })
      mainClass.set(null as String?)
  }

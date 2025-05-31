@@ -5,10 +5,10 @@ Subject: [PATCH] Changed branding
 
 
 diff --git a/src/main/java/com/destroystokyo/paper/Metrics.java b/src/main/java/com/destroystokyo/paper/Metrics.java
-index 8f62879582195d8ae4f64bd23f752fa133b1c973..adc4bad2156b0f2db668538cd9c79c0787d759af 100644
+index 6abc57669e87f7f98f3b76af3c0e50825fea6eb1..c58db15bb8304677a6a24b1c94155e393ddd42f3 100644
 --- a/src/main/java/com/destroystokyo/paper/Metrics.java
 +++ b/src/main/java/com/destroystokyo/paper/Metrics.java
-@@ -592,7 +592,7 @@ public class Metrics {
+@@ -593,7 +593,7 @@ public class Metrics {
              boolean logFailedRequests = config.getBoolean("logFailedRequests", false);
              // Only start Metrics, if it's enabled in the config
              if (config.getBoolean("enabled", true)) {
@@ -17,7 +17,7 @@ index 8f62879582195d8ae4f64bd23f752fa133b1c973..adc4bad2156b0f2db668538cd9c79c07
  
                  metrics.addCustomChart(new Metrics.SimplePie("minecraft_version", () -> {
                      String minecraftVersion = Bukkit.getVersion();
-@@ -606,11 +606,11 @@ public class Metrics {
+@@ -607,11 +607,11 @@ public class Metrics {
                  final String implVersion = org.bukkit.craftbukkit.Main.class.getPackage().getImplementationVersion();
                  if (implVersion != null) {
                      final String buildOrHash = implVersion.substring(implVersion.lastIndexOf('-') + 1);
@@ -32,7 +32,7 @@ index 8f62879582195d8ae4f64bd23f752fa133b1c973..adc4bad2156b0f2db668538cd9c79c07
                  metrics.addCustomChart(new Metrics.DrilldownPie("java_version", () -> {
                      Map<String, Map<String, Integer>> map = new HashMap<>();
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index 532306cacd52579cdf37e4aca25887b1ed3ba6a1..8f1b57680731152102e69cc2d7c323b58ca08d26 100644
+index d0554ed6631535815e5932930911e3fe1dee8710..5d0c2d2dcbf959f12d143e1786364b24fa4343c0 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 @@ -35,7 +35,7 @@ public class PaperVersionFetcher implements VersionFetcher {
@@ -40,7 +40,7 @@ index 532306cacd52579cdf37e4aca25887b1ed3ba6a1..8f1b57680731152102e69cc2d7c323b5
      private static final int DISTANCE_ERROR = -1;
      private static final int DISTANCE_UNKNOWN = -2;
 -    private static final String DOWNLOAD_PAGE = "https://papermc.io/downloads/paper";
-+    private static final String DOWNLOAD_PAGE = "https://dl.cloudcraftmc.de/CloudPlane"; // CloudPlane - branding
++    private static final String DOWNLOAD_PAGE = "https://dl.cloudcraftmc.de/cloudplane"; // CloudPlane - branding
  
      @Override
      public long getCacheTime() {
@@ -99,18 +99,18 @@ index 790bad0494454ca12ee152e3de6da3da634d9b20..a718b5f701c0795e9e39e026637258e4
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index bf5343b0847e9f57ffbc7f33714ae6ca62f14332..242c3bb588d3be12e84e5aaccd047c7dfc8f787e 100644
+index a11fc64b4933a5abce0182ba46f1da22043eb0d8..817eacc00dc86a5c94b11d56149317fbeef67b59 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
-@@ -267,7 +267,7 @@ public class Main {
+@@ -232,7 +232,7 @@ public class Main {
                      if (buildDate.before(deadline.getTime())) {
                          // Paper start - This is some stupid bullshit
                          System.err.println("*** Warning, you've not updated in a while! ***");
--                        System.err.println("*** Please download a new build from https://papermc.io/downloads/paper ***"); // Paper
-+                        System.err.println("*** Please download a new build from https://dl.cloudcraftmc.de/CloudPlane ***"); // Paper // CloudPlane - branding
-                         //System.err.println("*** Server will start in 20 seconds ***");
-                         //Thread.sleep(TimeUnit.SECONDS.toMillis(20));
+-                        System.err.println("*** Please download a new build from https://papermc.io/downloads/paper ***");
++                        System.err.println("*** Please download a new build from https://dl.cloudcraftmc.de/cloudplane ***"); // CloudPlane - branding
                          // Paper end
+                     }
+                 }
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
 index 774556a62eb240da42e84db4502e2ed43495be17..a2d3961b0027327327c248a2c11f5e285030964c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java

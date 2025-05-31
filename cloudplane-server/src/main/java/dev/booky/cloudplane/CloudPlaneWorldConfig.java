@@ -2,12 +2,10 @@ package dev.booky.cloudplane;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.apache.commons.lang.BooleanUtils;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 import static dev.booky.cloudplane.CloudPlaneConfig.log;
 
@@ -51,12 +49,6 @@ public class CloudPlaneWorldConfig {
     private boolean getBoolean(String path, boolean def) {
         CloudPlaneConfig.config.addDefault("world-settings.default." + path, def);
         return CloudPlaneConfig.config.getBoolean("world-settings." + this.worldName + "." + path, CloudPlaneConfig.config.getBoolean("world-settings.default." + path));
-    }
-
-    private boolean getBoolean(String path, Predicate<Boolean> predicate) {
-        String val = getString(path, "default").toLowerCase();
-        Boolean bool = BooleanUtils.toBooleanObject(val, "true", "false", "default");
-        return predicate.test(bool);
     }
 
     private double getDouble(String path, double def) {
