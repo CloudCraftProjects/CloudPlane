@@ -511,7 +511,7 @@ index b382665cc125b8b5c0938e5e55984e4bf91d37ff..9b8a1f1e6f833847f43c17c5e9c019b9
  
      boolean isEmpty();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 6fd0ceca1219ab52f84e3cf3bd63253d5027c723..78a169a0106583b63bdfba2436b230ef4aac55b3 100644
+index d34a2aea09f882d4a4dd459e6837a2152faab084..359b04ac35796d3469bf070326627a38d8df0490 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -234,7 +234,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -523,7 +523,7 @@ index 6fd0ceca1219ab52f84e3cf3bd63253d5027c723..78a169a0106583b63bdfba2436b230ef
      private ChunkPos chunkPosition;
      private Vec3 deltaMovement = Vec3.ZERO;
      private float yRot;
-@@ -512,6 +512,9 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -516,6 +516,9 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      }
      // Paper end - optimise entity tracker
  
@@ -533,7 +533,7 @@ index 6fd0ceca1219ab52f84e3cf3bd63253d5027c723..78a169a0106583b63bdfba2436b230ef
      public Entity(EntityType<?> entityType, Level level) {
          this.type = entityType;
          this.level = level;
-@@ -4470,7 +4473,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4474,7 +4477,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
  
      // Paper start - optimise collisions
      public boolean updateFluidHeightAndDoFluidPushing(final TagKey<Fluid> fluid, final double flowScale) {
@@ -542,7 +542,7 @@ index 6fd0ceca1219ab52f84e3cf3bd63253d5027c723..78a169a0106583b63bdfba2436b230ef
              return false;
          }
  
-@@ -4509,7 +4512,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4513,7 +4516,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
  
          for (int currChunkZ = minChunkZ; currChunkZ <= maxChunkZ; ++currChunkZ) {
              for (int currChunkX = minChunkX; currChunkX <= maxChunkX; ++currChunkX) {
@@ -557,7 +557,7 @@ index 6fd0ceca1219ab52f84e3cf3bd63253d5027c723..78a169a0106583b63bdfba2436b230ef
  
                  // bound y
                  for (int currChunkY = minChunkY; currChunkY <= maxChunkY; ++currChunkY) {
-@@ -4518,7 +4527,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4522,7 +4531,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                          continue;
                      }
                      final net.minecraft.world.level.chunk.LevelChunkSection section = sections[sectionIdx];
@@ -1032,7 +1032,7 @@ index cd28ca290c081d9f5e4498f59d7b87a566f81544..3d273dc63e795d4e14508f89247fc4ee
          profilerFiller.pop();
          super.customServerAiStep(level);
 diff --git a/net/minecraft/world/entity/npc/Villager.java b/net/minecraft/world/entity/npc/Villager.java
-index e0e0d2ea7fc60e3142c675404d152eca60263240..2b5e3d156e02634555ebb3c9b2e5a259e41da955 100644
+index 57498ab392c0dc0729fed048a89ef57509e31078..c8f92b44c068c85973311dd1501e944bf63ea8b1 100644
 --- a/net/minecraft/world/entity/npc/Villager.java
 +++ b/net/minecraft/world/entity/npc/Villager.java
 @@ -179,6 +179,8 @@ public class Villager extends AbstractVillager implements ReputationEventHandler

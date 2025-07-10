@@ -5,7 +5,7 @@ Subject: [PATCH] Further improve Player#canSee performance
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 78a169a0106583b63bdfba2436b230ef4aac55b3..028ffeba7eb2381e8ca8fba72d54168a18064e15 100644
+index 359b04ac35796d3469bf070326627a38d8df0490..60792c1ca51bdf3d4eaef3b840995074ecfa51bb 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -297,6 +297,15 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -24,7 +24,7 @@ index 78a169a0106583b63bdfba2436b230ef4aac55b3..028ffeba7eb2381e8ca8fba72d54168a
      private boolean hasGlowingTag;
      private final Set<String> tags = new io.papermc.paper.util.SizeLimitedSet<>(new it.unimi.dsi.fastutil.objects.ObjectOpenHashSet<>(), MAX_ENTITY_TAG_COUNT); // Paper - fully limit tag size - replace set impl
      private final double[] pistonDeltas = new double[]{0.0, 0.0, 0.0};
-@@ -522,6 +531,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -526,6 +535,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          this.position = Vec3.ZERO;
          this.blockPosition = BlockPos.ZERO;
          this.chunkPosition = ChunkPos.ZERO;
@@ -32,7 +32,7 @@ index 78a169a0106583b63bdfba2436b230ef4aac55b3..028ffeba7eb2381e8ca8fba72d54168a
          // Paper start - EAR 2
          if (level != null) {
              this.defaultActivationState = io.papermc.paper.entity.activation.ActivationRange.initializeEntityActivationState(this, level.spigotConfig);
-@@ -2549,8 +2559,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2553,8 +2563,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
              this.invulnerable = compound.getBooleanOr("Invulnerable", false);
              this.portalCooldown = compound.getIntOr("PortalCooldown", 0);
              compound.read("UUID", UUIDUtil.CODEC).ifPresent(uuid -> {
@@ -42,7 +42,7 @@ index 78a169a0106583b63bdfba2436b230ef4aac55b3..028ffeba7eb2381e8ca8fba72d54168a
              });
              if (!Double.isFinite(this.getX()) || !Double.isFinite(this.getY()) || !Double.isFinite(this.getZ())) {
                  throw new IllegalStateException("Entity has invalid position");
-@@ -3989,6 +3998,9 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -3993,6 +4002,9 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      public void setUUID(UUID uniqueId) {
          this.uuid = uniqueId;
          this.stringUUID = this.uuid.toString();
@@ -52,7 +52,7 @@ index 78a169a0106583b63bdfba2436b230ef4aac55b3..028ffeba7eb2381e8ca8fba72d54168a
      }
  
      @Override
-@@ -4000,6 +4012,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4004,6 +4016,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return this.stringUUID;
      }
  
