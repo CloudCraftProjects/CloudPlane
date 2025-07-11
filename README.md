@@ -11,6 +11,7 @@ This fork is mainly designed to fit the CloudCraft Minecraft network.
 - Instantly refresh various things on player locale change
 - Add version info to brand in F3 screen
 - Add option for changing Pufferfish config location
+- Configurable villager gossip limitations
 - Various other fixes and minor performance increases
 
 ## Download
