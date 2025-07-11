@@ -5,10 +5,10 @@ Subject: [PATCH] Further improve Player#canSee performance
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 359b04ac35796d3469bf070326627a38d8df0490..60792c1ca51bdf3d4eaef3b840995074ecfa51bb 100644
+index 587b2a40149aeb5e3483043f39612e4357df07ac..ff17cc2849f3fc83efe6754fc3080beee530b1b1 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -297,6 +297,15 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -317,6 +317,15 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      private boolean invulnerable;
      protected UUID uuid = Mth.createInsecureUUID(this.random);
      protected String stringUUID = this.uuid.toString();
@@ -24,7 +24,7 @@ index 359b04ac35796d3469bf070326627a38d8df0490..60792c1ca51bdf3d4eaef3b840995074
      private boolean hasGlowingTag;
      private final Set<String> tags = new io.papermc.paper.util.SizeLimitedSet<>(new it.unimi.dsi.fastutil.objects.ObjectOpenHashSet<>(), MAX_ENTITY_TAG_COUNT); // Paper - fully limit tag size - replace set impl
      private final double[] pistonDeltas = new double[]{0.0, 0.0, 0.0};
-@@ -526,6 +535,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -543,6 +552,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          this.position = Vec3.ZERO;
          this.blockPosition = BlockPos.ZERO;
          this.chunkPosition = ChunkPos.ZERO;
@@ -32,17 +32,17 @@ index 359b04ac35796d3469bf070326627a38d8df0490..60792c1ca51bdf3d4eaef3b840995074
          // Paper start - EAR 2
          if (level != null) {
              this.defaultActivationState = io.papermc.paper.entity.activation.ActivationRange.initializeEntityActivationState(this, level.spigotConfig);
-@@ -2553,8 +2563,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
-             this.invulnerable = compound.getBooleanOr("Invulnerable", false);
-             this.portalCooldown = compound.getIntOr("PortalCooldown", 0);
-             compound.read("UUID", UUIDUtil.CODEC).ifPresent(uuid -> {
+@@ -2617,8 +2627,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+             this.invulnerable = input.getBooleanOr("Invulnerable", false);
+             this.portalCooldown = input.getIntOr("PortalCooldown", 0);
+             input.read("UUID", UUIDUtil.CODEC).ifPresent(uuid -> {
 -                this.uuid = uuid;
 -                this.stringUUID = this.uuid.toString();
 +                this.setUUID(uuid); // CloudPlane - further improve Player#canSee performance; call common setter
              });
              if (!Double.isFinite(this.getX()) || !Double.isFinite(this.getY()) || !Double.isFinite(this.getZ())) {
                  throw new IllegalStateException("Entity has invalid position");
-@@ -3993,6 +4002,9 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4214,6 +4223,9 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      public void setUUID(UUID uniqueId) {
          this.uuid = uniqueId;
          this.stringUUID = this.uuid.toString();
@@ -52,7 +52,7 @@ index 359b04ac35796d3469bf070326627a38d8df0490..60792c1ca51bdf3d4eaef3b840995074
      }
  
      @Override
-@@ -4004,6 +4016,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4225,6 +4237,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return this.stringUUID;
      }
  

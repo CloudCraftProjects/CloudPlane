@@ -7,48 +7,43 @@ When the redirect of some command wasn't found (e.g. because "commands.send-name
 This fix now applies the same logic which is used for copying children normally
 
 diff --git a/net/minecraft/commands/Commands.java b/net/minecraft/commands/Commands.java
-index 1927163db5d44383b69f41e4b9855535e853d127..98de601fd7dc1cd08299542a4e3806ce0f8cff50 100644
+index ec1cced129ef42be65d7b2b622638bfae8bd895e..992d8d9e25e58ec0d5a0393d87d9d9b3a56dc21d 100644
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
-@@ -522,6 +522,17 @@ public class Commands {
-         CommandSourceStack source,
-         Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> commandNodeToSuggestionNode
-     ) {
+@@ -518,6 +518,12 @@ public class Commands {
+     }
+ 
+     private static <S> void fillUsableCommands(java.util.Collection<CommandNode<S>> children, CommandNode<S> current, S source, Map<CommandNode<S>, CommandNode<S>> output) { // Paper - Perf: Async command map building; pass copy of children
 +        // CloudPlane start - support filling builders
-+        this.fillUsableCommands(children, rootSuggestion::addChild, source, commandNodeToSuggestionNode);
++        fillUsableCommands(children, current::addChild, source, output);
 +    }
 +
-+    private void fillUsableCommands(
-+        java.util.Collection<CommandNode<CommandSourceStack>> children, // Paper - Perf: Async command map building; pass copy of children
-+        Consumer<CommandNode<SharedSuggestionProvider>> rootSuggestion,
-+        CommandSourceStack source,
-+        Map<CommandNode<CommandSourceStack>, CommandNode<SharedSuggestionProvider>> commandNodeToSuggestionNode
-+    ) {
++    private static <S> void fillUsableCommands(java.util.Collection<CommandNode<S>> children, Consumer<CommandNode<S>> current, S source, Map<CommandNode<S>, CommandNode<S>> output) { // Paper - Perf: Async command map building; pass copy of children
 +        // CloudPlane end - support filling builders
-         for (CommandNode<CommandSourceStack> commandNode : children) { // Paper - Perf: Async command map building; pass copy of children
+         for (CommandNode<S> commandNode : children) {  // Paper - Perf: Async command map building; pass copy of children
              // Paper start - Brigadier API
              if (commandNode.clientNode != null) {
-@@ -559,10 +570,10 @@ public class Commands {
+@@ -554,10 +560,10 @@ public class Commands {
                      if (redirect.getCommand() != null) {
                          builder.executes(redirect.getCommand());
                      }
 -                    // Diff copied from LiteralCommand#createBuilder
--                    for (final CommandNode<SharedSuggestionProvider> child : redirect.getChildren()) {
+-                    for (final CommandNode<S> child : redirect.getChildren()) {
 -                        builder.then(child);
 -                    }
 +                    // CloudPlane start - don't blindly copy children over
-+                    this.fillUsableCommands(commandNode.getRedirect().getChildren(),
-+                            builder::then, source, commandNodeToSuggestionNode);
++                    fillUsableCommands(commandNode.getRedirect().getChildren(),
++                            builder::then, source, output);
 +                    // CloudPlane end - don't blindly copy children over
  
                      argumentBuilder = builder;
                  }
-@@ -583,7 +594,7 @@ public class Commands {
+@@ -568,7 +574,7 @@ public class Commands {
  
-                 CommandNode<SharedSuggestionProvider> commandNode1 = argumentBuilder.build();
-                 commandNodeToSuggestionNode.put(commandNode, commandNode1);
--                rootSuggestion.addChild(commandNode1);
-+                rootSuggestion.accept(commandNode1); // CloudPlane - support filling builders
+                 CommandNode<S> commandNode1 = argumentBuilder.build();
+                 output.put(commandNode, commandNode1);
+-                current.addChild(commandNode1);
++                current.accept(commandNode1); // CloudPlane - support filling builders
                  if (!commandNode.getChildren().isEmpty()) {
-                     this.fillUsableCommands(commandNode.getChildren(), commandNode1, source, commandNodeToSuggestionNode); // Paper - Perf: Async command map building; pass copy of children
+                     fillUsableCommands(commandNode.getChildren(), commandNode1, source, output); // Paper - Perf: Async command map building; pass copy of children
                  }

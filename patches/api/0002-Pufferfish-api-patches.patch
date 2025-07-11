@@ -5,7 +5,7 @@ Subject: [PATCH] Pufferfish api patches
 
 
 diff --git a/src/main/java/org/bukkit/map/MapPalette.java b/src/main/java/org/bukkit/map/MapPalette.java
-index fc9728342de7605da69813fb44b008c1343124c0..e5a987dc07a8fb350383c4e90fa4b35324a4020f 100644
+index 2b9e4aa8cf35e7106e510e547954ee7e1bcf3d81..c1aee68dd0a9efdce26d3fc382cf25b69e5aab58 100644
 --- a/src/main/java/org/bukkit/map/MapPalette.java
 +++ b/src/main/java/org/bukkit/map/MapPalette.java
 @@ -1,6 +1,7 @@
@@ -23,7 +23,7 @@ index fc9728342de7605da69813fb44b008c1343124c0..e5a987dc07a8fb350383c4e90fa4b353
 -    static final Color[] colors = {
 +    public static final Color[] colors = { // Pufferfish - package-private-f -> public-f
          // Start generate - MapPalette#colors
-         // @GeneratedFrom 1.21.5
+         // @GeneratedFrom 1.21.7
          new Color(0x00000000, true),
 @@ -395,9 +396,15 @@ public final class MapPalette {
          temp.getRGB(0, 0, temp.getWidth(), temp.getHeight(), pixels, 0, temp.getWidth());
@@ -42,7 +42,7 @@ index fc9728342de7605da69813fb44b008c1343124c0..e5a987dc07a8fb350383c4e90fa4b353
      }
  
 diff --git a/src/main/java/org/bukkit/plugin/SimplePluginManager.java b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
-index 001465eedafa51ac027a4db51cba6223edfe1171..2e6d62c4f3687e299c34e876c503b400e13be05a 100644
+index dfc2d76403993640e6283f25f9f3647bb6d1a30c..cc07a76545aefbf9eb0915025c89770298be2c1c 100644
 --- a/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 +++ b/src/main/java/org/bukkit/plugin/SimplePluginManager.java
 @@ -597,7 +597,9 @@ public final class SimplePluginManager implements PluginManager {
@@ -92,10 +92,10 @@ index 163e9a0e179dc88be93614ff66ee2be3eccc694f..d2f3e99aec1fc292fc63c2171ee55cd0
  
              if (cloader instanceof PluginClassLoader) {
 diff --git a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
-index 37827b19e681b8fdab1803fc18a46ea90b5f57c4..d800de01aa23cf78bbea04fdda2387ab48f126ce 100644
+index 8c5a5043ad8b69d55fa1fc99864767238d435991..87c103a1898d6376fe5faa0e8718fd81e544d2dc 100644
 --- a/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
 +++ b/src/main/java/org/bukkit/plugin/java/PluginClassLoader.java
-@@ -50,6 +50,8 @@ public final class PluginClassLoader extends URLClassLoader implements io.paperm
+@@ -51,6 +51,8 @@ public final class PluginClassLoader extends URLClassLoader implements io.paperm
      private io.papermc.paper.plugin.provider.classloader.PluginClassLoaderGroup classLoaderGroup; // Paper
      public io.papermc.paper.plugin.provider.entrypoint.DependencyContext dependencyContext; // Paper
  
@@ -104,7 +104,7 @@ index 37827b19e681b8fdab1803fc18a46ea90b5f57c4..d800de01aa23cf78bbea04fdda2387ab
      static {
          ClassLoader.registerAsParallelCapable();
      }
-@@ -197,6 +199,7 @@ public final class PluginClassLoader extends URLClassLoader implements io.paperm
+@@ -205,6 +207,7 @@ public final class PluginClassLoader extends URLClassLoader implements io.paperm
          throw new ClassNotFoundException(name);
      }
  
@@ -112,7 +112,7 @@ index 37827b19e681b8fdab1803fc18a46ea90b5f57c4..d800de01aa23cf78bbea04fdda2387ab
      @Override
      protected Class<?> findClass(String name) throws ClassNotFoundException {
          if (name.startsWith("org.bukkit.") || name.startsWith("net.minecraft.")) {
-@@ -204,7 +207,7 @@ public final class PluginClassLoader extends URLClassLoader implements io.paperm
+@@ -212,7 +215,7 @@ public final class PluginClassLoader extends URLClassLoader implements io.paperm
          }
          Class<?> result = classes.get(name);
  
@@ -121,7 +121,7 @@ index 37827b19e681b8fdab1803fc18a46ea90b5f57c4..d800de01aa23cf78bbea04fdda2387ab
              String path = name.replace('.', '/').concat(".class");
              // Add details to zip file errors - help debug classloading
              JarEntry entry;
-@@ -260,6 +263,7 @@ public final class PluginClassLoader extends URLClassLoader implements io.paperm
+@@ -268,6 +271,7 @@ public final class PluginClassLoader extends URLClassLoader implements io.paperm
              this.setClass(name, result); // Paper
          }
  
@@ -129,7 +129,7 @@ index 37827b19e681b8fdab1803fc18a46ea90b5f57c4..d800de01aa23cf78bbea04fdda2387ab
          return result;
      }
  
-@@ -274,6 +278,7 @@ public final class PluginClassLoader extends URLClassLoader implements io.paperm
+@@ -282,6 +286,7 @@ public final class PluginClassLoader extends URLClassLoader implements io.paperm
              // Paper end
              super.close();
          } finally {

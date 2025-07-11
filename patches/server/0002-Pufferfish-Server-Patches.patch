@@ -54,23 +54,29 @@ index ece6db7b9a0dfd535141c0c756947c4898140503..adb643a87ad754052c6097aeefc701e7
      }
  
 diff --git a/src/main/java/ca/spottedleaf/moonrise/common/util/CoordinateUtils.java b/src/main/java/ca/spottedleaf/moonrise/common/util/CoordinateUtils.java
-index 31b92bd48828cbea25b44a9f0f96886347aa1ae6..5f4238c6cf4bc78542826f3fd4d2cbc4861d72c8 100644
+index bb5b9c9cb0c73edce1dbe3758ee2db0fcc8f4e40..d0920425dc9b1abeb6d10797f16d0c204b2c9257 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/common/util/CoordinateUtils.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/common/util/CoordinateUtils.java
-@@ -16,7 +16,7 @@ public final class CoordinateUtils {
+@@ -16,12 +16,11 @@ public final class CoordinateUtils {
      }
  
      public static long getChunkKey(final Entity entity) {
--        return ((Mth.lfloor(entity.getZ()) >> 4) << 32) | ((Mth.lfloor(entity.getX()) >> 4) & 0xFFFFFFFFL);
-+        return ((long)(entity.blockPosition.getZ() >> 4) << 32) | ((long)(entity.blockPosition.getX() >> 4) & 0xFFFFFFFFL); // Pufferfish - eliminate double->long cast in hotpath
+-        final ChunkPos pos = entity.chunkPosition();
+-        return ((long)pos.z << 32) | (pos.x & 0xFFFFFFFFL);
++        return entity.chunkPosition().longKey; // Pufferfish - use pre-calculated chunk key
      }
  
      public static long getChunkKey(final ChunkPos pos) {
+-        return ((long)pos.z << 32) | (pos.x & 0xFFFFFFFFL);
++        return pos.longKey; // Pufferfish - use pre-calculated chunk key
+     }
+ 
+     public static long getChunkKey(final SectionPos pos) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 1da86b25e3b89c79d4f3920c8d2ef10ee2757f65..8201466eb28951cd8e9d6ae406f5d16cc0ab944f 100644
+index 03dfcb4665d0279c825a74f3f999c92fe2bd22cb..a43267e9591e37b35fb9f429c4dd412be562663c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1166,7 +1166,7 @@ public final class CraftServer implements Server {
+@@ -1138,7 +1138,7 @@ public final class CraftServer implements Server {
                  plugin.getPluginMeta().getDisplayName(),
                  "This plugin is not properly shutting down its async tasks when it is being shut down. This task may throw errors during the final shutdown logs and might not complete before process dies."
              ));

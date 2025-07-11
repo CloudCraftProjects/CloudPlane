@@ -26,7 +26,7 @@ runnables on the event loop.
 Co-authored-by: booky10 <boooky10@gmail.com>
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 4ed9611994c5c8da01fede690197527c5b3a5731..0ea3db162831c538a10d1a4996c666f440c2d14c 100644
+index 8bab2c26e10e8495fd39be470bcb02917fe56f40..f2d8474881df62321b86cd46e64aeeb2325228a9 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
 @@ -67,6 +67,22 @@ import org.slf4j.Marker;
@@ -52,14 +52,14 @@ index 4ed9611994c5c8da01fede690197527c5b3a5731..0ea3db162831c538a10d1a4996c666f4
      private static final float AVERAGE_PACKETS_SMOOTHING = 0.75F;
      private static final Logger LOGGER = LogUtils.getLogger();
      public static final Marker ROOT_MARKER = MarkerFactory.getMarker("NETWORK");
-@@ -476,7 +492,21 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -473,7 +489,21 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          if (this.channel.eventLoop().inEventLoop()) {
-             this.doSendPacket(packet, sendListener, flush);
+             this.doSendPacket(packet, channelFutureListener, flag);
          } else {
--            this.channel.eventLoop().execute(() -> this.doSendPacket(packet, sendListener, flush));
+-            this.channel.eventLoop().execute(() -> this.doSendPacket(packet, channelFutureListener, flag));
 +            // Paper start - optimise packets that are not flushed
-+            final Runnable run = () -> this.doSendPacket(packet, sendListener, flush);
-+            if (flush) {
++            final Runnable run = () -> this.doSendPacket(packet, channelFutureListener, flag);
++            if (flag) {
 +                this.channel.eventLoop().execute(run);
 +            } else {
 +                // netty dropped support for LazyRunnable in some version, so

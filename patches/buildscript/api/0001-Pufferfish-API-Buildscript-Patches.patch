@@ -5,7 +5,7 @@ Subject: [PATCH] Pufferfish API Buildscript Patches
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 82d3005910f1f10b193c2b3859d8b62fb1475fea..6c4759a307a4d108df60cb24c52822939588feda 100644
+index f26cad3f5b85573e8a9b9ca39eb0643a30e04738..cf57411de3b82263e77d4d84a5fa734cadb7ea0e 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -88,6 +88,8 @@ dependencies {
@@ -40,7 +40,7 @@ index 82d3005910f1f10b193c2b3859d8b62fb1475fea..6c4759a307a4d108df60cb24c5282293
          into("META-INF/maven/${project.group}/${project.name}")
 @@ -166,6 +175,7 @@ val services = objects.newInstance<Services>()
  
- tasks.withType<Javadoc> {
+ tasks.withType<Javadoc>().configureEach {
      val options = options as StandardJavadocDocletOptions
 +    options.addStringOption("-add-modules", "jdk.incubator.vector") // Pufferfish
      options.overview = "src/main/javadoc/overview.html"

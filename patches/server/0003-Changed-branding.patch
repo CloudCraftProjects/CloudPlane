@@ -67,7 +67,7 @@ index 6ee39b534b8d992655bc0cef3c299d12cbae0034..291d45623d7e55f12dddb17e2c665562
                  .completer(new ConsoleCommandCompleter(this.server))
                  .option(LineReader.Option.COMPLETE_IN_WORD, true);
 diff --git a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java b/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
-index 790bad0494454ca12ee152e3de6da3da634d9b20..a718b5f701c0795e9e39e026637258e466d8831f 100644
+index 74ffdc823e66fc5ec027c4b7c462382bcbfe2be2..347f20a5107eb3644b4e42adfccbd7cc181ea512 100644
 --- a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
 +++ b/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
 @@ -31,6 +31,7 @@ public record ServerBuildInfoImpl(
@@ -87,8 +87,8 @@ index 790bad0494454ca12ee152e3de6da3da634d9b20..a718b5f701c0795e9e39e026637258e4
              getManifestAttribute(manifest, ATTRIBUTE_BRAND_NAME)
 -                .orElse(BRAND_PAPER_NAME),
 +                .orElse(BRAND_CLOUDPLANE_NAME), // CloudPlane - branding
-             SharedConstants.getCurrentVersion().getId(),
-             SharedConstants.getCurrentVersion().getName(),
+             SharedConstants.getCurrentVersion().id(),
+             SharedConstants.getCurrentVersion().name(),
              getManifestAttribute(manifest, ATTRIBUTE_BUILD_NUMBER)
 @@ -61,6 +62,7 @@ public record ServerBuildInfoImpl(
  
@@ -99,10 +99,10 @@ index 790bad0494454ca12ee152e3de6da3da634d9b20..a718b5f701c0795e9e39e026637258e4
      }
  
 diff --git a/src/main/java/org/bukkit/craftbukkit/Main.java b/src/main/java/org/bukkit/craftbukkit/Main.java
-index a11fc64b4933a5abce0182ba46f1da22043eb0d8..817eacc00dc86a5c94b11d56149317fbeef67b59 100644
+index 7675acdca2162e403f4ff523bcdd6efe0cb42d49..4b97c4b1e378e1ccef1fa0dfb77fb1ac1ddec68c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/Main.java
 +++ b/src/main/java/org/bukkit/craftbukkit/Main.java
-@@ -232,7 +232,7 @@ public class Main {
+@@ -231,7 +231,7 @@ public class Main {
                      if (buildDate.before(deadline.getTime())) {
                          // Paper start - This is some stupid bullshit
                          System.err.println("*** Warning, you've not updated in a while! ***");

@@ -6,10 +6,10 @@ Subject: [PATCH] Work around unnecessary chunk pos conversion on entity
 
 
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java b/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java
-index 02a9ef1694c796584c29430d27f0a09047368835..e4b5339e6637fd24ce301e57a99456ec30c837a4 100644
+index bdc1200ef5317fdaf58973bf580b0a672aee800f..4986f12ceda5c813de023bd89c8716ac4534262b 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java
-@@ -269,18 +269,26 @@ public final class RegionizedPlayerChunkLoader {
+@@ -273,18 +273,26 @@ public final class RegionizedPlayerChunkLoader {
          return sendViewDistance;
      }
  
@@ -51,7 +51,7 @@ index 656041c9539b6834b4d37b353eb6b810a7763ff4..a7b757b2a8be47d0ec5e0abde9193f66
              }
              ret.add(player);
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
-index 0d8aefe8c886eaa4c33cbab53b0ad1c016f0531f..b03b25bb55dee9ac13c472501665bf4b17d62c3c 100644
+index eb352aa4296abc3ed4cf31c590bc0be66daf4de3..fd2bbe60e523666ba75809f0a0d84806a696ab3b 100644
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
 @@ -301,7 +301,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider

@@ -6,7 +6,7 @@ Subject: [PATCH] Resend more data on locale change
 Includes advancements, inventories, entity custom names, text display texts and item frame items
 
 diff --git a/net/minecraft/server/PlayerAdvancements.java b/net/minecraft/server/PlayerAdvancements.java
-index 52e0ae233a7b1c88bfbbc27707ef5f18453ec865..7ddc2e9f1d71476212eaf4bc0a8213ce6cde07ba 100644
+index fdeca41d40705f28864ce4443d01cd872c9d51b0..4613bd1643a29d8a3f07da395c855b32acbd7fc9 100644
 --- a/net/minecraft/server/PlayerAdvancements.java
 +++ b/net/minecraft/server/PlayerAdvancements.java
 @@ -72,6 +72,16 @@ public class PlayerAdvancements {
@@ -27,19 +27,19 @@ index 52e0ae233a7b1c88bfbbc27707ef5f18453ec865..7ddc2e9f1d71476212eaf4bc0a8213ce
          this.player = player;
      }
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index b73c2e4d419ed75f4b8188786330ceb99df40b09..e2b85907f6ddcf902eb970aeae5f43f04e1ab6d1 100644
+index 279cda8cf1f06b0939059ff2008f099f3802c533..ec3ae27dde1cc6eaeb4532a0a89819f04a57eae1 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -451,6 +451,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -460,6 +460,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      }
      // Paper end - rewrite chunk system
  
 +    private long lastLocaleChange = 0L; // CloudPlane - refresh data on locale change; throttling
 +
      public ServerPlayer(MinecraftServer server, ServerLevel level, GameProfile gameProfile, ClientInformation clientInformation) {
-         super(level, level.getSharedSpawnPos(), level.getSharedSpawnAngle(), gameProfile);
+         super(level, gameProfile);
          this.textFilter = server.createTextFilterForPlayer(this);
-@@ -2235,6 +2237,33 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2272,6 +2274,33 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  clientInformation.language()
              );
              this.server.server.getPluginManager().callEvent(event);
@@ -53,7 +53,7 @@ index b73c2e4d419ed75f4b8188786330ceb99df40b09..e2b85907f6ddcf902eb970aeae5f43f0
 +                    this.containerMenu.sendAllDataToRemote();
 +                }
 +
-+                for (Entity entity : this.serverLevel().getEntities().getAll()) {
++                for (Entity entity : this.level().getEntities().getAll()) {
 +                    if (!entity.moonrise$getTrackedEntity().seenBy.contains(this.connection)) {
 +                        continue;
 +                    }

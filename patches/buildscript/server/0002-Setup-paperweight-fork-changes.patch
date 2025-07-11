@@ -5,12 +5,12 @@ Subject: [PATCH] Setup paperweight fork changes
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 875f1433bc5885a081522fdd73e2760a9fcf2577..500d28c4fc8f40d9cfc66e5e899e294ebbd2e49f 100644
+index 8b7f81076d990c5df6558eeb9f1c0e07ada4488b..f378d8b189706f7d5a29a60c3335d2225269e439 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -28,6 +28,25 @@ paperweight {
-     //    oldPaperCommit = "f4f275519f7c1fbe9db173b7144a4fe81440e365"
-     //}
+@@ -26,6 +26,25 @@ paperweight {
+     minecraftVersion = providers.gradleProperty("mcVersion")
+     gitFilePatches = false
  
 +    // CloudPlane start - setup paperweight fork
 +    val cloudplane = forks.register("cloudplane") {
@@ -32,9 +32,9 @@ index 875f1433bc5885a081522fdd73e2760a9fcf2577..500d28c4fc8f40d9cfc66e5e899e294e
 +    // CloudPlane end - setup paperweight fork
 +
      spigot {
-         buildDataRef = "702e1a0a5072b2c4082371d5228cb30525687efc"
-         packageVersion = "v1_21_R4" // also needs to be updated in MappingEnvironment
-@@ -113,12 +132,30 @@ sourceSets {
+         enabled = true
+         buildDataRef = "436eac9815c211be1a2a6ca0702615f995e81c44"
+@@ -112,12 +131,30 @@ sourceSets {
      main {
          java {
              srcDir("src/main/pufferfish")
@@ -66,7 +66,7 @@ index 875f1433bc5885a081522fdd73e2760a9fcf2577..500d28c4fc8f40d9cfc66e5e899e294e
  configurations.named(log4jPlugins.compileClasspathConfigurationName) {
      extendsFrom(configurations.compileClasspath.get())
  }
-@@ -140,7 +177,7 @@ abstract class MockitoAgentProvider : CommandLineArgumentProvider {
+@@ -139,7 +176,7 @@ abstract class MockitoAgentProvider : CommandLineArgumentProvider {
  }
  
  dependencies {
@@ -75,7 +75,7 @@ index 875f1433bc5885a081522fdd73e2760a9fcf2577..500d28c4fc8f40d9cfc66e5e899e294e
      implementation("ca.spottedleaf:concurrentutil:0.0.3")
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
      implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
-@@ -286,7 +323,7 @@ tasks.test {
+@@ -290,7 +327,7 @@ tasks.test {
      jvmArgumentProviders.add(provider)
  }
  
@@ -84,9 +84,9 @@ index 875f1433bc5885a081522fdd73e2760a9fcf2577..500d28c4fc8f40d9cfc66e5e899e294e
  idea {
      module {
          generatedSourceDirs.add(generatedDir.toFile())
-@@ -389,3 +426,12 @@ tasks.registerRunTask("runReobfPaperclip") {
-     classpath(tasks.createReobfPaperclipJar.flatMap { it.outputZip })
-     mainClass.set(null as String?)
+@@ -410,3 +447,12 @@ fill {
+         }
+     }
  }
 +
 +// CloudPlane start - work around strange paperweight madness

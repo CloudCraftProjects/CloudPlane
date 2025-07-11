@@ -5,10 +5,10 @@ Subject: [PATCH] Log exceptions caused by packet sending
 
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 0ea3db162831c538a10d1a4996c666f440c2d14c..f7e6f625daca552c26f9acd3fc183abb23bf8874 100644
+index f2d8474881df62321b86cd46e64aeeb2325228a9..b0855c0dc6bf695ef96d4fb2f43130488fd24213 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -226,7 +226,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -227,7 +227,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
  
                      if (player != null) player.quitReason = org.bukkit.event.player.PlayerQuitEvent.QuitReason.ERRONEOUS_STATE; // Paper - Add API for quit reason
                      if (flag) {
@@ -17,7 +17,7 @@ index 0ea3db162831c538a10d1a4996c666f440c2d14c..f7e6f625daca552c26f9acd3fc183abb
                          boolean doesDisconnectExist = this.packetListener.protocol() != ConnectionProtocol.STATUS && this.packetListener.protocol() != ConnectionProtocol.HANDSHAKING; // Paper
                          if (this.getSending() == PacketFlow.CLIENTBOUND && doesDisconnectExist) { // Paper
                              Packet<?> packet = (Packet<?>)(this.sendLoginDisconnect
-@@ -239,7 +239,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -240,7 +240,7 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
  
                          this.setReadOnly();
                      } else {

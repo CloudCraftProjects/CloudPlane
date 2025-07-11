@@ -5,10 +5,10 @@ Subject: [PATCH] Populate despawn time for existing entities on reload
 
 
 diff --git a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
-index 9511f978f6c7da506f67928f5a5a92ecf28e5930..2aed16ca78e848d6d7eb566228c2ae6acd4826e9 100644
+index 8e65586182bd586c95b8c4873fab6d6ff5975243..7df7e4327aa89812af9acd2b3ce2f952ffab137d 100644
 --- a/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
 +++ b/src/main/java/io/papermc/paper/configuration/WorldConfiguration.java
-@@ -206,6 +206,13 @@ public class WorldConfiguration extends ConfigurationPart {
+@@ -207,6 +207,13 @@ public class WorldConfiguration extends ConfigurationPart {
                      range.hard().preComputed(category.getDespawnDistance(), category.getSerializedName());
                      range.soft().preComputed(category.getNoDespawnDistance(), category.getSerializedName());
                  }
