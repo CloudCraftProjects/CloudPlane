@@ -141,10 +141,14 @@ public class CloudPlaneConfig {
         srPlaceInDefaultFluid = getBoolean("settings.allow-surface-rules-for-default-fluids", srPlaceInDefaultFluid);
     }
 
-    private static void villagerGossipLimits() {
+    private static void villagerGossip() {
         for (GossipType gossipType : GossipType.values()) {
             gossipType.max = gossipType.defaultMax;
-            gossipType.max = getInt("settings.villager-gossip-limits." + gossipType.id, gossipType.max);
+            gossipType.decayPerDay = gossipType.defaultDecayPerDay;
+            gossipType.decayPerTransfer = gossipType.defaultDecayPerTransfer;
+            gossipType.max = getInt("settings.villager-gossip." + gossipType.id + ".limit", gossipType.max);
+            gossipType.decayPerDay = getInt("settings.villager-gossip." + gossipType.id + ".decay-per-day", gossipType.decayPerDay);
+            gossipType.decayPerTransfer = getInt("settings.villager-gossip." + gossipType.id + ".decay-per-transfer", gossipType.decayPerTransfer);
         }
     }
 }

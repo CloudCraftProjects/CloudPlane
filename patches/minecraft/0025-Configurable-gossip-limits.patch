@@ -5,22 +5,30 @@ Subject: [PATCH] Configurable gossip limits
 
 
 diff --git a/net/minecraft/world/entity/ai/gossip/GossipType.java b/net/minecraft/world/entity/ai/gossip/GossipType.java
-index 8a9c9ce073af8bf5e74da2bc89578cdecad2a4d2..fb305ef9deeabe27d9cdf27dada70722132b165c 100644
+index 4ead4b33983a908b4f71206fb4f7495adeeecda6..5933d182c6696a2f29d2b8e089b18a9fa39443c1 100644
 --- a/net/minecraft/world/entity/ai/gossip/GossipType.java
 +++ b/net/minecraft/world/entity/ai/gossip/GossipType.java
-@@ -15,6 +15,7 @@ public enum GossipType implements StringRepresentable {
-     public static final int REPUTATION_CHANGE_PER_TRADE = 2;
-     public final String id;
-     public final int weight;
-+    public final int defaultMax; // CloudPlane - configurable gossip limits
+@@ -18,6 +18,11 @@ public enum GossipType implements StringRepresentable {
      public int max;
-     public final int decayPerDay;
-     public final int decayPerTransfer;
-@@ -23,6 +24,7 @@ public enum GossipType implements StringRepresentable {
+     public int decayPerDay;
+     public int decayPerTransfer;
++    // CloudPlane start - configurable gossip limits
++    public final int defaultMax;
++    public final int defaultDecayPerDay;
++    public final int defaultDecayPerTransfer;
++    // CloudPlane end - configurable gossip limits
+     public static final Codec<GossipType> CODEC = StringRepresentable.fromEnum(GossipType::values);
+ 
      private GossipType(final String id, final int weight, final int max, final int decayPerDay, final int decayPerTransfer) {
-         this.id = id;
-         this.weight = weight;
-+        this.defaultMax = max; // CloudPlane - configurable gossip limits
+@@ -26,6 +31,11 @@ public enum GossipType implements StringRepresentable {
          this.max = max;
          this.decayPerDay = decayPerDay;
          this.decayPerTransfer = decayPerTransfer;
++        // CloudPlane start - configurable gossip limits
++        this.defaultMax = max;
++        this.defaultDecayPerDay = decayPerDay;
++        this.defaultDecayPerTransfer = decayPerTransfer;
++        // CloudPlane end - configurable gossip limits
+     }
+ 
+     @Override
