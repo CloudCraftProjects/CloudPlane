@@ -5,10 +5,10 @@ Subject: [PATCH] Setup paperweight fork changes
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index b910370958d4e82c23638a42733c5f3f74849c9d..222006bf61bb4a8043ce2d7cc9f7cc428dd7ea25 100644
+index 64ecba84aef540c9d9b1f3ed9aa5106520dfc3c8..3e06867e9ab38acc3d060ac801f0365cc2ea90bb 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -26,6 +26,25 @@ paperweight {
+@@ -23,6 +23,25 @@ paperweight {
      minecraftVersion = providers.gradleProperty("mcVersion")
      gitFilePatches = false
  
@@ -33,8 +33,8 @@ index b910370958d4e82c23638a42733c5f3f74849c9d..222006bf61bb4a8043ce2d7cc9f7cc42
 +
      spigot {
          enabled = true
-         buildDataRef = "436eac9815c211be1a2a6ca0702615f995e81c44"
-@@ -112,12 +131,30 @@ sourceSets {
+         buildDataRef = "42d18d4c4653ffc549778dbe223f6994a031d69e"
+@@ -109,12 +128,30 @@ sourceSets {
      main {
          java {
              srcDir("src/main/pufferfish")
@@ -66,16 +66,16 @@ index b910370958d4e82c23638a42733c5f3f74849c9d..222006bf61bb4a8043ce2d7cc9f7cc42
  configurations.named(log4jPlugins.compileClasspathConfigurationName) {
      extendsFrom(configurations.compileClasspath.get())
  }
-@@ -139,7 +176,7 @@ abstract class MockitoAgentProvider : CommandLineArgumentProvider {
+@@ -137,7 +174,7 @@ abstract class MockitoAgentProvider : CommandLineArgumentProvider {
  }
  
  dependencies {
 -    implementation(project(":paper-api"))
 +    implementation(projects.cloudplaneApi) // CloudPlane - update to own api
-     implementation("ca.spottedleaf:concurrentutil:0.0.3")
+     implementation("ca.spottedleaf:concurrentutil:0.0.5")
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
      implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
-@@ -285,7 +322,7 @@ tasks.test {
+@@ -282,7 +319,7 @@ tasks.test {
      jvmArgumentProviders.add(provider)
  }
  
@@ -84,7 +84,7 @@ index b910370958d4e82c23638a42733c5f3f74849c9d..222006bf61bb4a8043ce2d7cc9f7cc42
  idea {
      module {
          generatedSourceDirs.add(generatedDir.toFile())
-@@ -405,3 +442,12 @@ fill {
+@@ -390,3 +427,12 @@ fill {
          }
      }
  }

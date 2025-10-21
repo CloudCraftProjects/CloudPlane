@@ -6,7 +6,7 @@ Subject: [PATCH] Keep track of brain behaviors directly
 Replaces the cost of iterating over nested hash sets by iterating over linear lists which need to be sorted upon update
 
 diff --git a/net/minecraft/world/entity/ai/Brain.java b/net/minecraft/world/entity/ai/Brain.java
-index 98652c2c549bd7657a606d25ba4fe3cffa0548da..acf25f1d43576932703c251e57a5610473535cec 100644
+index ebdd6f4f493ca52104a0c7094d1c474a951bde81..569c828e501ca930506591619a244d5ac428de9a 100644
 --- a/net/minecraft/world/entity/ai/Brain.java
 +++ b/net/minecraft/world/entity/ai/Brain.java
 @@ -47,14 +47,22 @@ public class Brain<E extends LivingEntity> {
@@ -183,3 +183,12 @@ index 98652c2c549bd7657a606d25ba4fe3cffa0548da..acf25f1d43576932703c251e57a56104
      }
  
      private boolean activityRequirementsAreMet(Activity activity) {
+@@ -500,7 +560,7 @@ public class Brain<E extends LivingEntity> {
+     }
+ 
+     public boolean isBrainDead() {
+-        return this.memories.isEmpty() && this.sensors.isEmpty() && this.availableBehaviorsByPriority.isEmpty();
++        return this.memories.isEmpty() && this.sensors.isEmpty() && this.allBehaviors.isEmpty(); // CloudPlane - keep track of behaviors directly
+     }
+ 
+     static final class MemoryValue<U> {

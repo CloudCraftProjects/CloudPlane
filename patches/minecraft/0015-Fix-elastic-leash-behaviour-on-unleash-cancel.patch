@@ -5,7 +5,7 @@ Subject: [PATCH] Fix elastic leash behaviour on unleash cancel
 
 
 diff --git a/net/minecraft/world/entity/Leashable.java b/net/minecraft/world/entity/Leashable.java
-index b3568d4a1467912f555ce461fa8dcf218c474047..8a9cdb408c8806fbcb79821eede4cfa59db06602 100644
+index 1e79baeb2c3d1ab66d264ec0872f3b7a9a285cc9..b137fc472fecd67004c644d6252fa6ea4f8f4808 100644
 --- a/net/minecraft/world/entity/Leashable.java
 +++ b/net/minecraft/world/entity/Leashable.java
 @@ -171,8 +171,7 @@ public interface Leashable {
@@ -14,7 +14,7 @@ index b3568d4a1467912f555ce461fa8dcf218c474047..8a9cdb408c8806fbcb79821eede4cfa5
                  entity.whenLeashedTo(leashHolder);
 -                if (d > entity.leashSnapDistanceOrConfig()) { // Paper - Configurable max leash distance
 -                    entity.leashTooFarBehaviour();
-+                if (d > entity.leashSnapDistanceOrConfig() && entity.leashTooFarBehaviour()) { // Paper - Configurable max leash distance // CloudPlane - fix elastic leash behavior on event cancel
++                if (d > entity.leashSnapDistanceOrConfig() && entity.leashTooFarBehaviour0()) { // Paper - Configurable max leash distance // CloudPlane - fix elastic leash behavior on event cancel
                  } else if (d > entity.leashElasticDistance() - leashHolder.getBbWidth() - entity.getBbWidth()
                      && entity.checkElasticInteractions(leashHolder, leashData)) {
                      entity.onElasticLeashPull();
@@ -50,10 +50,10 @@ index b3568d4a1467912f555ce461fa8dcf218c474047..8a9cdb408c8806fbcb79821eede4cfa5
  
      default void closeRangeLeashBehaviour(Entity entity) {
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index 6f895cab638e36667d0aabe81767acf44f7a1061..0b15bc79549af8c4c146107b4e8ab378ec0c72e7 100644
+index c450a712ca2cdc9ba753473b0fd496bf0f9f065f..d403a66a3aa8324ac793201db30ef751479ae520 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -1436,10 +1436,14 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+@@ -1455,10 +1455,14 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
          }
      }
  

@@ -5,22 +5,22 @@ Subject: [PATCH] Add CloudPlane configuration
 
 
 diff --git a/net/minecraft/server/dedicated/DedicatedServer.java b/net/minecraft/server/dedicated/DedicatedServer.java
-index e28ba8b443f70b346a7748dc20a7e147a00bdcdb..ebbc48fe1934740ba6690982cda64cb4225ecc82 100644
+index 2ee864f2d61e45f7c006c448ed1100355e3e79b4..f710a6ade234949f30df83cd76510ecf22a0d06b 100644
 --- a/net/minecraft/server/dedicated/DedicatedServer.java
 +++ b/net/minecraft/server/dedicated/DedicatedServer.java
-@@ -186,6 +186,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
+@@ -279,6 +279,7 @@ public class DedicatedServer extends MinecraftServer implements ServerInterface
          com.destroystokyo.paper.VersionHistoryManager.INSTANCE.getClass(); // Paper - load version history now
          gg.pufferfish.pufferfish.PufferfishConfig.load(); // Pufferfish
          gg.pufferfish.pufferfish.PufferfishCommand.init(); // Pufferfish
 +        dev.booky.cloudplane.CloudPlaneConfig.init((java.io.File) this.options.valueOf("cloudplane-settings")); // CloudPlane - config
  
-         this.setPvpAllowed(properties.pvp);
-         this.setFlightAllowed(properties.allowFlight);
+         // this.worldData.setGameType(properties.gameMode.get()); // CraftBukkit - moved to world loading
+         LOGGER.info("Default game type: {}", properties.gameMode.get());
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 8eb11074c3ddcc7ca55e382459bc4a2ac02caff5..0bcb7b78279c561b55cf2d625abecdf5ced3d4bf 100644
+index 68b2bf46420a684f36bf6a78de6a824347e92db3..67d37802eef78ea9329998ec0d8e97e6bb1ecf78 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -813,6 +813,8 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+@@ -818,6 +818,8 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
      }
      // Paper end - optimise random ticking
  
@@ -29,7 +29,7 @@ index 8eb11074c3ddcc7ca55e382459bc4a2ac02caff5..0bcb7b78279c561b55cf2d625abecdf5
      protected Level(
          WritableLevelData levelData,
          ResourceKey<Level> dimension,
-@@ -840,6 +842,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+@@ -845,6 +847,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
          // Paper end - getblock optimisations - cache world height/sections
          this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) levelData).getLevelName()); // Spigot
          this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper - create paper world config

@@ -5,10 +5,10 @@ Subject: [PATCH] Fix paper relative teleport flag changes
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 766cacddd5df52d9ec2d19b1ba229303dbff8128..d4e713d6751bcb5bbec001e9cf5e7bba91143d79 100644
+index 07105f7a317c30dbc880eb080c84c3211abdae7d..b110407f7cc046d746f1969965005df038678cf4 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -1340,6 +1340,32 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -1304,6 +1304,32 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          this.getHandle().lookAt(toNmsAnchor(playerAnchor), ((CraftEntity) entity).getHandle(), toNmsAnchor(entityAnchor));
      }
  
@@ -41,7 +41,7 @@ index 766cacddd5df52d9ec2d19b1ba229303dbff8128..d4e713d6751bcb5bbec001e9cf5e7bba
      public static net.minecraft.world.entity.Relative deltaRelativeToNMS(io.papermc.paper.entity.TeleportFlag.Relative apiFlag) {
          return switch (apiFlag) {
              case VELOCITY_X -> net.minecraft.world.entity.Relative.DELTA_X;
-@@ -1351,10 +1377,12 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -1315,10 +1341,12 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
  
      public static @org.jetbrains.annotations.Nullable io.papermc.paper.entity.TeleportFlag.Relative deltaRelativeToAPI(net.minecraft.world.entity.Relative nmsFlag) {
          return switch (nmsFlag) {
@@ -58,7 +58,7 @@ index 766cacddd5df52d9ec2d19b1ba229303dbff8128..d4e713d6751bcb5bbec001e9cf5e7bba
              default -> null;
          };
      }
-@@ -1447,11 +1475,19 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -1411,11 +1439,19 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
              // Paper start - Teleport API
              final Set<net.minecraft.world.entity.Relative> nms = java.util.EnumSet.noneOf(net.minecraft.world.entity.Relative.class);
              for (final io.papermc.paper.entity.TeleportFlag.Relative bukkit : relativeArguments) {

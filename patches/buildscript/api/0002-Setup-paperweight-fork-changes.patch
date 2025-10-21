@@ -5,10 +5,10 @@ Subject: [PATCH] Setup paperweight fork changes
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index cf57411de3b82263e77d4d84a5fa734cadb7ea0e..cd7ca717121b8e01f0b7bd20e979fb5eb04c10d5 100644
+index 7891077ce12718a5585201b9a2a3475bae4b329b..65c8f79071593763358f22f2d65a5086d1948665 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -92,7 +92,7 @@ dependencies {
+@@ -91,7 +91,7 @@ dependencies {
      api("io.sentry:sentry:7.15.0") // Pufferfish
  }
  
@@ -17,7 +17,7 @@ index cf57411de3b82263e77d4d84a5fa734cadb7ea0e..cd7ca717121b8e01f0b7bd20e979fb5e
  idea {
      module {
          generatedSourceDirs.add(generatedDir.toFile())
-@@ -103,8 +103,22 @@ sourceSets {
+@@ -102,8 +102,22 @@ sourceSets {
          java {
              srcDir(generatedDir)
              srcDir("src/main/pufferfish") // Pufferfish
@@ -40,7 +40,7 @@ index cf57411de3b82263e77d4d84a5fa734cadb7ea0e..cd7ca717121b8e01f0b7bd20e979fb5e
  }
  
  val outgoingVariants = arrayOf("runtimeElements", "apiElements", "sourcesElements", "javadocElements")
-@@ -176,7 +190,7 @@ val services = objects.newInstance<Services>()
+@@ -175,7 +189,7 @@ val services = objects.newInstance<Services>()
  tasks.withType<Javadoc>().configureEach {
      val options = options as StandardJavadocDocletOptions
      options.addStringOption("-add-modules", "jdk.incubator.vector") // Pufferfish
@@ -49,7 +49,7 @@ index cf57411de3b82263e77d4d84a5fa734cadb7ea0e..cd7ca717121b8e01f0b7bd20e979fb5e
      options.use()
      options.isDocFilesSubDirs = true
      options.links(
-@@ -209,11 +223,11 @@ tasks.withType<Javadoc>().configureEach {
+@@ -208,11 +222,11 @@ tasks.withType<Javadoc>().configureEach {
      }
  
      // workaround for https://github.com/gradle/gradle/issues/4046

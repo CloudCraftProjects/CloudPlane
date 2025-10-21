@@ -6,7 +6,7 @@ Subject: [PATCH] Work around unnecessary chunk pos conversion on entity
 
 
 diff --git a/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java b/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java
-index bdc1200ef5317fdaf58973bf580b0a672aee800f..4986f12ceda5c813de023bd89c8716ac4534262b 100644
+index 8697528095ebed543ee1bb3b6b617a26a800bd5d..db527a83e1690a699d1a18f4b1d159a0a9bcb199 100644
 --- a/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java
 +++ b/ca/spottedleaf/moonrise/patches/chunk_system/player/RegionizedPlayerChunkLoader.java
 @@ -273,18 +273,26 @@ public final class RegionizedPlayerChunkLoader {
@@ -51,10 +51,10 @@ index 656041c9539b6834b4d37b353eb6b810a7763ff4..a7b757b2a8be47d0ec5e0abde9193f66
              }
              ret.add(player);
 diff --git a/net/minecraft/server/level/ChunkMap.java b/net/minecraft/server/level/ChunkMap.java
-index eb352aa4296abc3ed4cf31c590bc0be66daf4de3..fd2bbe60e523666ba75809f0a0d84806a696ab3b 100644
+index ce53eb1e966e07b04e6a13785a858a3318b2c573..377372af02860ad66909bc79c686814cb691bbbb 100644
 --- a/net/minecraft/server/level/ChunkMap.java
 +++ b/net/minecraft/server/level/ChunkMap.java
-@@ -301,7 +301,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
+@@ -299,7 +299,7 @@ public class ChunkMap extends ChunkStorage implements ChunkHolder.PlayerProvider
      }
  
      private boolean isChunkOnTrackedBorder(ServerPlayer player, int x, int z) {

@@ -7,10 +7,10 @@ The client doesn't respect newlines, so
 this has to be done at the network level
 
 diff --git a/net/minecraft/core/component/DataComponents.java b/net/minecraft/core/component/DataComponents.java
-index 3c97531a7bbcd84b80d4704aaa27b913652f4019..f680303923f61d931ae1c1f49f43f2ee33508cbe 100644
+index 4be9e73b1939e4470b2e27665ebe984cf71420af..bb224d1c127f1914bd9b19f2ed9e8243e60a651f 100644
 --- a/net/minecraft/core/component/DataComponents.java
 +++ b/net/minecraft/core/component/DataComponents.java
-@@ -114,7 +114,7 @@ public class DataComponents {
+@@ -117,7 +117,7 @@ public class DataComponents {
          "item_model", builder -> builder.persistent(ResourceLocation.CODEC).networkSynchronized(ResourceLocation.STREAM_CODEC).cacheEncoding()
      );
      public static final DataComponentType<ItemLore> LORE = register(

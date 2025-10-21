@@ -5,10 +5,10 @@ Subject: [PATCH] Convert chunk heightmaps to array
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
-index 400e632208d133a3f49fc7f14bceb48a1026769b..6d93eb97bad39fc8c06d5cd00af6ead6deaadeab 100644
+index 09baa8c13a56e0f503815a436042b7b79b1698e4..7fabb54c965615af2de56d77a7ec40ff05b7cbab 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftChunk.java
-@@ -330,7 +330,7 @@ public class CraftChunk implements Chunk {
+@@ -317,7 +317,7 @@ public class CraftChunk implements Chunk {
  
          if (includeMaxBlockY) {
              heightmap = new Heightmap(chunk, Heightmap.Types.MOTION_BLOCKING);

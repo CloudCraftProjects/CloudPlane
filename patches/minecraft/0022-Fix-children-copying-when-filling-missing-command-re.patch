@@ -7,10 +7,10 @@ When the redirect of some command wasn't found (e.g. because "commands.send-name
 This fix now applies the same logic which is used for copying children normally
 
 diff --git a/net/minecraft/commands/Commands.java b/net/minecraft/commands/Commands.java
-index ec1cced129ef42be65d7b2b622638bfae8bd895e..992d8d9e25e58ec0d5a0393d87d9d9b3a56dc21d 100644
+index 83f05b042630891d43cfb567e98666831df80f6e..c744277be48ada309b5a85aed16ce101b6ef23ff 100644
 --- a/net/minecraft/commands/Commands.java
 +++ b/net/minecraft/commands/Commands.java
-@@ -518,6 +518,12 @@ public class Commands {
+@@ -525,6 +525,12 @@ public class Commands {
      }
  
      private static <S> void fillUsableCommands(java.util.Collection<CommandNode<S>> children, CommandNode<S> current, S source, Map<CommandNode<S>, CommandNode<S>> output) { // Paper - Perf: Async command map building; pass copy of children
@@ -23,7 +23,7 @@ index ec1cced129ef42be65d7b2b622638bfae8bd895e..992d8d9e25e58ec0d5a0393d87d9d9b3
          for (CommandNode<S> commandNode : children) {  // Paper - Perf: Async command map building; pass copy of children
              // Paper start - Brigadier API
              if (commandNode.clientNode != null) {
-@@ -554,10 +560,10 @@ public class Commands {
+@@ -561,10 +567,10 @@ public class Commands {
                      if (redirect.getCommand() != null) {
                          builder.executes(redirect.getCommand());
                      }
@@ -38,7 +38,7 @@ index ec1cced129ef42be65d7b2b622638bfae8bd895e..992d8d9e25e58ec0d5a0393d87d9d9b3
  
                      argumentBuilder = builder;
                  }
-@@ -568,7 +574,7 @@ public class Commands {
+@@ -575,7 +581,7 @@ public class Commands {
  
                  CommandNode<S> commandNode1 = argumentBuilder.build();
                  output.put(commandNode, commandNode1);

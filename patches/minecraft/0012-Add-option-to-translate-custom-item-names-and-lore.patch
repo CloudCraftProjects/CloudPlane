@@ -5,10 +5,10 @@ Subject: [PATCH] Add option to translate custom item names and lore
 
 
 diff --git a/net/minecraft/world/item/ItemStack.java b/net/minecraft/world/item/ItemStack.java
-index 70db847aa99b350c719bd5dbe66c63dd14c93614..3d51f714920b55a8c3df31f83809ab79dc5cd4d3 100644
+index 46c975cb8cd64a22d80aafef738c9e96bf0d9546..339846aa525313ed999746f9d5256c90f6d57738 100644
 --- a/net/minecraft/world/item/ItemStack.java
 +++ b/net/minecraft/world/item/ItemStack.java
-@@ -189,7 +189,13 @@ public final class ItemStack implements DataComponentHolder {
+@@ -191,7 +191,13 @@ public final class ItemStack implements DataComponentHolder {
                  } else {
                      Holder<Item> holder = Item.STREAM_CODEC.decode(buffer);
                      DataComponentPatch dataComponentPatch = codec.decode(buffer);
@@ -23,7 +23,7 @@ index 70db847aa99b350c719bd5dbe66c63dd14c93614..3d51f714920b55a8c3df31f83809ab79
                  }
              }
  
-@@ -200,15 +206,23 @@ public final class ItemStack implements DataComponentHolder {
+@@ -202,15 +208,23 @@ public final class ItemStack implements DataComponentHolder {
                  } else {
                      buffer.writeVarInt(io.papermc.paper.util.sanitizer.ItemComponentSanitizer.sanitizeCount(io.papermc.paper.util.sanitizer.ItemObfuscationSession.currentSession(), value, value.getCount())); // Paper - potentially sanitize count
                      Item.STREAM_CODEC.encode(buffer, value.getItemHolder());

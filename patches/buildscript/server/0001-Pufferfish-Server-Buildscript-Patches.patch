@@ -5,10 +5,10 @@ Subject: [PATCH] Pufferfish Server Buildscript Patches
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index c16d409e31f3ce53b4704f03e200e3270db38aa6..b910370958d4e82c23638a42733c5f3f74849c9d 100644
+index 6449d21421346fc077dc10cbbf246fbc926825df..64ecba84aef540c9d9b1f3ed9aa5106520dfc3c8 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -107,6 +107,16 @@ if (project.providers.gradleProperty("publishDevBundle").isPresent) {
+@@ -104,6 +104,16 @@ if (project.providers.gradleProperty("publishDevBundle").isPresent) {
      }
  }
  
@@ -25,7 +25,7 @@ index c16d409e31f3ce53b4704f03e200e3270db38aa6..b910370958d4e82c23638a42733c5f3f
  val log4jPlugins = sourceSets.create("log4jPlugins")
  configurations.named(log4jPlugins.compileClasspathConfigurationName) {
      extendsFrom(configurations.compileClasspath.get())
-@@ -165,6 +175,8 @@ dependencies {
+@@ -162,6 +172,8 @@ dependencies {
          isTransitive = false // includes junit
      }
  
@@ -34,8 +34,8 @@ index c16d409e31f3ce53b4704f03e200e3270db38aa6..b910370958d4e82c23638a42733c5f3f
      testImplementation("io.github.classgraph:classgraph:4.8.179") // For mob goal test
      testImplementation("org.junit.jupiter:junit-jupiter:5.12.2")
      testImplementation("org.junit.platform:junit-platform-suite-engine:1.12.2")
-@@ -188,6 +200,13 @@ dependencies {
-     implementation("me.lucko:spark-paper:1.10.133-20250413.112336-1")
+@@ -185,6 +197,13 @@ dependencies {
+     implementation("me.lucko:spark-paper:1.10.152")
  }
  
 +// Pufferfish start

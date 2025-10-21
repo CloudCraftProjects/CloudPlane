@@ -5,10 +5,10 @@ Subject: [PATCH] Convert spawn category limits and ticks to array
 
 
 diff --git a/net/minecraft/server/level/ServerChunkCache.java b/net/minecraft/server/level/ServerChunkCache.java
-index ac4c4c31cd56fd51e25084f0fb854f1077d1bca7..846247f982f3029261c6fdc5394459fa2ff9c56f 100644
+index efe96d04bb5886dc0966c00ef029052e2fea83ac..a594c145ac58ba40c17f618d7f09d5823443c827 100644
 --- a/net/minecraft/server/level/ServerChunkCache.java
 +++ b/net/minecraft/server/level/ServerChunkCache.java
-@@ -586,7 +586,10 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+@@ -580,7 +580,10 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
                  entityPlayer.playerNaturallySpawnedEvent.callEvent();
              }
              // Paper end - PlayerNaturallySpawnCreaturesEvent
@@ -21,10 +21,10 @@ index ac4c4c31cd56fd51e25084f0fb854f1077d1bca7..846247f982f3029261c6fdc5394459fa
          } else {
              filteredSpawningCategories = List.of();
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 0bcb7b78279c561b55cf2d625abecdf5ced3d4bf..f56c35b01bc85931310ff12c45b0dccedeca4341 100644
+index 67d37802eef78ea9329998ec0d8e97e6bb1ecf78..e3a591b41e0354d8304388caa81c5a17ce6fed9f 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -144,7 +144,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+@@ -149,7 +149,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
      public Map<BlockPos, BlockEntity> capturedTileEntities = new java.util.LinkedHashMap<>(); // Paper - Retain block place order when capturing blockstates
      @Nullable
      public List<net.minecraft.world.entity.item.ItemEntity> captureDrops;
@@ -33,7 +33,7 @@ index 0bcb7b78279c561b55cf2d625abecdf5ced3d4bf..f56c35b01bc85931310ff12c45b0dcce
      // Paper start - EAR 2
      public int wakeupInactiveRemainingAnimals;
      public int wakeupInactiveRemainingFlying;
-@@ -848,7 +848,7 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
+@@ -853,7 +853,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
  
          for (SpawnCategory spawnCategory : SpawnCategory.values()) {
              if (org.bukkit.craftbukkit.util.CraftSpawnCategory.isValidForLimits(spawnCategory)) {
@@ -43,10 +43,10 @@ index 0bcb7b78279c561b55cf2d625abecdf5ced3d4bf..f56c35b01bc85931310ff12c45b0dcce
          }
          // CraftBukkit end
 diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
-index f5821c32f92bdd5bc682e27bd06ce9fedbcb32ee..8b3205ae7373399920ef95f0b36683d415d4171f 100644
+index 7e16b2274985b70ec815a1baf240aaf8c2f7a872..d44faea65637cc0040ca3bae21553c36a6aadb21 100644
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
-@@ -131,8 +131,11 @@ public final class NaturalSpawner {
+@@ -133,8 +133,11 @@ public final class NaturalSpawner {
              int limit = mobCategory.getMaxInstancesPerChunk();
              org.bukkit.entity.SpawnCategory spawnCategory = org.bukkit.craftbukkit.util.CraftSpawnCategory.toBukkit(mobCategory);
              if (org.bukkit.craftbukkit.util.CraftSpawnCategory.isValidForLimits(spawnCategory)) {
@@ -60,7 +60,7 @@ index f5821c32f92bdd5bc682e27bd06ce9fedbcb32ee..8b3205ae7373399920ef95f0b36683d4
              }
  
              if (!spawnThisTick || limit == 0) {
-@@ -164,7 +167,7 @@ public final class NaturalSpawner {
+@@ -166,7 +169,7 @@ public final class NaturalSpawner {
                  int limit = mobCategory.getMaxInstancesPerChunk();
                  org.bukkit.entity.SpawnCategory spawnCategory = org.bukkit.craftbukkit.util.CraftSpawnCategory.toBukkit(mobCategory);
                  if (org.bukkit.craftbukkit.util.CraftSpawnCategory.isValidForLimits(spawnCategory)) {

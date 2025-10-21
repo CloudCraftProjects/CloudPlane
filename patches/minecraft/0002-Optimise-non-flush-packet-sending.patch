@@ -26,10 +26,10 @@ runnables on the event loop.
 Co-authored-by: booky10 <boooky10@gmail.com>
 
 diff --git a/net/minecraft/network/Connection.java b/net/minecraft/network/Connection.java
-index 41005f6b9f53a9c1125ad5e08538d9f5aacb3571..f2dff045eb60896bc5e3300932e2dbae3383c587 100644
+index 14addbaf68b7ad80490187d12d9c9b00891e2ce1..fb874a5cff63110920decbb7e9edeaaf1877f925 100644
 --- a/net/minecraft/network/Connection.java
 +++ b/net/minecraft/network/Connection.java
-@@ -67,6 +67,22 @@ import org.slf4j.Marker;
+@@ -66,6 +66,22 @@ import org.slf4j.Marker;
  import org.slf4j.MarkerFactory;
  
  public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
@@ -52,14 +52,14 @@ index 41005f6b9f53a9c1125ad5e08538d9f5aacb3571..f2dff045eb60896bc5e3300932e2dbae
      private static final float AVERAGE_PACKETS_SMOOTHING = 0.75F;
      private static final Logger LOGGER = LogUtils.getLogger();
      public static final Marker ROOT_MARKER = MarkerFactory.getMarker("NETWORK");
-@@ -474,7 +490,21 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
+@@ -472,7 +488,21 @@ public class Connection extends SimpleChannelInboundHandler<Packet<?>> {
          if (this.channel.eventLoop().inEventLoop()) {
-             this.doSendPacket(packet, channelFutureListener, flag);
+             this.doSendPacket(packet, sendListener, flush);
          } else {
--            this.channel.eventLoop().execute(() -> this.doSendPacket(packet, channelFutureListener, flag));
+-            this.channel.eventLoop().execute(() -> this.doSendPacket(packet, sendListener, flush));
 +            // Paper start - optimise packets that are not flushed
-+            final Runnable run = () -> this.doSendPacket(packet, channelFutureListener, flag);
-+            if (flag) {
++            final Runnable run = () -> this.doSendPacket(packet, sendListener, flush);
++            if (flush) {
 +                this.channel.eventLoop().execute(run);
 +            } else {
 +                // netty dropped support for LazyRunnable in some version, so

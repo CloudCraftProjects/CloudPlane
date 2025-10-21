@@ -5,10 +5,10 @@ Subject: [PATCH] Further improve Player#canSee performance
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 23ac8ded361459b41a0b73b0c9e5672268543c53..038de789c7ce742fc740f9d17495d24220f80824 100644
+index ecdd2aebf5d08beb5bcd9318cc13496cc29dd063..9e13ac76b292beb017616b430663f259136530b1 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
-@@ -317,6 +317,15 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -319,6 +319,15 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
      private boolean invulnerable;
      protected UUID uuid = Mth.createInsecureUUID(this.random);
      protected String stringUUID = this.uuid.toString();
@@ -24,7 +24,7 @@ index 23ac8ded361459b41a0b73b0c9e5672268543c53..038de789c7ce742fc740f9d17495d242
      private boolean hasGlowingTag;
      private final Set<String> tags = new io.papermc.paper.util.SizeLimitedSet<>(new it.unimi.dsi.fastutil.objects.ObjectOpenHashSet<>(), MAX_ENTITY_TAG_COUNT); // Paper - fully limit tag size - replace set impl
      private final double[] pistonDeltas = new double[]{0.0, 0.0, 0.0};
-@@ -543,6 +552,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -545,6 +554,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          this.position = Vec3.ZERO;
          this.blockPosition = BlockPos.ZERO;
          this.chunkPosition = ChunkPos.ZERO;
@@ -32,7 +32,7 @@ index 23ac8ded361459b41a0b73b0c9e5672268543c53..038de789c7ce742fc740f9d17495d242
          // Paper start - EAR 2
          if (level != null) {
              this.defaultActivationState = io.papermc.paper.entity.activation.ActivationRange.initializeEntityActivationState(this, level.spigotConfig);
-@@ -2617,8 +2627,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -2674,8 +2684,7 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
              this.invulnerable = input.getBooleanOr("Invulnerable", false);
              this.portalCooldown = input.getIntOr("PortalCooldown", 0);
              input.read("UUID", UUIDUtil.CODEC).ifPresent(uuid -> {
@@ -42,9 +42,9 @@ index 23ac8ded361459b41a0b73b0c9e5672268543c53..038de789c7ce742fc740f9d17495d242
              });
              if (!Double.isFinite(this.getX()) || !Double.isFinite(this.getY()) || !Double.isFinite(this.getZ())) {
                  throw new IllegalStateException("Entity has invalid position");
-@@ -4213,6 +4222,9 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
-     public void setUUID(UUID uniqueId) {
-         this.uuid = uniqueId;
+@@ -4291,6 +4300,9 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
+     public void setUUID(UUID uuid) {
+         this.uuid = uuid;
          this.stringUUID = this.uuid.toString();
 +        // CloudPlane start - further improve Player#canSee performance
 +        this.longUUID = this.uuid.getMostSignificantBits() ^ this.uuid.getLeastSignificantBits();
@@ -52,7 +52,7 @@ index 23ac8ded361459b41a0b73b0c9e5672268543c53..038de789c7ce742fc740f9d17495d242
      }
  
      @Override
-@@ -4224,6 +4236,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4302,6 +4314,12 @@ public abstract class Entity implements SyncedDataHolder, DebugValueSource, Name
          return this.stringUUID;
      }
  
