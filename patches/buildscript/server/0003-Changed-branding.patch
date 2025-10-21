@@ -5,10 +5,10 @@ Subject: [PATCH] Changed branding
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index f378d8b189706f7d5a29a60c3335d2225269e439..cd754a007937f300748fd66af2ef16ea4a0bffb7 100644
+index 222006bf61bb4a8043ce2d7cc9f7cc428dd7ea25..34b9d1ec9e708b214514b7069838ce3513e0261a 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
-@@ -261,14 +261,14 @@ tasks.jar {
+@@ -256,14 +256,14 @@ tasks.jar {
          val gitBranch = git.exec(providers, "rev-parse", "--abbrev-ref", "HEAD").get().trim()
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",

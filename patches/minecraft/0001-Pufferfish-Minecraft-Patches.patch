@@ -70,7 +70,7 @@ index f6eed34b2fd72ab74cc9dc4b99ca184d512c0a66..9cec107eae394eef14fab1177bdccb14
                          throw new SignedMessageChain.DecodeException(SignedMessageChain.DecodeException.OUT_OF_ORDER_CHAT, org.bukkit.event.player.PlayerKickEvent.Cause.OUT_OF_ORDER_CHAT); // Paper - kick event causes
                      } else {
 diff --git a/net/minecraft/server/MinecraftServer.java b/net/minecraft/server/MinecraftServer.java
-index 7aac2a6889af3edaebfaf94deecbf00d00758b68..8291a623045127015d3a35a3a6f883ab274703ce 100644
+index 9243bb11e3f968d0bf0eb2e3dc9295c0232bc15d..6f1b31af54cfcd2ef5b13b85be8da85e8d1d01cf 100644
 --- a/net/minecraft/server/MinecraftServer.java
 +++ b/net/minecraft/server/MinecraftServer.java
 @@ -391,6 +391,8 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -108,7 +108,7 @@ index 98927d4a5fba2a0dcdb147ac10b82c3286ccdc6b..cf5fbdcc92abf9b5da3c20aa1f26c1a3
          }
      }
 diff --git a/net/minecraft/server/level/DistanceManager.java b/net/minecraft/server/level/DistanceManager.java
-index fd3d0f6cb53bc8b6186f0d86575f21007b2c20ed..306c7db807f82a7c80e2ecdb40be3a3f6d3a0264 100644
+index 50bc5b940812432bc472e5b272582efb8bbfc7a7..1029d64937b603ceab4e7dd9c9401767332da9c8 100644
 --- a/net/minecraft/server/level/DistanceManager.java
 +++ b/net/minecraft/server/level/DistanceManager.java
 @@ -58,20 +58,25 @@ public abstract class DistanceManager implements ca.spottedleaf.moonrise.patches
@@ -340,10 +340,10 @@ index dda8d38ef61672cc714d9e5a475f9b0412ed5ff9..cce41d44f7e8810e8a622a220a9622e5
              if (this.isRainingAt(blockPos)) {
                  DifficultyInstance currentDifficultyAt = this.getCurrentDifficultyAt(blockPos);
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index dfa00516e9a6c941087bd7ecfd5aca8a9f7915be..279cda8cf1f06b0939059ff2008f099f3802c533 100644
+index 8f94c963f2c59668d72d162f46f7505d6a6b06a5..2db446959fc8b6e7e21aef5acfecce6fb61bc702 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -1390,6 +1390,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1403,6 +1403,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  this.connection.internalTeleport(PositionMoveRotation.of(teleportTransition), teleportTransition.relatives());
                  // CraftBukkit end
                  this.connection.resetPosition();
@@ -351,7 +351,7 @@ index dfa00516e9a6c941087bd7ecfd5aca8a9f7915be..279cda8cf1f06b0939059ff2008f099f
                  teleportTransition.postTeleportTransition().onTransition(this);
                  return this;
              } else {
-@@ -1428,6 +1429,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -1441,6 +1442,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  this.setServerLevel(level);
                  this.connection.internalTeleport(PositionMoveRotation.of(teleportTransition), teleportTransition.relatives()); // CraftBukkit - use internal teleport without event
                  this.connection.resetPosition();
@@ -359,7 +359,7 @@ index dfa00516e9a6c941087bd7ecfd5aca8a9f7915be..279cda8cf1f06b0939059ff2008f099f
                  level.addDuringTeleport(this);
                  profilerFiller.pop();
                  this.triggerDimensionChangeTriggers(serverLevel);
-@@ -2117,6 +2119,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2130,6 +2132,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      public void snapTo(double x, double y, double z) {
          super.snapTo(x, y, z);
          this.connection.resetPosition();
@@ -367,7 +367,7 @@ index dfa00516e9a6c941087bd7ecfd5aca8a9f7915be..279cda8cf1f06b0939059ff2008f099f
      }
  
      @Override
-@@ -2388,6 +2391,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2401,6 +2404,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
  
              this.connection.send(new ClientboundSetCameraPacket(this.camera));
              this.connection.resetPosition();
@@ -375,7 +375,7 @@ index dfa00516e9a6c941087bd7ecfd5aca8a9f7915be..279cda8cf1f06b0939059ff2008f099f
          }
      }
  
-@@ -2909,6 +2913,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2922,6 +2926,7 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      public void forceSetPositionRotation(double x, double y, double z, float yaw, float pitch) {
          this.snapTo(x, y, z, yaw, pitch);
          this.connection.resetPosition();
@@ -384,7 +384,7 @@ index dfa00516e9a6c941087bd7ecfd5aca8a9f7915be..279cda8cf1f06b0939059ff2008f099f
  
      @Override
 diff --git a/net/minecraft/server/network/ServerGamePacketListenerImpl.java b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
-index c61e8b5202a6ac6fcca8d1d7cbe8addecd42778e..ee4371c12d8c2d6202e0c09de8ff6170c9f4bcf2 100644
+index ca13dd72f173be6714965c506f2d48dcd3c9e569..4145da49a95d78c07b793a8cda4b9d8d017109aa 100644
 --- a/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 +++ b/net/minecraft/server/network/ServerGamePacketListenerImpl.java
 @@ -1269,6 +1269,13 @@ public class ServerGamePacketListenerImpl
@@ -511,7 +511,7 @@ index b382665cc125b8b5c0938e5e55984e4bf91d37ff..9b8a1f1e6f833847f43c17c5e9c019b9
  
      boolean isEmpty();
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 8c69b9f46356123211a95f6601bc5a1fa831b5e2..587b2a40149aeb5e3483043f39612e4357df07ac 100644
+index fe42b7b0a174471ba1c13c96d08939abe55a58f3..23ac8ded361459b41a0b73b0c9e5672268543c53 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -254,7 +254,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -533,7 +533,7 @@ index 8c69b9f46356123211a95f6601bc5a1fa831b5e2..587b2a40149aeb5e3483043f39612e43
      public Entity(EntityType<?> entityType, Level level) {
          this.type = entityType;
          this.level = level;
-@@ -4683,7 +4686,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4682,7 +4685,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
  
      // Paper start - optimise collisions
      public boolean updateFluidHeightAndDoFluidPushing(final TagKey<Fluid> fluid, final double flowScale) {
@@ -542,7 +542,7 @@ index 8c69b9f46356123211a95f6601bc5a1fa831b5e2..587b2a40149aeb5e3483043f39612e43
              return false;
          }
  
-@@ -4722,7 +4725,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4721,7 +4724,13 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
  
          for (int currChunkZ = minChunkZ; currChunkZ <= maxChunkZ; ++currChunkZ) {
              for (int currChunkX = minChunkX; currChunkX <= maxChunkX; ++currChunkX) {
@@ -557,7 +557,7 @@ index 8c69b9f46356123211a95f6601bc5a1fa831b5e2..587b2a40149aeb5e3483043f39612e43
  
                  // bound y
                  for (int currChunkY = minChunkY; currChunkY <= maxChunkY; ++currChunkY) {
-@@ -4731,7 +4740,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4730,7 +4739,7 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
                          continue;
                      }
                      final net.minecraft.world.level.chunk.LevelChunkSection section = sections[sectionIdx];
@@ -580,7 +580,7 @@ index cdf71340278e05e58bbb4ed51a432336de46e549..ebdbc5f4a9951fd0857e8b428af448f4
          return Registry.register(BuiltInRegistries.ENTITY_TYPE, key, builder.build(key));
      }
 diff --git a/net/minecraft/world/entity/LivingEntity.java b/net/minecraft/world/entity/LivingEntity.java
-index 1ba342a1a60951f828034d3ed535b577b3990bf6..7ff661e2bd51ff3077bd329eb0d62cdf73abfc30 100644
+index 0268e02d2ef2cb3d699644a804e23a6da4521f4c..e5b28de6fb170f15d0bf91da39d363feaa6749be 100644
 --- a/net/minecraft/world/entity/LivingEntity.java
 +++ b/net/minecraft/world/entity/LivingEntity.java
 @@ -437,7 +437,7 @@ public abstract class LivingEntity extends Entity implements Attackable, Waypoin
@@ -630,10 +630,10 @@ index 1ba342a1a60951f828034d3ed535b577b3990bf6..7ff661e2bd51ff3077bd329eb0d62cdf
          if (this.isSpectator()) {
              return false;
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index 0470c4bbf8be7e48ce8dfa4910c3b9f5ebb23360..96cc7d1fcb8627484a16e6930ff1221f55251e2a 100644
+index e0b3cb2b2694768803ed347a1026b881fd624951..6f895cab638e36667d0aabe81767acf44f7a1061 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -206,14 +206,17 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+@@ -207,14 +207,17 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
          return this.lookControl;
      }
  
@@ -653,7 +653,7 @@ index 0470c4bbf8be7e48ce8dfa4910c3b9f5ebb23360..96cc7d1fcb8627484a16e6930ff1221f
              this.targetSelector.tick();
          }
      }
-@@ -748,16 +751,20 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+@@ -761,16 +764,20 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
          int i = this.tickCount + this.getId();
          if (i % 2 != 0 && this.tickCount > 1) {
              profilerFiller.push("targetSelector");
@@ -674,7 +674,7 @@ index 0470c4bbf8be7e48ce8dfa4910c3b9f5ebb23360..96cc7d1fcb8627484a16e6930ff1221f
              this.goalSelector.tick();
              profilerFiller.pop();
          }
-@@ -784,6 +791,19 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+@@ -797,6 +804,19 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
          DebugPackets.sendGoalSelector(this.level(), this, this.goalSelector);
      }
  
@@ -907,7 +907,7 @@ index 6a9f31c1f39cc14ad7b5ae3af85908bc7a4caae4..877eb29bcc1c0e85f54f2be05aa3f596
          profilerFiller.popPush("snifferActivityUpdate");
          SnifferAi.updateActivity(this);
 diff --git a/net/minecraft/world/entity/boss/wither/WitherBoss.java b/net/minecraft/world/entity/boss/wither/WitherBoss.java
-index 787b74c5aa02afc4ba95fa1cdaf6cc21b6554b56..1399c5c06b8d6eec4d34d197ba51234aab3227c4 100644
+index 030721328b05526c3f56d9875859ee8860a1d36b..95955fdfdaaeef7980a525f075d5bd5217329ec2 100644
 --- a/net/minecraft/world/entity/boss/wither/WitherBoss.java
 +++ b/net/minecraft/world/entity/boss/wither/WitherBoss.java
 @@ -136,6 +136,13 @@ public class WitherBoss extends Monster implements RangedAttackMob {
@@ -1066,7 +1066,7 @@ index a6bb436dc80daf6901dc027a6011ead4b3ed27e2..db4bd4666030398670d9fa586474e78b
          }
  
 diff --git a/net/minecraft/world/entity/projectile/Projectile.java b/net/minecraft/world/entity/projectile/Projectile.java
-index ee16a05b8b2747ce95fcae1616c96143a5dec74e..2951bc92c398191733a475e937d9b30d244fd7a2 100644
+index dae6619f4670c6f68dae7e4b10b0b6a8bbe6dc2e..325acbe052120e07f5f76f196e35865890b861f2 100644
 --- a/net/minecraft/world/entity/projectile/Projectile.java
 +++ b/net/minecraft/world/entity/projectile/Projectile.java
 @@ -50,6 +50,36 @@ public abstract class Projectile extends Entity implements TraceableEntity {
@@ -1142,7 +1142,7 @@ index 05ec512839898f96d9769bb0d00f6ba11dda0c4b..f37ac37344d2b30662306aff59c610d1
                              dragonFight.tryRespawn(aboveBlockPos); // Paper - Perf: Do crystal-portal proximity check before entity lookup
                          }
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index c41df4b1fff1f65532256e835dc30fadbb4f8c8b..232c87fb981a9eb8f1e2e1c6bb18fc045e90891f 100644
+index be16627136f7b3979e62308f58b96a2b16ee9f62..2e1fc8bce7eb50b7ca013ca71a72ebb0d12b98f7 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
 @@ -1481,12 +1481,12 @@ public abstract class Level implements LevelAccessor, UUIDLookup<Entity>, AutoCl
@@ -1161,7 +1161,7 @@ index c41df4b1fff1f65532256e835dc30fadbb4f8c8b..232c87fb981a9eb8f1e2e1c6bb18fc04
          }
          this.moonrise$midTickTasks(); // Paper - rewrite chunk system
 diff --git a/net/minecraft/world/level/NaturalSpawner.java b/net/minecraft/world/level/NaturalSpawner.java
-index 14a2514a408a66a83f7b5fb43b4c4dc8f23fd5f4..f5821c32f92bdd5bc682e27bd06ce9fedbcb32ee 100644
+index 4f647507d06d45a65b4b1793219d90c65e110225..bc238438897e4d31bdcf44e6862ef61b9e9d83af 100644
 --- a/net/minecraft/world/level/NaturalSpawner.java
 +++ b/net/minecraft/world/level/NaturalSpawner.java
 @@ -441,12 +441,20 @@ public final class NaturalSpawner {
@@ -1295,7 +1295,7 @@ index b7d94ebe0ee995392c355c4237da8443dcc79b21..2ec3dad9f7b5ebb927ae07919703a4a3
  
      @Override
 diff --git a/net/minecraft/world/level/block/entity/HopperBlockEntity.java b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
-index 800b7e78ae989868ed0b9e060c80dcd002759412..1f4ceb3ecfa2266d90accd6500faa78c58734123 100644
+index 01ed25d1f895d94485b5fecd98476534cbb26930..9adb91df255aa61b14fe83aa632809854653bc25 100644
 --- a/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 +++ b/net/minecraft/world/level/block/entity/HopperBlockEntity.java
 @@ -33,7 +33,8 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
@@ -1346,7 +1346,7 @@ index 800b7e78ae989868ed0b9e060c80dcd002759412..1f4ceb3ecfa2266d90accd6500faa78c
              if (item.isEmpty()) {
                  // Spigot start - SPIGOT-6693, SimpleContainer#setItem
                  ItemStack leftover = ItemStack.EMPTY; // Paper - Make hoppers respect inventory max stack size
-@@ -859,7 +877,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
+@@ -861,7 +879,7 @@ public class HopperBlockEntity extends RandomizableContainerBlockEntity implemen
  
      @Override
      protected void setItems(NonNullList<ItemStack> items) {

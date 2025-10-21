@@ -5,10 +5,10 @@ Subject: [PATCH] Convert spawn category limits and ticks to array
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 015c61518fb6cf7f03294a546c04e2c858d663f4..9925c61c3cca73c0ac072e368f631e661ea7d357 100644
+index 2d054c04645798023b49699af481b0a2ac53cbf2..fb718470de1c280c6fcbd4192328194a31ae933f 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -294,7 +294,7 @@ public final class CraftServer implements Server {
+@@ -295,7 +295,7 @@ public final class CraftServer implements Server {
      private final EntityMetadataStore entityMetadata = new EntityMetadataStore();
      private final PlayerMetadataStore playerMetadata = new PlayerMetadataStore();
      private final WorldMetadataStore worldMetadata = new WorldMetadataStore();
@@ -17,7 +17,7 @@ index 015c61518fb6cf7f03294a546c04e2c858d663f4..9925c61c3cca73c0ac072e368f631e66
      private File container;
      private WarningState warningState = WarningState.DEFAULT;
      public ApiVersion minimumAPI;
-@@ -480,6 +480,7 @@ public final class CraftServer implements Server {
+@@ -481,6 +481,7 @@ public final class CraftServer implements Server {
          this.saveCommandsConfig();
          this.overrideAllCommandBlockCommands = this.commandsConfiguration.getStringList("command-block-overrides").contains("*");
          this.ignoreVanillaPermissions = this.commandsConfiguration.getBoolean("ignore-vanilla-permissions");
@@ -25,7 +25,7 @@ index 015c61518fb6cf7f03294a546c04e2c858d663f4..9925c61c3cca73c0ac072e368f631e66
          this.overrideSpawnLimits();
          console.autosavePeriod = this.configuration.getInt("ticks-per.autosave");
          this.warningState = WarningState.value(this.configuration.getString("settings.deprecated-verbose"));
-@@ -513,7 +514,7 @@ public final class CraftServer implements Server {
+@@ -514,7 +515,7 @@ public final class CraftServer implements Server {
      private void overrideSpawnLimits() {
          for (SpawnCategory spawnCategory : SpawnCategory.values()) {
              if (CraftSpawnCategory.isValidForLimits(spawnCategory)) {
@@ -34,7 +34,7 @@ index 015c61518fb6cf7f03294a546c04e2c858d663f4..9925c61c3cca73c0ac072e368f631e66
              }
          }
      }
-@@ -1054,9 +1055,9 @@ public final class CraftServer implements Server {
+@@ -1057,9 +1058,9 @@ public final class CraftServer implements Server {
                  if (CraftSpawnCategory.isValidForLimits(spawnCategory)) {
                      long ticksPerCategorySpawn = this.getTicksPerSpawns(spawnCategory);
                      if (ticksPerCategorySpawn < 0) {
@@ -46,7 +46,7 @@ index 015c61518fb6cf7f03294a546c04e2c858d663f4..9925c61c3cca73c0ac072e368f631e66
                      }
                  }
              }
-@@ -2457,8 +2458,8 @@ public final class CraftServer implements Server {
+@@ -2460,8 +2461,8 @@ public final class CraftServer implements Server {
          return this.getSpawnLimitUnsafe(spawnCategory);
      }
  
@@ -58,10 +58,10 @@ index 015c61518fb6cf7f03294a546c04e2c858d663f4..9925c61c3cca73c0ac072e368f631e66
  
      @Override
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-index 68351e47609ae06f0a1641b4ad2013ce6261ae4e..f827fbe73c654c3b45255ef5758152f9cc3be22f 100644
+index ee7a4169003b23766b5d2e6edf9221375d80d83c..cdabdddb82a183c6d14a3e5439288ee108be1317 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftWorld.java
-@@ -171,7 +171,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -173,7 +173,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
      private final @Nullable BiomeProvider biomeProvider;
      private final List<BlockPopulator> populators = new ArrayList<BlockPopulator>();
      private final BlockMetadataStore blockMetadata = new BlockMetadataStore(this);
@@ -70,7 +70,7 @@ index 68351e47609ae06f0a1641b4ad2013ce6261ae4e..f827fbe73c654c3b45255ef5758152f9
      private final CraftPersistentDataContainer persistentDataContainer = new CraftPersistentDataContainer(CraftWorld.DATA_TYPE_REGISTRY);
      // Paper start - void damage configuration
      private boolean voidDamageEnabled;
-@@ -301,6 +301,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -303,6 +303,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
          this.biomeProvider = biomeProvider;
  
          this.environment = environment;
@@ -78,7 +78,7 @@ index 68351e47609ae06f0a1641b4ad2013ce6261ae4e..f827fbe73c654c3b45255ef5758152f9
          // Paper start - per world spawn limits
          for (SpawnCategory spawnCategory : SpawnCategory.values()) {
              if (CraftSpawnCategory.isValidForLimits(spawnCategory)) {
-@@ -1734,7 +1735,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -1736,7 +1737,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
          Preconditions.checkArgument(spawnCategory != null, "SpawnCategory cannot be null");
          Preconditions.checkArgument(CraftSpawnCategory.isValidForLimits(spawnCategory), "SpawnCategory.%s are not supported", spawnCategory);
  
@@ -87,7 +87,7 @@ index 68351e47609ae06f0a1641b4ad2013ce6261ae4e..f827fbe73c654c3b45255ef5758152f9
      }
  
      @Override
-@@ -1742,7 +1743,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -1744,7 +1745,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
          Preconditions.checkArgument(spawnCategory != null, "SpawnCategory cannot be null");
          Preconditions.checkArgument(CraftSpawnCategory.isValidForLimits(spawnCategory), "SpawnCategory.%s are not supported", spawnCategory);
  
@@ -96,7 +96,7 @@ index 68351e47609ae06f0a1641b4ad2013ce6261ae4e..f827fbe73c654c3b45255ef5758152f9
      }
  
      @Override
-@@ -1846,7 +1847,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -1848,7 +1849,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
          return this.getSpawnLimitUnsafe(spawnCategory);
      }
      public final int getSpawnLimitUnsafe(final SpawnCategory spawnCategory) {
@@ -105,7 +105,7 @@ index 68351e47609ae06f0a1641b4ad2013ce6261ae4e..f827fbe73c654c3b45255ef5758152f9
          if (limit < 0) {
              limit = this.server.getSpawnLimitUnsafe(spawnCategory);
              // Paper end - Add mobcaps commands
-@@ -1859,7 +1860,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
+@@ -1861,7 +1862,7 @@ public class CraftWorld extends CraftRegionAccessor implements World {
          Preconditions.checkArgument(spawnCategory != null, "SpawnCategory cannot be null");
          Preconditions.checkArgument(CraftSpawnCategory.isValidForLimits(spawnCategory), "SpawnCategory.%s are not supported", spawnCategory);
  

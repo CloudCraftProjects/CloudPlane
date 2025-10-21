@@ -1,6 +1,6 @@
 # CloudPlane
 
-A 1.21.7 Minecraft server fork of [Paper](https://github.com/PaperMC/Paper) and
+A 1.21.8 Minecraft server fork of [Paper](https://github.com/PaperMC/Paper) and
 [Pufferfish](https://github.com/pufferfish-gg/Pufferfish) with some more patches.
 This fork is mainly designed to fit the CloudCraft Minecraft network.
 

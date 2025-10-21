@@ -5,11 +5,11 @@ Subject: [PATCH] Fix paper relative teleport flag changes
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index 0f94b55b98c3ed293e465bfc8f8a26663f6ed5bd..ee62c93bdd2da87202a76f8bc9e95a7874f9e6ae 100644
+index 766cacddd5df52d9ec2d19b1ba229303dbff8128..d4e713d6751bcb5bbec001e9cf5e7bba91143d79 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -318,6 +318,32 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
-         this.firstPlayed = System.currentTimeMillis();
+@@ -1340,6 +1340,32 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+         this.getHandle().lookAt(toNmsAnchor(playerAnchor), ((CraftEntity) entity).getHandle(), toNmsAnchor(entityAnchor));
      }
  
 +    // CloudPlane start - fix paper relative teleport flag changes
@@ -41,7 +41,7 @@ index 0f94b55b98c3ed293e465bfc8f8a26663f6ed5bd..ee62c93bdd2da87202a76f8bc9e95a78
      public static net.minecraft.world.entity.Relative deltaRelativeToNMS(io.papermc.paper.entity.TeleportFlag.Relative apiFlag) {
          return switch (apiFlag) {
              case VELOCITY_X -> net.minecraft.world.entity.Relative.DELTA_X;
-@@ -329,10 +355,12 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -1351,10 +1377,12 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
  
      public static @org.jetbrains.annotations.Nullable io.papermc.paper.entity.TeleportFlag.Relative deltaRelativeToAPI(net.minecraft.world.entity.Relative nmsFlag) {
          return switch (nmsFlag) {
@@ -58,7 +58,7 @@ index 0f94b55b98c3ed293e465bfc8f8a26663f6ed5bd..ee62c93bdd2da87202a76f8bc9e95a78
              default -> null;
          };
      }
-@@ -1550,13 +1578,21 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -1447,11 +1475,19 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
              // Paper start - Teleport API
              final Set<net.minecraft.world.entity.Relative> nms = java.util.EnumSet.noneOf(net.minecraft.world.entity.Relative.class);
              for (final io.papermc.paper.entity.TeleportFlag.Relative bukkit : relativeArguments) {
@@ -66,18 +66,16 @@ index 0f94b55b98c3ed293e465bfc8f8a26663f6ed5bd..ee62c93bdd2da87202a76f8bc9e95a78
 +                // CloudPlane start - fix paper relative teleport flag changes
 +                deltaRelativeToNMS(bukkit, nms);
              }
-             entity.connection.internalTeleport(
-                 new net.minecraft.world.entity.PositionMoveRotation(
--                    io.papermc.paper.util.MCUtil.toVec3(to), net.minecraft.world.phys.Vec3.ZERO, to.getYaw(), to.getPitch()
-+                        new net.minecraft.world.phys.Vec3(
-+                                nms.contains(net.minecraft.world.entity.Relative.X) ? location.getX() - this.getX() : location.getX(),
-+                                nms.contains(net.minecraft.world.entity.Relative.Y) ? location.getY() - this.getY() : location.getY(),
-+                                nms.contains(net.minecraft.world.entity.Relative.Z) ? location.getZ() - this.getZ() : location.getZ()
-+                        ), net.minecraft.world.phys.Vec3.ZERO,
-+                        nms.contains(net.minecraft.world.entity.Relative.Y_ROT) ? to.getYaw() - this.getYaw() : to.getYaw(),
-+                        nms.contains(net.minecraft.world.entity.Relative.X_ROT) ? to.getPitch() - this.getPitch() : to.getPitch()
-                 ), nms
-             );
+             entity.connection.internalTeleport(new net.minecraft.world.entity.PositionMoveRotation(
+-                io.papermc.paper.util.MCUtil.toVec3(to), net.minecraft.world.phys.Vec3.ZERO, to.getYaw(), to.getPitch()
++                new net.minecraft.world.phys.Vec3(
++                    nms.contains(net.minecraft.world.entity.Relative.X) ? to.getX() - this.getX() : to.getX(),
++                    nms.contains(net.minecraft.world.entity.Relative.Y) ? to.getY() - this.getY() : to.getY(),
++                    nms.contains(net.minecraft.world.entity.Relative.Z) ? to.getZ() - this.getZ() : to.getZ()
++                ), net.minecraft.world.phys.Vec3.ZERO,
++                nms.contains(net.minecraft.world.entity.Relative.Y_ROT) ? to.getYaw() - this.getYaw() : to.getYaw(),
++                nms.contains(net.minecraft.world.entity.Relative.X_ROT) ? to.getPitch() - this.getPitch() : to.getPitch()
+             ), nms);
 +            // CloudPlane end - fix paper relative teleport flag changes
              // Paper end - Teleport API
          } else {

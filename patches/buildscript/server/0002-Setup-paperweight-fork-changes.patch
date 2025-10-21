@@ -5,7 +5,7 @@ Subject: [PATCH] Setup paperweight fork changes
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 8b7f81076d990c5df6558eeb9f1c0e07ada4488b..f378d8b189706f7d5a29a60c3335d2225269e439 100644
+index b910370958d4e82c23638a42733c5f3f74849c9d..222006bf61bb4a8043ce2d7cc9f7cc428dd7ea25 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -26,6 +26,25 @@ paperweight {
@@ -75,7 +75,7 @@ index 8b7f81076d990c5df6558eeb9f1c0e07ada4488b..f378d8b189706f7d5a29a60c3335d222
      implementation("ca.spottedleaf:concurrentutil:0.0.3")
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
      implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
-@@ -290,7 +327,7 @@ tasks.test {
+@@ -285,7 +322,7 @@ tasks.test {
      jvmArgumentProviders.add(provider)
  }
  
@@ -84,7 +84,7 @@ index 8b7f81076d990c5df6558eeb9f1c0e07ada4488b..f378d8b189706f7d5a29a60c3335d222
  idea {
      module {
          generatedSourceDirs.add(generatedDir.toFile())
-@@ -410,3 +447,12 @@ fill {
+@@ -405,3 +442,12 @@ fill {
          }
      }
  }

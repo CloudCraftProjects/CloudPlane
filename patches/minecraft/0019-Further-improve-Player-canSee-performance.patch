@@ -5,7 +5,7 @@ Subject: [PATCH] Further improve Player#canSee performance
 
 
 diff --git a/net/minecraft/world/entity/Entity.java b/net/minecraft/world/entity/Entity.java
-index 587b2a40149aeb5e3483043f39612e4357df07ac..ff17cc2849f3fc83efe6754fc3080beee530b1b1 100644
+index 23ac8ded361459b41a0b73b0c9e5672268543c53..038de789c7ce742fc740f9d17495d24220f80824 100644
 --- a/net/minecraft/world/entity/Entity.java
 +++ b/net/minecraft/world/entity/Entity.java
 @@ -317,6 +317,15 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
@@ -42,7 +42,7 @@ index 587b2a40149aeb5e3483043f39612e4357df07ac..ff17cc2849f3fc83efe6754fc3080bee
              });
              if (!Double.isFinite(this.getX()) || !Double.isFinite(this.getY()) || !Double.isFinite(this.getZ())) {
                  throw new IllegalStateException("Entity has invalid position");
-@@ -4214,6 +4223,9 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4213,6 +4222,9 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
      public void setUUID(UUID uniqueId) {
          this.uuid = uniqueId;
          this.stringUUID = this.uuid.toString();
@@ -52,7 +52,7 @@ index 587b2a40149aeb5e3483043f39612e4357df07ac..ff17cc2849f3fc83efe6754fc3080bee
      }
  
      @Override
-@@ -4225,6 +4237,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
+@@ -4224,6 +4236,12 @@ public abstract class Entity implements SyncedDataHolder, Nameable, EntityAccess
          return this.stringUUID;
      }
  

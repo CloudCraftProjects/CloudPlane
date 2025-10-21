@@ -5,7 +5,7 @@ Subject: [PATCH] Pufferfish api patches
 
 
 diff --git a/src/main/java/org/bukkit/map/MapPalette.java b/src/main/java/org/bukkit/map/MapPalette.java
-index 2b9e4aa8cf35e7106e510e547954ee7e1bcf3d81..c1aee68dd0a9efdce26d3fc382cf25b69e5aab58 100644
+index 204860b32b4958a2804b2e5bc82f5be099e461f3..deb7de48f4d1853f9416276f8130a66e5ca684dc 100644
 --- a/src/main/java/org/bukkit/map/MapPalette.java
 +++ b/src/main/java/org/bukkit/map/MapPalette.java
 @@ -1,6 +1,7 @@
@@ -23,7 +23,7 @@ index 2b9e4aa8cf35e7106e510e547954ee7e1bcf3d81..c1aee68dd0a9efdce26d3fc382cf25b6
 -    static final Color[] colors = {
 +    public static final Color[] colors = { // Pufferfish - package-private-f -> public-f
          // Start generate - MapPalette#colors
-         // @GeneratedFrom 1.21.7
+         // @GeneratedFrom 1.21.8
          new Color(0x00000000, true),
 @@ -395,9 +396,15 @@ public final class MapPalette {
          temp.getRGB(0, 0, temp.getWidth(), temp.getHeight(), pixels, 0, temp.getWidth());

@@ -54,7 +54,7 @@ index ece6db7b9a0dfd535141c0c756947c4898140503..adb643a87ad754052c6097aeefc701e7
      }
  
 diff --git a/src/main/java/ca/spottedleaf/moonrise/common/util/CoordinateUtils.java b/src/main/java/ca/spottedleaf/moonrise/common/util/CoordinateUtils.java
-index bb5b9c9cb0c73edce1dbe3758ee2db0fcc8f4e40..d0920425dc9b1abeb6d10797f16d0c204b2c9257 100644
+index bb5b9c9cb0c73edce1dbe3758ee2db0fcc8f4e40..e3f45dee9e2f3eca0d7b5d5a0a30a4553be67f1a 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/common/util/CoordinateUtils.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/common/util/CoordinateUtils.java
 @@ -16,12 +16,11 @@ public final class CoordinateUtils {
@@ -63,20 +63,20 @@ index bb5b9c9cb0c73edce1dbe3758ee2db0fcc8f4e40..d0920425dc9b1abeb6d10797f16d0c20
      public static long getChunkKey(final Entity entity) {
 -        final ChunkPos pos = entity.chunkPosition();
 -        return ((long)pos.z << 32) | (pos.x & 0xFFFFFFFFL);
-+        return entity.chunkPosition().longKey; // Pufferfish - use pre-calculated chunk key
++        return entity.chunkPosition().longKey; // Pufferfish - fast access
      }
  
      public static long getChunkKey(final ChunkPos pos) {
 -        return ((long)pos.z << 32) | (pos.x & 0xFFFFFFFFL);
-+        return pos.longKey; // Pufferfish - use pre-calculated chunk key
++        return pos.longKey; // Pufferfish - fast access
      }
  
      public static long getChunkKey(final SectionPos pos) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 03dfcb4665d0279c825a74f3f999c92fe2bd22cb..a43267e9591e37b35fb9f429c4dd412be562663c 100644
+index 1d12a870a2f239bf95df639ef350b38911558199..9c223365c1c7beead77f952418b10c4a976d2b85 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1138,7 +1138,7 @@ public final class CraftServer implements Server {
+@@ -1141,7 +1141,7 @@ public final class CraftServer implements Server {
                  plugin.getPluginMeta().getDisplayName(),
                  "This plugin is not properly shutting down its async tasks when it is being shut down. This task may throw errors during the final shutdown logs and might not complete before process dies."
              ));

@@ -5,10 +5,10 @@ Subject: [PATCH] Add CloudPlane configuration
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index a43267e9591e37b35fb9f429c4dd412be562663c..015c61518fb6cf7f03294a546c04e2c858d663f4 100644
+index 9c223365c1c7beead77f952418b10c4a976d2b85..2d054c04645798023b49699af481b0a2ac53cbf2 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1045,6 +1045,7 @@ public final class CraftServer implements Server {
+@@ -1048,6 +1048,7 @@ public final class CraftServer implements Server {
  
          org.spigotmc.SpigotConfig.init((File) this.console.options.valueOf("spigot-settings")); // Spigot
          this.console.paperConfigurations.reloadConfigs(this.console);
@@ -16,7 +16,7 @@ index a43267e9591e37b35fb9f429c4dd412be562663c..015c61518fb6cf7f03294a546c04e2c8
          for (ServerLevel world : this.console.getAllLevels()) {
              // world.serverLevelData.setDifficulty(config.difficulty); // Paper - per level difficulty
              world.setSpawnSettings(world.serverLevelData.getDifficulty() != Difficulty.PEACEFUL && config.spawnMonsters); // Paper - per level difficulty (from MinecraftServer#setDifficulty(ServerLevel, Difficulty, boolean))
-@@ -2944,6 +2945,13 @@ public final class CraftServer implements Server {
+@@ -2947,6 +2948,13 @@ public final class CraftServer implements Server {
              return CraftServer.this.console.paperConfigurations.createLegacyObject(CraftServer.this.console);
          }
  

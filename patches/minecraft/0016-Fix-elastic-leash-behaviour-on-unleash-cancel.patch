@@ -5,21 +5,20 @@ Subject: [PATCH] Fix elastic leash behaviour on unleash cancel
 
 
 diff --git a/net/minecraft/world/entity/Leashable.java b/net/minecraft/world/entity/Leashable.java
-index eab109f5256bf829dd43174699e79e9a2c6326c0..0d017113811411acfb105c2bc05b25fa04db74b7 100644
+index b3568d4a1467912f555ce461fa8dcf218c474047..8a9cdb408c8806fbcb79821eede4cfa59db06602 100644
 --- a/net/minecraft/world/entity/Leashable.java
 +++ b/net/minecraft/world/entity/Leashable.java
-@@ -171,9 +171,8 @@ public interface Leashable {
+@@ -171,8 +171,7 @@ public interface Leashable {
              if (leashHolder != null && leashHolder.level() == entity.level()) {
                  double d = entity.leashDistanceTo(leashHolder);
                  entity.whenLeashedTo(leashHolder);
 -                if (d > entity.leashSnapDistanceOrConfig()) { // Paper - Configurable max leash distance
-+                if (d > entity.leashSnapDistanceOrConfig() && entity.leashTooFarBehaviour0()) { // Paper - Configurable max leash distance // CloudPlane - fix elastic leash behavior on event cancel
-                     level.playSound(null, leashHolder.getX(), leashHolder.getY(), leashHolder.getZ(), SoundEvents.LEAD_BREAK, SoundSource.NEUTRAL, 1.0F, 1.0F);
 -                    entity.leashTooFarBehaviour();
++                if (d > entity.leashSnapDistanceOrConfig() && entity.leashTooFarBehaviour()) { // Paper - Configurable max leash distance // CloudPlane - fix elastic leash behavior on event cancel
                  } else if (d > entity.leashElasticDistance() - leashHolder.getBbWidth() - entity.getBbWidth()
                      && entity.checkElasticInteractions(leashHolder, leashData)) {
                      entity.onElasticLeashPull();
-@@ -218,13 +217,21 @@ public interface Leashable {
+@@ -217,13 +216,21 @@ public interface Leashable {
          entity.notifyLeashHolder(this);
      }
  
@@ -39,10 +38,10 @@ index eab109f5256bf829dd43174699e79e9a2c6326c0..0d017113811411acfb105c2bc05b25fa
              final org.bukkit.event.entity.EntityUnleashEvent event = new org.bukkit.event.entity.EntityUnleashEvent(entity.getBukkitEntity(), org.bukkit.event.entity.EntityUnleashEvent.UnleashReason.DISTANCE, true);
 -            if (!event.callEvent()) return;
 +            if (!event.callEvent()) return false; // CloudPlane - fix elastic leash behaviour on unleash cancel
-             dropLeash = event.isDropLeash();
-         }
-         // CraftBukkit end
-@@ -234,6 +241,7 @@ public interface Leashable {
+ 
+             Entity leashHolder = this.getLeashHolder();
+             Level level = leashHolder.level();
+@@ -237,6 +244,7 @@ public interface Leashable {
              this.removeLeash();
          }
          // Paper end - Expand EntityUnleashEvent
@@ -51,10 +50,10 @@ index eab109f5256bf829dd43174699e79e9a2c6326c0..0d017113811411acfb105c2bc05b25fa
  
      default void closeRangeLeashBehaviour(Entity entity) {
 diff --git a/net/minecraft/world/entity/Mob.java b/net/minecraft/world/entity/Mob.java
-index 96cc7d1fcb8627484a16e6930ff1221f55251e2a..04968d5e5c4d039a5035465a5f016037500bed59 100644
+index 6f895cab638e36667d0aabe81767acf44f7a1061..0b15bc79549af8c4c146107b4e8ab378ec0c72e7 100644
 --- a/net/minecraft/world/entity/Mob.java
 +++ b/net/minecraft/world/entity/Mob.java
-@@ -1423,10 +1423,14 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
+@@ -1436,10 +1436,14 @@ public abstract class Mob extends LivingEntity implements EquipmentUser, Leashab
          }
      }
  

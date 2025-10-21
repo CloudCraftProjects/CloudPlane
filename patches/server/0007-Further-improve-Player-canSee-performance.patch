@@ -5,18 +5,18 @@ Subject: [PATCH] Further improve Player#canSee performance
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index cb47590583cb7cc82248db5f7850994f00beb82b..0f94b55b98c3ed293e465bfc8f8a26663f6ed5bd 100644
+index a04ac298058e4eb18d23374057e6167b0f25eba2..766cacddd5df52d9ec2d19b1ba229303dbff8128 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -218,6 +218,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
-     private static final net.kyori.adventure.text.Component DEFAULT_KICK_COMPONENT = net.kyori.adventure.text.Component.translatable("multiplayer.disconnect.kicked");
+@@ -221,6 +221,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+     private boolean hasPlayedBefore = false;
      private final ConversationTracker conversationTracker = new ConversationTracker();
      private final Map<UUID, Set<WeakReference<Plugin>>> invertedVisibilityEntities = new HashMap<>();
 +    private final it.unimi.dsi.fastutil.longs.LongSet invertedVisibilityEntitySet = new it.unimi.dsi.fastutil.longs.LongOpenHashSet(); // CloudPlane - further improve Player#canSee performance
      private final Set<UUID> unlistedEntities = new HashSet<>(); // Paper - Add Listing API for Player
-     public org.bukkit.event.player.PlayerResourcePackStatusEvent.Status resourcePackStatus; // Paper - more resource pack API
-     private long firstPlayed = 0;
-@@ -2130,6 +2131,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+     private static final WeakHashMap<Plugin, WeakReference<Plugin>> pluginWeakReferences = new WeakHashMap<>();
+     private int hash = 0;
+@@ -2012,6 +2013,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          invertedPlugins = new HashSet<>();
          invertedPlugins.add(CraftPlayer.getPluginWeakReference(plugin));
          this.invertedVisibilityEntities.put(entity.getUniqueId(), invertedPlugins);
@@ -24,7 +24,7 @@ index cb47590583cb7cc82248db5f7850994f00beb82b..0f94b55b98c3ed293e465bfc8f8a2666
  
          return true;
      }
-@@ -2169,6 +2171,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2050,6 +2052,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          if (this.invertedVisibilityEntities.remove(entity.getUniqueId()) == null) {
              this.untrackAndHideEntity(entity);
          }
@@ -32,7 +32,7 @@ index cb47590583cb7cc82248db5f7850994f00beb82b..0f94b55b98c3ed293e465bfc8f8a2666
      }
  
      @Override
-@@ -2217,6 +2220,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2098,6 +2101,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
              return false; // Some other plugins still want the entity inverted
          }
          this.invertedVisibilityEntities.remove(entity.getUniqueId());
@@ -40,15 +40,15 @@ index cb47590583cb7cc82248db5f7850994f00beb82b..0f94b55b98c3ed293e465bfc8f8a2666
  
          return true;
      }
-@@ -2262,6 +2266,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2174,6 +2178,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          if (this.invertedVisibilityEntities.remove(entity.getUniqueId()) == null) {
              this.trackAndShowEntity(entity);
          }
 +        else this.invertedVisibilityEntitySet.remove(((CraftEntity) entity).getHandle().getLongUUID()); // CloudPlane - further improve Player#canSee performance
      }
- 
      // Paper start
-@@ -2327,6 +2332,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+     public com.destroystokyo.paper.profile.PlayerProfile getPlayerProfile() {
+@@ -2205,6 +2210,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
  
      public void onEntityRemove(Entity entity) {
          this.invertedVisibilityEntities.remove(entity.getUUID());
@@ -56,7 +56,7 @@ index cb47590583cb7cc82248db5f7850994f00beb82b..0f94b55b98c3ed293e465bfc8f8a2666
      }
  
      @Override
-@@ -2342,7 +2348,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2220,7 +2226,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
  
      public boolean canSee(Entity entity) {
          return this.entity == entity // SPIGOT-7312: Can always see self
