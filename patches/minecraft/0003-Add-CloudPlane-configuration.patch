@@ -17,10 +17,10 @@ index 2ee864f2d61e45f7c006c448ed1100355e3e79b4..f710a6ade234949f30df83cd76510ecf
          // this.worldData.setGameType(properties.gameMode.get()); // CraftBukkit - moved to world loading
          LOGGER.info("Default game type: {}", properties.gameMode.get());
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 68b2bf46420a684f36bf6a78de6a824347e92db3..67d37802eef78ea9329998ec0d8e97e6bb1ecf78 100644
+index 213a36af6fd1218b67b7b25b5f7bb646e4f44891..4fb56e686ce20c3f09936aeaee5bcac4ce350de1 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -818,6 +818,8 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -819,6 +819,8 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
      }
      // Paper end - optimise random ticking
  
@@ -29,7 +29,7 @@ index 68b2bf46420a684f36bf6a78de6a824347e92db3..67d37802eef78ea9329998ec0d8e97e6
      protected Level(
          WritableLevelData levelData,
          ResourceKey<Level> dimension,
-@@ -845,6 +847,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -846,6 +848,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
          // Paper end - getblock optimisations - cache world height/sections
          this.spigotConfig = new org.spigotmc.SpigotWorldConfig(((net.minecraft.world.level.storage.PrimaryLevelData) levelData).getLevelName()); // Spigot
          this.paperConfig = paperWorldConfigCreator.apply(this.spigotConfig); // Paper - create paper world config

@@ -27,10 +27,10 @@ index fdeca41d40705f28864ce4443d01cd872c9d51b0..4613bd1643a29d8a3f07da395c855b32
          this.player = player;
      }
 diff --git a/net/minecraft/server/level/ServerPlayer.java b/net/minecraft/server/level/ServerPlayer.java
-index 49771f74431ea3574d0136efda34594800aa668e..e08fa12f97f78d13dea158f826ff4a66d2ef6e23 100644
+index 261d493a401b0b31e1baa8815e4ad0ed6055cd9d..92cbde0e7f7bd2baef24c9eed3c3df29014c3edc 100644
 --- a/net/minecraft/server/level/ServerPlayer.java
 +++ b/net/minecraft/server/level/ServerPlayer.java
-@@ -473,6 +473,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -474,6 +474,8 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
      }
      // Paper end - rewrite chunk system
  
@@ -39,7 +39,7 @@ index 49771f74431ea3574d0136efda34594800aa668e..e08fa12f97f78d13dea158f826ff4a66
      public ServerPlayer(MinecraftServer server, ServerLevel level, GameProfile gameProfile, ClientInformation clientInformation) {
          super(level, gameProfile);
          this.server = server;
-@@ -2402,6 +2404,33 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
+@@ -2394,6 +2396,33 @@ public class ServerPlayer extends Player implements ca.spottedleaf.moonrise.patc
                  clientInformation.language()
              );
              this.server.server.getPluginManager().callEvent(event);

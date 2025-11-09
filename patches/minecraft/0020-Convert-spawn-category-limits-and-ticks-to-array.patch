@@ -21,10 +21,10 @@ index efe96d04bb5886dc0966c00ef029052e2fea83ac..a594c145ac58ba40c17f618d7f09d582
          } else {
              filteredSpawningCategories = List.of();
 diff --git a/net/minecraft/world/level/Level.java b/net/minecraft/world/level/Level.java
-index 67d37802eef78ea9329998ec0d8e97e6bb1ecf78..e3a591b41e0354d8304388caa81c5a17ce6fed9f 100644
+index 4fb56e686ce20c3f09936aeaee5bcac4ce350de1..bce1726b0316f58fca60c8c06880f672413dd4fc 100644
 --- a/net/minecraft/world/level/Level.java
 +++ b/net/minecraft/world/level/Level.java
-@@ -149,7 +149,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -150,7 +150,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
      public Map<BlockPos, BlockEntity> capturedTileEntities = new java.util.LinkedHashMap<>(); // Paper - Retain block place order when capturing blockstates
      @Nullable
      public List<net.minecraft.world.entity.item.ItemEntity> captureDrops;
@@ -33,7 +33,7 @@ index 67d37802eef78ea9329998ec0d8e97e6bb1ecf78..e3a591b41e0354d8304388caa81c5a17
      // Paper start - EAR 2
      public int wakeupInactiveRemainingAnimals;
      public int wakeupInactiveRemainingFlying;
-@@ -853,7 +853,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
+@@ -854,7 +854,7 @@ public abstract class Level implements LevelAccessor, AutoCloseable, ca.spottedl
  
          for (SpawnCategory spawnCategory : SpawnCategory.values()) {
              if (org.bukkit.craftbukkit.util.CraftSpawnCategory.isValidForLimits(spawnCategory)) {

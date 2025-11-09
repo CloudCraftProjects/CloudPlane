@@ -73,10 +73,10 @@ index bb5b9c9cb0c73edce1dbe3758ee2db0fcc8f4e40..e3f45dee9e2f3eca0d7b5d5a0a30a455
  
      public static long getChunkKey(final SectionPos pos) {
 diff --git a/src/main/java/org/bukkit/craftbukkit/CraftServer.java b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-index 11911a74f6074852624ff62a1ad78b77680830c4..e52cfdcb3463ff28eb2d89c518466e7673603527 100644
+index 34d74014fd042f6eeafafadb6237a838b1ddd47c..14be6fa9cf2116ef3d86b72f161df44eaac8074c 100644
 --- a/src/main/java/org/bukkit/craftbukkit/CraftServer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/CraftServer.java
-@@ -1086,7 +1086,7 @@ public final class CraftServer implements Server {
+@@ -1085,7 +1085,7 @@ public final class CraftServer implements Server {
                  plugin.getPluginMeta().getDisplayName(),
                  "This plugin is not properly shutting down its async tasks when it is being shut down. This task may throw errors during the final shutdown logs and might not complete before process dies."
              ));
