@@ -5,10 +5,10 @@ Subject: [PATCH] Further improve Player#canSee performance
 
 
 diff --git a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-index fbfcf3dcc35d9433e380820df8f67b72c40dc5ec..9359b4ab98cdabe815a42b7bb6e64b944f79cfb3 100644
+index 6f9c1fd4cb0c3761f5b9e1f17eba36b517aae975..17569447e75f6c3bc2c718ee3b9f06b1130ee2e5 100644
 --- a/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
 +++ b/src/main/java/org/bukkit/craftbukkit/entity/CraftPlayer.java
-@@ -227,6 +227,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -235,6 +235,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
      private boolean hasPlayedBefore = false;
      private final ConversationTracker conversationTracker = new ConversationTracker();
      private final Map<UUID, Set<WeakReference<Plugin>>> invertedVisibilityEntities = new HashMap<>();
@@ -16,7 +16,7 @@ index fbfcf3dcc35d9433e380820df8f67b72c40dc5ec..9359b4ab98cdabe815a42b7bb6e64b94
      private final Set<UUID> unlistedEntities = new HashSet<>(); // Paper - Add Listing API for Player
      private static final WeakHashMap<Plugin, WeakReference<Plugin>> pluginWeakReferences = new WeakHashMap<>();
      private int hash = 0;
-@@ -1849,6 +1850,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -1857,6 +1858,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          invertedPlugins = new HashSet<>();
          invertedPlugins.add(CraftPlayer.getPluginWeakReference(plugin));
          this.invertedVisibilityEntities.put(entity.getUniqueId(), invertedPlugins);
@@ -24,7 +24,7 @@ index fbfcf3dcc35d9433e380820df8f67b72c40dc5ec..9359b4ab98cdabe815a42b7bb6e64b94
  
          return true;
      }
-@@ -1887,6 +1889,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -1895,6 +1897,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          if (this.invertedVisibilityEntities.remove(entity.getUniqueId()) == null) {
              this.untrackAndHideEntity(entity);
          }
@@ -32,7 +32,7 @@ index fbfcf3dcc35d9433e380820df8f67b72c40dc5ec..9359b4ab98cdabe815a42b7bb6e64b94
      }
  
      @Override
-@@ -1930,6 +1933,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -1938,6 +1941,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
              return false; // Some other plugins still want the entity inverted
          }
          this.invertedVisibilityEntities.remove(entity.getUniqueId());
@@ -40,7 +40,7 @@ index fbfcf3dcc35d9433e380820df8f67b72c40dc5ec..9359b4ab98cdabe815a42b7bb6e64b94
  
          return true;
      }
-@@ -2003,6 +2007,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2011,6 +2015,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
          if (this.invertedVisibilityEntities.remove(entity.getUniqueId()) == null) {
              this.trackAndShowEntity(entity);
          }
@@ -48,7 +48,7 @@ index fbfcf3dcc35d9433e380820df8f67b72c40dc5ec..9359b4ab98cdabe815a42b7bb6e64b94
      }
      // Paper start
      public com.destroystokyo.paper.profile.PlayerProfile getPlayerProfile() {
-@@ -2034,6 +2039,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2042,6 +2047,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
  
      public void onEntityRemove(Entity entity) {
          this.invertedVisibilityEntities.remove(entity.getUUID());
@@ -56,7 +56,7 @@ index fbfcf3dcc35d9433e380820df8f67b72c40dc5ec..9359b4ab98cdabe815a42b7bb6e64b94
      }
  
      @Override
-@@ -2049,7 +2055,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
+@@ -2057,7 +2063,7 @@ public class CraftPlayer extends CraftHumanEntity implements Player, PluginMessa
  
      public boolean canSee(Entity entity) {
          return this.entity == entity // SPIGOT-7312: Can always see self

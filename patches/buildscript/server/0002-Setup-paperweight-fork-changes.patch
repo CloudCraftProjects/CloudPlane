@@ -5,7 +5,7 @@ Subject: [PATCH] Setup paperweight fork changes
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 64ecba84aef540c9d9b1f3ed9aa5106520dfc3c8..3e06867e9ab38acc3d060ac801f0365cc2ea90bb 100644
+index 944a8e37dc098dae735bdf4d041021878e52ea26..965c3f1970862c9d434488c108cb7e49868187fe 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -23,6 +23,25 @@ paperweight {
@@ -72,7 +72,7 @@ index 64ecba84aef540c9d9b1f3ed9aa5106520dfc3c8..3e06867e9ab38acc3d060ac801f0365c
  dependencies {
 -    implementation(project(":paper-api"))
 +    implementation(projects.cloudplaneApi) // CloudPlane - update to own api
-     implementation("ca.spottedleaf:concurrentutil:0.0.5")
+     implementation("ca.spottedleaf:concurrentutil:0.0.7")
      implementation("org.jline:jline-terminal-ffm:3.27.1") // use ffm on java 22+
      implementation("org.jline:jline-terminal-jni:3.27.1") // fall back to jni on java 21
 @@ -282,7 +319,7 @@ tasks.test {
