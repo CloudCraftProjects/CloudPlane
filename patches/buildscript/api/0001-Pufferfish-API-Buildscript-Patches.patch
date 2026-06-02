@@ -5,11 +5,11 @@ Subject: [PATCH] Pufferfish API Buildscript Patches
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 49b24787796658987f2b04c433d0316e7a23bb67..b7b9a2d4667d62fc186c4efb3041f1f9c496f305 100644
+index 22886d99bac9a1298287cd3c9051237a59f2d628..2d7692052f17dba1c8d262fd0de6921c5215db92 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -89,6 +89,8 @@ dependencies {
-     testImplementation("org.ow2.asm:asm-tree:9.8")
+     testImplementation("org.ow2.asm:asm-tree:9.9.1")
      mockitoAgent("org.mockito:mockito-core:5.14.1") { isTransitive = false } // configure mockito agent that is needed in newer java versions
      testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 +

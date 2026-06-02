@@ -71,8 +71,7 @@ configure<PaperweightPatcherExtension> {
         // they fail once; so create a patch dir and use a symbolic
         // link to place the buildscript at the proper location
         listOf("api", "server").forEach { part ->
-            val capitalizedPart = part.replaceFirstChar { it.titlecaseChar() }
-            patchDir("paper${capitalizedPart}Buildscript") {
+            patchDir("${part}Buildscript") {
                 upstreamPath = "paper-$part"
                 patchesDir = file("patches/buildscript/$part")
                 featurePatchDir = patchesDir.dir(".")
